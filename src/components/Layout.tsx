@@ -1,14 +1,22 @@
 
 import { ReactNode, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+declare global {
+  interface Window {
+    birdsTransitionComplete?: boolean;
+  }
+}
+
 const Layout = ({ children }: LayoutProps) => {
   const [contentVisible, setContentVisible] = useState(false);
-  
+  const location = useLocation();
+
   useEffect(() => {
     // Check if birds transition is complete or not active
     const checkTransitionStatus = () => {
@@ -17,22 +25,26 @@ const Layout = ({ children }: LayoutProps) => {
         setContentVisible(true);
         return;
       }
-      
+
       // Otherwise check again in a short interval
       setTimeout(checkTransitionStatus, 100);
     };
-    
+
     // Start with content hidden
     setContentVisible(false);
-    
+
     // Wait a brief moment for any transition to initialize
     const timer = setTimeout(() => {
       checkTransitionStatus();
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
-  
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
   return (
     <>
       <div className={`transition-opacity duration-500 ${contentVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -47,13 +59,13 @@ const Layout = ({ children }: LayoutProps) => {
                 © {new Date().getFullYear()} Nakhle Rizk. All rights reserved.
               </p>
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
                   GitHub
                 </a>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
                   LinkedIn
                 </a>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
                   Twitter
                 </a>
               </div>

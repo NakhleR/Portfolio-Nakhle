@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import FadeTransition from "./components/transitions/FadeTransition";
 import BirdsTransition from "./components/transitions/BirdsTransition";
+import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Work from "./pages/Work";
@@ -17,20 +18,22 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <BirdsTransition />
-        <Routes>
-          <Route path="/" element={<Layout><FadeTransition><Index /></FadeTransition></Layout>} />
-          <Route path="/about" element={<Layout><FadeTransition><About /></FadeTransition></Layout>} />
-          <Route path="/work" element={<Layout><FadeTransition><Work /></FadeTransition></Layout>} />
-          <Route path="/contact" element={<Layout><FadeTransition><Contact /></FadeTransition></Layout>} />
-          <Route path="*" element={<Layout><FadeTransition><NotFound /></FadeTransition></Layout>} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="system">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <BirdsTransition />
+          <Routes>
+            <Route path="/" element={<Layout><FadeTransition><Index /></FadeTransition></Layout>} />
+            <Route path="/about" element={<Layout><FadeTransition><About /></FadeTransition></Layout>} />
+            <Route path="/work" element={<Layout><FadeTransition><Work /></FadeTransition></Layout>} />
+            <Route path="/contact" element={<Layout><FadeTransition><Contact /></FadeTransition></Layout>} />
+            <Route path="*" element={<Layout><FadeTransition><NotFound /></FadeTransition></Layout>} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
