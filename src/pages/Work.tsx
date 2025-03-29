@@ -127,9 +127,11 @@ const Work = () => {
                 >
                   <p className="text-muted-foreground">Project image</p>
                 </div>
-                <h3 className="text-2xl mb-2">{project.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
-                <p className="text-muted-foreground">{project.description}</p>
+                <div className='p-4'>
+                  <h3 className="text-2xl mb-2">{project.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
+                  <p className="text-muted-foreground">{project.description}</p>
+                </div>
               </div>
             ))}
           </div>
