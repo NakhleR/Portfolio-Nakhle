@@ -35,27 +35,65 @@ const About = () => {
 
   const timelineItems: TimelineItem[] = [
     {
-      year: '2022 - Present',
+      year: 'January 2024 - Currently',
       title: 'Full Stack Developer',
-      description: 'Working on web applications using modern technologies like React, TypeScript, and Node.js.',
-      category: 'work'
+      location: 'Code SARL - Jounieh, Lebanon',
+      category: 'work',
+      bullets: [
+        'Mastery of front-end and back-end technologies.',
+        'Effective collaboration with teams to achieve project objectives.',
+        'Creation of complete web applications, from design to production.'
+      ]
     },
     {
-      year: '2021 - Present',
-      title: 'Game Development with Unreal Engine',
-      description: 'Creating games and interactive experiences using Unreal Engine.',
-      category: 'project'
+      year: 'February 2020 - September 2022',
+      title: 'Maintenance team manager',
+      location: 'GCS Computers Pro - Sarba, Lebanon',
+      category: 'work',
+      bullets: [
+        'Close collaboration within a dynamic team.',
+        'Evolution at the heart of a workshop specializing in the complete repair of various electronic devices.',
+        'Active participation in repair and maintenance projects.'
+      ]
     },
     {
-      year: '2020 - 2021',
-      title: 'Unity and Godot Experience',
-      description: 'Developed multiple game prototypes and small projects using Unity and Godot game engines.',
-      category: 'project'
+      year: 'September 2019 - January 2020',
+      title: 'Cashier',
+      location: 'Morgan\'s Lane - Kaslik, Lebanon',
+      category: 'work',
+      bullets: [
+        'Development of essential skills in the accurate and efficient processing of financial transactions.',
+        'Commitment to exceptional customer service.',
+        'Warm welcome to customers.'
+      ]
     },
     {
-      year: '2019 - 2023',
-      title: 'Computer Science Degree',
-      description: 'Studied programming fundamentals, algorithms, data structures, and software development principles.',
+      year: 'June 2019 - August 2019',
+      title: 'Versatile Employee',
+      location: 'McDonald\'s - Kaslik, Lebanon',
+      category: 'work',
+      bullets: [
+        'Acquisition of extensive experience in various operational areas.',
+        'Inventory management.',
+        'Customer service.'
+      ]
+    },
+    {
+      year: 'September 2023 - Currently',
+      title: 'L2 Computer Science',
+      location: 'University of Rouen Normandy - Rouen, France',
+      category: 'education'
+    },
+    {
+      year: 'September 2022 - June 2023',
+      title: 'L1 IEEA',
+      location: 'University of Rouen Normandy - Rouen, France',
+      category: 'education'
+    },
+    {
+      year: 'September 2019 - June 2020',
+      title: 'French Scientific Baccalaureate - Biology',
+      location: 'Sainte-Famille Française - Jounieh, Liban',
       category: 'education'
     }
   ];
@@ -90,18 +128,18 @@ const About = () => {
               <h2 className="mb-6">My Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  I'm Nakhle Rizk, born on November 20, 2002. I'm a full stack developer with a passion for creating 
-                  both web applications and games. My journey began with web development, mastering various frontend 
+                  I'm Nakhle Rizk, born on November 20, 2002. I'm a full stack developer with a passion for creating
+                  both web applications and games. My journey began with web development, mastering various frontend
                   and backend technologies.
                 </p>
                 <p>
-                  My fascination with interactive experiences led me to game development, where I've worked with 
-                  Godot and Unity before finding my current focus with Unreal Engine. I enjoy the creative and 
+                  My fascination with interactive experiences led me to game development, where I've worked with
+                  Godot and Unity before finding my current focus with Unreal Engine. I enjoy the creative and
                   technical challenges that come with building immersive digital experiences.
                 </p>
                 <p>
-                  I approach every project with attention to detail and a focus on user experience, whether 
-                  I'm building a responsive web application or designing game mechanics. I'm constantly learning 
+                  I approach every project with attention to detail and a focus on user experience, whether
+                  I'm building a responsive web application or designing game mechanics. I'm constantly learning
                   and expanding my skills to stay current with the latest technologies and best practices.
                 </p>
               </div>
@@ -123,8 +161,8 @@ const About = () => {
       <section className="py-16 bg-secondary">
         <div className="container">
           <h2 className="text-center mb-16">My Journey</h2>
-          <div 
-            className="opacity-0" 
+          <div
+            className="opacity-0"
             ref={timelineRef}
             style={{ animationDelay: '0.2s' }}
           >
@@ -137,13 +175,13 @@ const About = () => {
       <section className="py-16">
         <div className="container">
           <h2 className="text-center mb-16">My Skills</h2>
-          <div 
+          <div
             className="grid grid-cols-1 md:grid-cols-3 gap-8 opacity-0"
             ref={skillsRef}
             style={{ animationDelay: '0.3s' }}
           >
             {skills.map((skillGroup, index) => (
-              <Card key={index} className="bg-background">
+              <Card key={index} className="bg-background hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="pt-6">
                   <h3 className="text-xl mb-4">{skillGroup.name}</h3>
                   <ul className="space-y-2">

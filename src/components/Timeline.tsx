@@ -1,11 +1,19 @@
 
 import React from 'react';
+import {
+  VerticalTimeline,
+  VerticalTimelineElement
+} from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
+import { BriefcaseIcon, GraduationCapIcon, FolderIcon } from 'lucide-react';
 
 export interface TimelineItem {
   year: string;
   title: string;
-  description: string;
+  description?: string;
   category: 'education' | 'work' | 'project';
+  location?: string;
+  bullets?: string[];
 }
 
 interface TimelineProps {
@@ -14,48 +22,76 @@ interface TimelineProps {
 
 const Timeline: React.FC<TimelineProps> = ({ items }) => {
   return (
-    <div className="relative">
-      {/* Vertical line */}
-      <div className="absolute left-0 md:left-1/2 h-full w-px bg-border transform -translate-x-1/2"></div>
-      
-      <div className="space-y-12">
-        {items.map((item, index) => (
-          <div 
-            key={index} 
-            className={`relative flex flex-col md:flex-row ${
-              index % 2 === 0 ? 'md:flex-row-reverse' : ''
-            }`}
+    <VerticalTimeline animate={true} lineColor="var(--border)">
+      {items.map((item, index) => {
+        const isEducation = item.category === 'education';
+        const isWork = item.category === 'work';
+
+        // Determine color based on category
+        const iconStyle = {
+          background: isEducation
+            ? 'hsl(var(--primary))'
+            : isWork
+              ? 'hsl(var(--primary))'
+              : 'hsl(var(--primary))',
+          color: 'hsl(var(--primary-foreground))',
+          boxShadow: '0 0 0 4px hsl(var(--background)), 0 0 0 5px hsl(var(--border))'
+        };
+
+        // Determine icon based on category
+        const IconComponent = isEducation
+          ? GraduationCapIcon
+          : isWork
+            ? BriefcaseIcon
+            : FolderIcon;
+
+        return (
+          <VerticalTimelineElement
+            key={index}
+            className="vertical-timeline-element"
+            contentStyle={{
+              background: 'hsl(var(--card))',
+              color: 'hsl(var(--card-foreground))',
+              boxShadow: '0 3px 10px rgba(0, 0, 0, 0.1)',
+              borderRadius: 'var(--radius)',
+              border: '1px solid hsl(var(--border))'
+            }}
+            contentArrowStyle={{
+              borderRight: '7px solid hsl(var(--card))'
+            }}
+            date={item.year}
+            dateClassName="text-muted-foreground font-medium"
+            iconStyle={iconStyle}
+            icon={<IconComponent className="w-5 h-5" />}
           >
-            {/* Content */}
-            <div className="md:w-1/2 pb-10">
-              <div 
-                className={`relative ${
-                  index % 2 === 0 ? 'md:mr-10' : 'md:ml-10'
-                } p-6 bg-card rounded-lg border`}
-              >
-                <span className={`inline-block px-3 py-1 text-xs rounded-full mb-3 ${
-                  item.category === 'education' 
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' 
-                    : item.category === 'work'
+            <div>
+              <span className={`inline-block px-3 py-1 text-xs rounded-full mb-3 ${isEducation
+                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                  : isWork
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                     : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
                 }`}>
-                  {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                </span>
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-muted-foreground">{item.year}</span>
-                </div>
-                <h3 className="text-lg font-medium mb-2">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
-              </div>
+                {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+              </span>
+              <h3 className="text-lg font-medium mb-2">{item.title}</h3>
+              {item.location && (
+                <p className="text-sm text-muted-foreground mb-2">{item.location}</p>
+              )}
+              {item.description && (
+                <p className="text-muted-foreground mb-4">{item.description}</p>
+              )}
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                  {item.bullets.map((bullet, i) => (
+                    <li key={i} className="ml-2">{bullet}</li>
+                  ))}
+                </ul>
+              )}
             </div>
-            
-            {/* Circle indicator */}
-            <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-5 h-5 rounded-full border-4 border-background bg-primary"></div>
-          </div>
-        ))}
-      </div>
-    </div>
+          </VerticalTimelineElement>
+        );
+      })}
+    </VerticalTimeline>
   );
 };
 
