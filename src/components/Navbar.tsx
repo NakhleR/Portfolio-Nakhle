@@ -42,7 +42,7 @@ const Navbar = () => {
 
     // Create a temporary link to download the CV
     const link = document.createElement('a');
-    link.href = '/your-cv-filename.pdf'; // Replace with actual path to your CV
+    link.href = '/Nakhle_CV.pdf'; // Replace with actual path to your CV
     link.download = 'Nakhle_Rizk_CV.pdf';
     document.body.appendChild(link);
     link.click();
