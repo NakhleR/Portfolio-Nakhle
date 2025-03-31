@@ -1,4 +1,5 @@
 
+import DNAPlayback from '@/components/DNAPlayback';
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -43,12 +44,10 @@ const Index = () => {
               </div>
             </div>
             <div
-              className="rounded-lg overflow-hidden opacity-0"
+              className="rounded-lg h-full overflow-hidden opacity-0"
               ref={imageRef}
             >
-              <div className="aspect-[4/3] bg-secondary rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Development showcase image</p>
-              </div>
+              <DNAPlayback />
             </div>
           </div>
         </div>
