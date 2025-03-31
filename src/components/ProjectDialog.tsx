@@ -1,6 +1,16 @@
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselPrevious,
+    CarouselNext
+} from "@/components/ui/carousel";
 
 export interface ProjectDetails {
     id: string;
@@ -25,19 +35,60 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
 
     if (!project) return null;
 
+    const nextImage = () => {
+        if (project.images && project.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev + 1) % project.images!.length);
+        }
+    };
+
+    const prevImage = () => {
+        if (project.images && project.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev - 1 + project.images!.length) % project.images!.length);
+        }
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[700px] p-0 gap-0 overflow-hidden">
                 <ScrollArea className="max-h-[80vh]">
                     {/* Project Images */}
                     {project.images && project.images.length > 0 ? (
-                        <div className="relative aspect-video bg-muted">
-                            {/* Placeholder for project image */}
-                            <div className="w-full h-full flex items-center justify-center bg-secondary">
-                                <p className="text-muted-foreground">Project screenshot {currentImageIndex + 1}</p>
+                        <div className="relative">
+                            <Carousel className="w-full" setApi={(api) => {
+                                // Optional: Sync external state with carousel api
+                                api?.on('select', () => {
+                                    setCurrentImageIndex(api.selectedScrollSnap());
+                                });
+                            }}>
+                                <CarouselContent>
+                                    {project.images.map((image, index) => (
+                                        <CarouselItem key={index}>
+                                            <div className="aspect-video bg-secondary flex items-center justify-center">
+                                                <p className="text-muted-foreground">Project screenshot {index + 1}</p>
+                                            </div>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
+                                    onClick={() => setCurrentImageIndex(prev =>
+                                        (prev - 1 + project.images!.length) % project.images!.length
+                                    )}
+                                />
+                                <CarouselNext
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
+                                    onClick={() => setCurrentImageIndex(prev =>
+                                        (prev + 1) % project.images!.length
+                                    )}
+                                />
+                            </Carousel>
+
+                            {/* Image counter */}
+                            <div className="absolute bottom-2 right-2 bg-background/80 text-foreground text-xs px-2 py-1 rounded-md">
+                                {currentImageIndex + 1} / {project.images.length}
                             </div>
 
-                            {/* Image navigation buttons */}
+                            {/* Image navigation dots */}
                             {project.images.length > 1 && (
                                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                                     {project.images.map((_, index) => (
@@ -46,6 +97,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                             className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? 'bg-primary' : 'bg-muted-foreground/30'
                                                 }`}
                                             onClick={() => setCurrentImageIndex(index)}
+                                            aria-label={`View image ${index + 1}`}
                                         />
                                     ))}
                                 </div>
