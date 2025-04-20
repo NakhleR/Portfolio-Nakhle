@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getTimelineItems, getProjects, createTimelineItem, updateTimelineItem, deleteTimelineItem, createProject, updateProject, deleteProject } from '@/lib/api';
+import { getTimelineItems, getProjects, createTimelineItem, updateTimelineItem, deleteTimelineItem, createProject, updateProject, deleteProject, uploadProjectImages } from '@/lib/api';
 import { TimelineItem } from '@/components/Timeline';
 import { ProjectDetails } from '@/components/ProjectDialog';
 import { PlusCircle, Edit, Trash2, LogOut } from 'lucide-react';
@@ -49,6 +49,25 @@ const Dashboard = () => {
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [selectedTimelineItem, setSelectedTimelineItem] = useState<TimelineItem | null>(null);
     const [selectedProject, setSelectedProject] = useState<ProjectDetails | null>(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [editingProject, setEditingProject] = useState<ProjectDetails | null>(null);
+
+    // Add state for file upload
+    const [uploading, setUploading] = useState<boolean>(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+    // Project form state
+    const [projectForm, setProjectForm] = useState<ProjectFormData>({
+        title: '',
+        category: '',
+        description: '',
+        longDescription: '',
+        technologies: [],
+        images: [],
+        liveUrl: '',
+        githubUrl: ''
+    });
 
     // Check if user is authenticated and admin
     useEffect(() => {
@@ -147,11 +166,33 @@ const Dashboard = () => {
     // Project CRUD operations
     const handleAddProject = () => {
         setSelectedProject(null);
+        setEditingProject(null);
+        setProjectForm({
+            title: '',
+            category: '',
+            description: '',
+            longDescription: '',
+            technologies: [],
+            images: [],
+            liveUrl: '',
+            githubUrl: ''
+        });
         setIsProjectModalOpen(true);
     };
 
     const handleEditProject = (project: ProjectDetails) => {
         setSelectedProject(project);
+        setEditingProject(project);
+        setProjectForm({
+            title: project.title,
+            category: project.category,
+            description: project.description,
+            longDescription: project.longDescription || '',
+            technologies: project.technologies || [],
+            images: project.images || [],
+            liveUrl: project.liveUrl || '',
+            githubUrl: project.githubUrl || ''
+        });
         setIsProjectModalOpen(true);
     };
 
@@ -166,41 +207,139 @@ const Dashboard = () => {
         }
     };
 
-    const handleProjectSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const form = e.currentTarget;
-        const formData = new FormData(form);
+    // Function to handle file selection
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
 
-        const projectData: ProjectFormData = {
-            title: formData.get('title') as string,
-            category: formData.get('category') as string,
-            description: formData.get('description') as string,
-            longDescription: formData.get('longDescription') as string,
-            technologies: formData.get('technologies') ? (formData.get('technologies') as string).split(',').map(tech => tech.trim()) : [],
-            images: formData.get('images') ? (formData.get('images') as string).split(',').map(img => img.trim()) : [],
-            liveUrl: formData.get('liveUrl') as string,
-            githubUrl: formData.get('githubUrl') as string,
-        };
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+
+        // Create preview URLs for the selected files
+        const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    };
+
+    // Function to remove a selected file
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+
+        // Revoke the object URL to prevent memory leaks
+        URL.revokeObjectURL(previewUrls[index]);
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Upload images and get their URLs
+    const uploadImages = async (): Promise<string[]> => {
+        if (selectedFiles.length === 0) return [];
+
+        setUploading(true);
+        try {
+            const response = await uploadProjectImages(selectedFiles);
+            setUploading(false);
+
+            // Make sure we always return an array of strings
+            if (Array.isArray(response)) {
+                return response;
+            } else if (response && typeof response === 'object') {
+                // Try to handle cases where the API might return differently structured data
+                const responseObj = response as Record<string, unknown>;
+
+                if (responseObj.imageUrls && Array.isArray(responseObj.imageUrls)) {
+                    return responseObj.imageUrls as string[];
+                } else if (responseObj.imageUrls && typeof responseObj.imageUrls === 'string') {
+                    return [responseObj.imageUrls as string];
+                } else if (responseObj.urls && Array.isArray(responseObj.urls)) {
+                    return responseObj.urls as string[];
+                } else if (responseObj.url && typeof responseObj.url === 'string') {
+                    return [responseObj.url as string];
+                }
+            } else if (typeof response === 'string') {
+                return [response];
+            }
+
+            // Fallback if response format is unexpected
+            console.error('Unexpected response format from uploadProjectImages:', response);
+            return [];
+        } catch (error) {
+            setUploading(false);
+            toast.error('Failed to upload images');
+            console.error('Error uploading images:', error);
+            return [];
+        }
+    };
+
+    // Modified handleProjectSubmit to include image upload
+    const handleProjectSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
         try {
-            if (selectedProject?.id) {
-                // Update existing project
-                await updateProject(selectedProject.id, projectData);
-                setProjects(projects.map(project =>
-                    project.id === selectedProject.id ? { ...project, ...projectData, id: selectedProject.id } : project
-                ));
+            setSubmitting(true);
+
+            // Upload images first if there are any
+            let imageUrls: string[] = [];
+            if (selectedFiles.length > 0) {
+                imageUrls = await uploadImages();
+                console.log('Uploaded image URLs:', imageUrls);
+            }
+
+            // Ensure imageUrls is always an array
+            if (!Array.isArray(imageUrls)) {
+                console.error('imageUrls is not an array:', imageUrls);
+                imageUrls = [];
+            }
+
+            const projectData: ProjectFormData = {
+                title: projectForm.title,
+                category: projectForm.category,
+                description: projectForm.description,
+                longDescription: projectForm.longDescription || '',
+                technologies: Array.isArray(projectForm.technologies) ?
+                    projectForm.technologies :
+                    [],
+                // Combine existing images with newly uploaded ones
+                images: [
+                    ...(Array.isArray(projectForm.images) ? projectForm.images : []),
+                    ...imageUrls
+                ],
+                liveUrl: projectForm.liveUrl || '',
+                githubUrl: projectForm.githubUrl || ''
+            };
+
+            if (editingProject) {
+                const updatedProject = await updateProject(editingProject.id!, projectData);
+                setProjects(prev => prev.map(p => (p.id === updatedProject._id ? { ...updatedProject, id: updatedProject._id } : p)));
                 toast.success('Project updated successfully');
             } else {
-                // Create new project
                 const newProjectItem = await createProject(projectData);
-                setProjects([...projects, { ...newProjectItem, id: newProjectItem._id }]);
+                setProjects(prev => [...prev, { ...newProjectItem, id: newProjectItem._id }]);
                 toast.success('Project created successfully');
             }
-            setIsProjectModalOpen(false);
+
+            resetProjectForm();
+            setSelectedFiles([]);
+            setPreviewUrls([]);
         } catch (error) {
-            console.error('Error saving project:', error);
-            toast.error('Failed to save project');
+            toast.error(error instanceof Error ? error.message : 'Something went wrong');
+        } finally {
+            setSubmitting(false);
         }
+    };
+
+    // Reset project form
+    const resetProjectForm = () => {
+        setProjectForm({
+            title: '',
+            category: '',
+            description: '',
+            longDescription: '',
+            technologies: [],
+            images: [],
+            liveUrl: '',
+            githubUrl: ''
+        });
+        setEditingProject(null);
+        setSelectedFiles([]);
+        setPreviewUrls([]);
     };
 
     if (loading) {
@@ -506,100 +645,176 @@ const Dashboard = () => {
                         <h2 className="text-xl font-bold mb-4">
                             {selectedProject ? 'Edit Project' : 'Add Project'}
                         </h2>
-                        <form onSubmit={handleProjectSubmit}>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="title">Title</Label>
-                                        <Input
-                                            id="title"
-                                            name="title"
-                                            placeholder="Project title"
-                                            defaultValue={selectedProject?.title || ''}
-                                            required
+                        <form onSubmit={handleProjectSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="title">Title</Label>
+                                <Input
+                                    id="title"
+                                    name="title"
+                                    placeholder="Project title"
+                                    value={projectForm.title}
+                                    onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="category">Category</Label>
+                                <Input
+                                    id="category"
+                                    name="category"
+                                    placeholder="e.g. Web Development"
+                                    value={projectForm.category}
+                                    onChange={(e) => setProjectForm({ ...projectForm, category: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="description">Short Description</Label>
+                                <Textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Brief description..."
+                                    value={projectForm.description}
+                                    onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="longDescription">Detailed Description</Label>
+                                <Textarea
+                                    id="longDescription"
+                                    name="longDescription"
+                                    placeholder="More detailed description..."
+                                    rows={4}
+                                    value={projectForm.longDescription}
+                                    onChange={(e) => setProjectForm({ ...projectForm, longDescription: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="technologies">Technologies (comma separated)</Label>
+                                <Input
+                                    id="technologies"
+                                    name="technologies"
+                                    placeholder="e.g. React, Node.js, MongoDB"
+                                    value={Array.isArray(projectForm.technologies) ? projectForm.technologies.join(', ') : ''}
+                                    onChange={(e) => setProjectForm({ ...projectForm, technologies: e.target.value.split(',').map(t => t.trim()) })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="images">Images</Label>
+                                <div className="flex flex-col gap-4">
+                                    {/* Existing images display */}
+                                    {selectedProject && selectedProject.images && selectedProject.images.length > 0 && (
+                                        <div>
+                                            <p className="text-sm text-muted-foreground mb-2">Current Images:</p>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                                {selectedProject.images.map((image, index) => (
+                                                    <div key={index} className="relative group">
+                                                        <img
+                                                            src={image.startsWith('/uploads') ? `http://localhost:5000${image}` : image}
+                                                            alt={`Project image ${index + 1}`}
+                                                            className="w-full h-24 object-cover rounded border"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={() => {
+                                                                const updatedImages = [...selectedProject.images!];
+                                                                updatedImages.splice(index, 1);
+                                                                setSelectedProject({
+                                                                    ...selectedProject,
+                                                                    images: updatedImages
+                                                                });
+                                                            }}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Image preview section */}
+                                    {previewUrls.length > 0 && (
+                                        <div>
+                                            <p className="text-sm text-muted-foreground mb-2">New Images:</p>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                                {previewUrls.map((url, index) => (
+                                                    <div key={index} className="relative group">
+                                                        <img
+                                                            src={url}
+                                                            alt={`Upload preview ${index + 1}`}
+                                                            className="w-full h-24 object-cover rounded border"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={() => removeFile(index)}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* File input button */}
+                                    <div>
+                                        <Label
+                                            htmlFor="file-upload"
+                                            className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded"
+                                        >
+                                            {uploading ? 'Uploading...' : 'Select Images'}
+                                        </Label>
+                                        <input
+                                            id="file-upload"
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            disabled={uploading}
                                         />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="category">Category</Label>
-                                        <Input
-                                            id="category"
-                                            name="category"
-                                            placeholder="e.g. Web Development"
-                                            defaultValue={selectedProject?.category || ''}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="description">Short Description</Label>
-                                    <Textarea
-                                        id="description"
-                                        name="description"
-                                        placeholder="Brief description..."
-                                        defaultValue={selectedProject?.description || ''}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="longDescription">Detailed Description</Label>
-                                    <Textarea
-                                        id="longDescription"
-                                        name="longDescription"
-                                        placeholder="More detailed description..."
-                                        rows={4}
-                                        defaultValue={selectedProject?.longDescription || ''}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="technologies">Technologies (comma separated)</Label>
-                                    <Input
-                                        id="technologies"
-                                        name="technologies"
-                                        placeholder="e.g. React, Node.js, MongoDB"
-                                        defaultValue={selectedProject?.technologies?.join(', ') || ''}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="images">Images (comma separated)</Label>
-                                    <Input
-                                        id="images"
-                                        name="images"
-                                        placeholder="e.g. image1.jpg, image2.jpg"
-                                        defaultValue={selectedProject?.images?.join(', ') || ''}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="liveUrl">Live URL (Optional)</Label>
-                                        <Input
-                                            id="liveUrl"
-                                            name="liveUrl"
-                                            placeholder="https://..."
-                                            defaultValue={selectedProject?.liveUrl || ''}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="githubUrl">GitHub URL (Optional)</Label>
-                                        <Input
-                                            id="githubUrl"
-                                            name="githubUrl"
-                                            placeholder="https://github.com/..."
-                                            defaultValue={selectedProject?.githubUrl || ''}
-                                        />
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            You can upload up to 5 images (PNG, JPG, JPEG)
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="flex justify-end gap-2 mt-6">
-                                <Button type="button" variant="outline" onClick={() => setIsProjectModalOpen(false)}>
+                            <div className="space-y-2">
+                                <Label htmlFor="liveUrl">Live URL (Optional)</Label>
+                                <Input
+                                    id="liveUrl"
+                                    name="liveUrl"
+                                    placeholder="https://..."
+                                    value={projectForm.liveUrl}
+                                    onChange={(e) => setProjectForm({ ...projectForm, liveUrl: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="githubUrl">GitHub URL (Optional)</Label>
+                                <Input
+                                    id="githubUrl"
+                                    name="githubUrl"
+                                    placeholder="https://github.com/..."
+                                    value={projectForm.githubUrl}
+                                    onChange={(e) => setProjectForm({ ...projectForm, githubUrl: e.target.value })}
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsProjectModalOpen(false)}
+                                    disabled={submitting}
+                                >
                                     Cancel
                                 </Button>
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" disabled={submitting || uploading}>
+                                    {submitting || uploading ? 'Saving...' : selectedProject ? 'Update Project' : 'Add Project'}
+                                </Button>
                             </div>
                         </form>
                     </div>

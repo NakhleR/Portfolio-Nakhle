@@ -11,6 +11,8 @@ import {
     CarouselNext
 } from "@/components/ui/carousel";
 
+const API_URL = 'http://localhost:5000';
+
 export interface ProjectDetails {
     id?: string;
     title: string;
@@ -46,6 +48,20 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
         }
     };
 
+    // Helper function to get the full URL for an image path
+    const getImageUrl = (imagePath: string) => {
+        // If the image is already a full URL, return it
+        if (imagePath.startsWith('http')) {
+            return imagePath;
+        }
+        // If it's a path starting with /uploads, prepend the API URL
+        if (imagePath.startsWith('/uploads')) {
+            return `${API_URL}${imagePath}`;
+        }
+        // Default case, just return the image path
+        return imagePath;
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[700px] p-0 gap-0 overflow-hidden">
@@ -62,8 +78,16 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                 <CarouselContent>
                                     {project.images.map((image, index) => (
                                         <CarouselItem key={index}>
-                                            <div className="aspect-video bg-secondary flex items-center justify-center">
-                                                <p className="text-muted-foreground">Project screenshot {index + 1}</p>
+                                            <div className="aspect-video bg-secondary flex items-center justify-center overflow-hidden">
+                                                <img
+                                                    src={getImageUrl(image)}
+                                                    alt={`${project.title} - Image ${index + 1}`}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        // Fallback if image fails to load
+                                                        (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                                                    }}
+                                                />
                                             </div>
                                         </CarouselItem>
                                     ))}

@@ -126,10 +126,36 @@ const deleteProject = async (req, res) => {
     }
 };
 
+// @desc    Upload project images
+// @route   POST /api/projects/upload
+// @access  Private/Admin
+const uploadProjectImages = async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            res.status(400);
+            throw new Error('No files uploaded');
+        }
+
+        // Create array of image paths
+        const imagePaths = req.files.map(file => `/uploads/${file.filename}`);
+
+        res.json({
+            success: true,
+            images: imagePaths
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: error.message || 'Error uploading files',
+            success: false
+        });
+    }
+};
+
 export {
     getProjects,
     getProject,
     createProject,
     updateProject,
     deleteProject,
+    uploadProjectImages,
 }; 

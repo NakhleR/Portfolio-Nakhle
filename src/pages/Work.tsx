@@ -84,25 +84,54 @@ const Work = () => {
             <div className="text-center text-red-500 py-8">{error}</div>
           ) : (
             <div
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 opacity-0"
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
               ref={projectsRef}
               style={{ animationDelay: '0.3s' }}
             >
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-lg overflow-hidden"
+                  className="group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-lg overflow-hidden border border-border"
                   onClick={() => handleProjectClick(project)}
                 >
-                  <div
-                    className={`aspect-video bg-secondary rounded-lg mb-6 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]`}
-                  >
-                    <p className="text-muted-foreground">Project image</p>
+                  <div className="aspect-video bg-secondary relative overflow-hidden">
+                    {project.images && project.images.length > 0 ? (
+                      <img
+                        src={project.images[0].startsWith('/uploads')
+                          ? `http://localhost:5000${project.images[0]}`
+                          : project.images[0]}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <p className="text-muted-foreground">No project image</p>
+                      </div>
+                    )}
                   </div>
                   <div className='p-4'>
                     <h3 className="text-2xl mb-2">{project.title}</h3>
                     <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
                     <p className="text-muted-foreground">{project.description}</p>
+
+                    {project.technologies && project.technologies.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {project.technologies.slice(0, 3).map((tech, index) => (
+                          <span key={index} className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
+                            {tech}
+                          </span>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <span className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
+                            +{project.technologies.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

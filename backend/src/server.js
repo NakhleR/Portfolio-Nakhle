@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -15,6 +16,16 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
 
+// Create __dirname equivalent in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -22,6 +33,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -31,8 +45,6 @@ app.use('/api/projects', projectRoutes);
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
     // Set static folder
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
     app.use(express.static(path.join(__dirname, '../../dist')));
 
     app.get('*', (req, res) => {

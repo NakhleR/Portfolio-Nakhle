@@ -1,5 +1,6 @@
 import { TimelineItem } from '@/components/Timeline';
 import { ProjectDetails } from '@/components/ProjectDialog';
+import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -235,4 +236,54 @@ export const deleteProject = async (id: string) => {
     }
 
     return data;
+};
+
+// Upload project images
+export const uploadProjectImages = async (files: File[]): Promise<string[]> => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error('No authentication token found');
+    }
+
+    const formData = new FormData();
+
+    // Append each file to the FormData
+    files.forEach(file => {
+        formData.append('images', file);
+    });
+
+    try {
+        const response = await axios.post(`${API_URL}/projects/upload`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        // Handle different response formats
+        if (response.data) {
+            if (Array.isArray(response.data)) {
+                return response.data;
+            } else if (typeof response.data === 'object') {
+                if (Array.isArray(response.data.imageUrls)) {
+                    return response.data.imageUrls;
+                } else if (typeof response.data.imageUrls === 'string') {
+                    return [response.data.imageUrls];
+                } else if (response.data.urls && Array.isArray(response.data.urls)) {
+                    return response.data.urls;
+                } else if (response.data.url && typeof response.data.url === 'string') {
+                    return [response.data.url];
+                }
+            } else if (typeof response.data === 'string') {
+                return [response.data];
+            }
+        }
+
+        console.error('Unexpected response format:', response.data);
+        return [];
+    } catch (error) {
+        console.error('Error uploading images:', error);
+        throw new Error('Failed to upload images');
+    }
 }; 
