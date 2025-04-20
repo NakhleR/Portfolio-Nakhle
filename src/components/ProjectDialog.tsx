@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -8,7 +8,8 @@ import {
     CarouselContent,
     CarouselItem,
     CarouselPrevious,
-    CarouselNext
+    CarouselNext,
+    type CarouselApi
 } from "@/components/ui/carousel";
 
 const API_URL = 'http://localhost:5000';
@@ -33,20 +34,23 @@ interface ProjectDialogProps {
 
 const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+
+    // Update currentImageIndex when carousel changes
+    useEffect(() => {
+        if (!carouselApi) return;
+
+        const handleSelect = () => {
+            setCurrentImageIndex(carouselApi.selectedScrollSnap());
+        };
+
+        carouselApi.on("select", handleSelect);
+        return () => {
+            carouselApi.off("select", handleSelect);
+        };
+    }, [carouselApi]);
 
     if (!project) return null;
-
-    const nextImage = () => {
-        if (project.images && project.images.length > 0) {
-            setCurrentImageIndex((prev) => (prev + 1) % project.images!.length);
-        }
-    };
-
-    const prevImage = () => {
-        if (project.images && project.images.length > 0) {
-            setCurrentImageIndex((prev) => (prev - 1 + project.images!.length) % project.images!.length);
-        }
-    };
 
     // Helper function to get the full URL for an image path
     const getImageUrl = (imagePath: string) => {
@@ -63,7 +67,9 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
         }
         // If it contains /uploads but doesn't start with it
         if (imagePath.includes('/uploads')) {
-            return `${API_URL}/${imagePath}`;
+            // Remove any leading slashes before /uploads to ensure correct path
+            const fixedPath = imagePath.substring(imagePath.indexOf('/uploads'));
+            return `${API_URL}${fixedPath}`;
         }
         // Default case, just return the image path
         return imagePath;
@@ -76,12 +82,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                     {/* Project Images */}
                     {project.images && project.images.length > 0 ? (
                         <div className="relative">
-                            <Carousel className="w-full" setApi={(api) => {
-                                // Optional: Sync external state with carousel api
-                                api?.on('select', () => {
-                                    setCurrentImageIndex(api.selectedScrollSnap());
-                                });
-                            }}>
+                            <Carousel className="w-full" setApi={setCarouselApi}>
                                 <CarouselContent>
                                     {project.images.map((image, index) => (
                                         <CarouselItem key={index}>
@@ -101,15 +102,9 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                 </CarouselContent>
                                 <CarouselPrevious
                                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
-                                    onClick={() => setCurrentImageIndex(prev =>
-                                        (prev - 1 + project.images!.length) % project.images!.length
-                                    )}
                                 />
                                 <CarouselNext
                                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
-                                    onClick={() => setCurrentImageIndex(prev =>
-                                        (prev + 1) % project.images!.length
-                                    )}
                                 />
                             </Carousel>
 
@@ -126,7 +121,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                             key={index}
                                             className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? 'bg-primary' : 'bg-muted-foreground/30'
                                                 }`}
-                                            onClick={() => setCurrentImageIndex(index)}
+                                            onClick={() => carouselApi?.scrollTo(index)}
                                             aria-label={`View image ${index + 1}`}
                                         />
                                     ))}

@@ -157,6 +157,7 @@ const Dashboard = () => {
                 toast.success('Timeline item created successfully');
             }
             setIsTimelineModalOpen(false);
+            setSelectedTimelineItem(null);
         } catch (error) {
             console.error('Error saving timeline item:', error);
             toast.error('Failed to save timeline item');
@@ -315,9 +316,13 @@ const Dashboard = () => {
                 toast.success('Project created successfully');
             }
 
+            // Close the modal and reset form
+            setIsProjectModalOpen(false);
             resetProjectForm();
             setSelectedFiles([]);
             setPreviewUrls([]);
+            setEditingProject(null);
+            setSelectedProject(null);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Something went wrong');
         } finally {
