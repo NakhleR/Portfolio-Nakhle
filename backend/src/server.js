@@ -29,21 +29,50 @@ if (!fs.existsSync(uploadsDir)) {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-const corsOptions = {
-    origin: [
-        'https://portfolio-nakhle.vercel.app',
-        'http://localhost:3000',
-        'http://localhost:5173' // Vite's default development port
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
+// CORS configuration - Apply before any routes
+const allowedOrigins = [
+    'https://portfolio-nakhle.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173' // Vite's default development port
+];
 
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('CORS blocked origin:', origin);
+            // Allow all origins in development
+            if (process.env.NODE_ENV !== 'production') {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"]
+}));
+
+// Other middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Set CORS headers again for all responses
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
