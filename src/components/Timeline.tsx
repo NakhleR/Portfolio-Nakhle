@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   VerticalTimeline,
@@ -8,6 +7,7 @@ import 'react-vertical-timeline-component/style.min.css';
 import { BriefcaseIcon, GraduationCapIcon, FolderIcon } from 'lucide-react';
 
 export interface TimelineItem {
+  id?: string;
   year: string;
   title: string;
   description?: string;
@@ -47,7 +47,7 @@ const Timeline: React.FC<TimelineProps> = ({ items }) => {
 
         return (
           <VerticalTimelineElement
-            key={index}
+            key={item.id || index}
             className="vertical-timeline-element"
             contentStyle={{
               background: 'hsl(var(--card))',
@@ -66,10 +66,10 @@ const Timeline: React.FC<TimelineProps> = ({ items }) => {
           >
             <div>
               <span className={`inline-block px-3 py-1 text-xs rounded-full mb-3 ${isEducation
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                  : isWork
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                : isWork
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                  : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
                 }`}>
                 {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
               </span>

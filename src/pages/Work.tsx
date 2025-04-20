@@ -1,12 +1,16 @@
-
 import { useEffect, useRef, useState } from 'react';
 import ProjectDialog, { ProjectDetails } from '@/components/ProjectDialog';
+import { getProjects } from '@/lib/api';
 
 const Work = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const [selectedProject, setSelectedProject] = useState<ProjectDetails | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [projects, setProjects] = useState<ProjectDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,65 +31,26 @@ const Work = () => {
     return () => observer.disconnect();
   }, []);
 
-  const projects: ProjectDetails[] = [
-    {
-      id: "1",
-      title: "Unreal Engine Adventure Game",
-      category: "Game Development",
-      description: "A third-person adventure game with realistic visuals and physics.",
-      longDescription: "A fully immersive third-person adventure game developed with Unreal Engine. Features include realistic visuals with dynamic lighting, advanced AI behavior systems, interactive environments, and a unique narrative that adapts to player choices. The game incorporates custom character animations and a procedurally generated world.",
-      technologies: ["Unreal Engine", "C++", "Blueprint", "Niagara VFX", "SpeedTree"],
-      images: ["game1.jpg", "game2.jpg", "game3.jpg"]
-    },
-    {
-      id: "2",
-      title: "React E-Commerce Platform",
-      category: "Web Development",
-      description: "A full-featured online shopping platform with payment integration.",
-      longDescription: "A comprehensive e-commerce solution built with React and Node.js. The platform includes user authentication, product management, shopping cart functionality, checkout process with Stripe integration, and an admin dashboard for inventory management. The application is fully responsive and optimized for performance.",
-      technologies: ["React", "Node.js", "Express", "MongoDB", "Stripe API", "Redux"],
-      images: ["ecommerce1.jpg", "ecommerce2.jpg"],
-      liveUrl: "https://example.com",
-      githubUrl: "https://github.com/nakhlerizk/ecommerce"
-    },
-    {
-      id: "3",
-      title: "Unity Mobile Game",
-      category: "Game Development",
-      description: "A casual mobile game with engaging mechanics and monetization.",
-      longDescription: "A casual mobile game developed with Unity targeting iOS and Android platforms. The game features intuitive touch controls, progressive difficulty, in-app purchases, ad integration, and social features. Special attention was paid to optimizing performance for a wide range of mobile devices.",
-      technologies: ["Unity", "C#", "Mobile SDK", "Firebase", "AdMob"],
-      images: ["mobile-game1.jpg", "mobile-game2.jpg"]
-    },
-    {
-      id: "4",
-      title: "Real-time Analytics Dashboard",
-      category: "Full Stack Development",
-      description: "A data visualization platform with real-time updates and filters.",
-      longDescription: "An advanced analytics dashboard that provides real-time data visualization for business metrics. The application features interactive charts, customizable widgets, data filtering capabilities, and automated reporting. Built with a scalable architecture to handle large datasets with minimal latency.",
-      technologies: ["Vue.js", "D3.js", "Node.js", "WebSockets", "PostgreSQL"],
-      images: ["dashboard1.jpg", "dashboard2.jpg"]
-    },
-    {
-      id: "5",
-      title: "Godot 2D Platformer",
-      category: "Game Development",
-      description: "A retro-styled 2D platformer with unique puzzle elements.",
-      longDescription: "A 2D platformer game developed with Godot Engine featuring pixel art graphics, custom physics, innovative puzzle mechanisms, and a chiptune soundtrack. The game includes multiple levels with increasing difficulty, boss fights, and hidden collectibles throughout the game world.",
-      technologies: ["Godot Engine", "GDScript", "Pixel Art", "Tiled Map Editor"],
-      images: ["platformer1.jpg", "platformer2.jpg"]
-    },
-    {
-      id: "6",
-      title: "Progressive Web App",
-      category: "Frontend Development",
-      description: "A PWA with offline capabilities and push notifications.",
-      longDescription: "A Progressive Web Application that delivers a native-like experience across all devices. The app features offline functionality using Service Workers, push notifications, home screen installation, and optimized loading times. The interface is fully responsive and adapts to different screen sizes.",
-      technologies: ["React", "TypeScript", "PWA", "Service Workers", "IndexedDB"],
-      images: ["pwa1.jpg", "pwa2.jpg"],
-      githubUrl: "https://github.com/nakhlerizk/pwa-project"
-    }
-  ];
+  // Fetch projects data from API
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const data = await getProjects();
+        setProjects(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects. Please try again later.');
+        // Fallback to static data if API fails
+        setProjects(fallbackProjects);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const handleProjectClick = (project: ProjectDetails) => {
     setSelectedProject(project);
@@ -111,30 +76,38 @@ const Work = () => {
       {/* Projects */}
       <section className="py-16">
         <div className="container">
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 opacity-0"
-            ref={projectsRef}
-            style={{ animationDelay: '0.3s' }}
-          >
-            {projects.map((project, index) => (
-              <div
-                key={project.id}
-                className="group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-lg overflow-hidden"
-                onClick={() => handleProjectClick(project)}
-              >
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-8">{error}</div>
+          ) : (
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 opacity-0"
+              ref={projectsRef}
+              style={{ animationDelay: '0.3s' }}
+            >
+              {projects.map((project) => (
                 <div
-                  className={`aspect-video bg-secondary rounded-lg mb-6 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]`}
+                  key={project.id}
+                  className="group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-lg overflow-hidden"
+                  onClick={() => handleProjectClick(project)}
                 >
-                  <p className="text-muted-foreground">Project image</p>
+                  <div
+                    className={`aspect-video bg-secondary rounded-lg mb-6 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]`}
+                  >
+                    <p className="text-muted-foreground">Project image</p>
+                  </div>
+                  <div className='p-4'>
+                    <h3 className="text-2xl mb-2">{project.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
+                    <p className="text-muted-foreground">{project.description}</p>
+                  </div>
                 </div>
-                <div className='p-4'>
-                  <h3 className="text-2xl mb-2">{project.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
-                  <p className="text-muted-foreground">{project.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -171,5 +144,66 @@ const Work = () => {
     </div>
   );
 };
+
+// Fallback data in case API fails
+const fallbackProjects: ProjectDetails[] = [
+  {
+    id: "1",
+    title: "Unreal Engine Adventure Game",
+    category: "Game Development",
+    description: "A third-person adventure game with realistic visuals and physics.",
+    longDescription: "A fully immersive third-person adventure game developed with Unreal Engine. Features include realistic visuals with dynamic lighting, advanced AI behavior systems, interactive environments, and a unique narrative that adapts to player choices. The game incorporates custom character animations and a procedurally generated world.",
+    technologies: ["Unreal Engine", "C++", "Blueprint", "Niagara VFX", "SpeedTree"],
+    images: ["game1.jpg", "game2.jpg", "game3.jpg"]
+  },
+  {
+    id: "2",
+    title: "React E-Commerce Platform",
+    category: "Web Development",
+    description: "A full-featured online shopping platform with payment integration.",
+    longDescription: "A comprehensive e-commerce solution built with React and Node.js. The platform includes user authentication, product management, shopping cart functionality, checkout process with Stripe integration, and an admin dashboard for inventory management. The application is fully responsive and optimized for performance.",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "Stripe API", "Redux"],
+    images: ["ecommerce1.jpg", "ecommerce2.jpg"],
+    liveUrl: "https://example.com",
+    githubUrl: "https://github.com/nakhlerizk/ecommerce"
+  },
+  {
+    id: "3",
+    title: "Unity Mobile Game",
+    category: "Game Development",
+    description: "A casual mobile game with engaging mechanics and monetization.",
+    longDescription: "A casual mobile game developed with Unity targeting iOS and Android platforms. The game features intuitive touch controls, progressive difficulty, in-app purchases, ad integration, and social features. Special attention was paid to optimizing performance for a wide range of mobile devices.",
+    technologies: ["Unity", "C#", "Mobile SDK", "Firebase", "AdMob"],
+    images: ["mobile-game1.jpg", "mobile-game2.jpg"]
+  },
+  {
+    id: "4",
+    title: "Real-time Analytics Dashboard",
+    category: "Full Stack Development",
+    description: "A data visualization platform with real-time updates and filters.",
+    longDescription: "An advanced analytics dashboard that provides real-time data visualization for business metrics. The application features interactive charts, customizable widgets, data filtering capabilities, and automated reporting. Built with a scalable architecture to handle large datasets with minimal latency.",
+    technologies: ["Vue.js", "D3.js", "Node.js", "WebSockets", "PostgreSQL"],
+    images: ["dashboard1.jpg", "dashboard2.jpg"]
+  },
+  {
+    id: "5",
+    title: "Godot 2D Platformer",
+    category: "Game Development",
+    description: "A retro-styled 2D platformer with unique puzzle elements.",
+    longDescription: "A 2D platformer game developed with Godot Engine featuring pixel art graphics, custom physics, innovative puzzle mechanisms, and a chiptune soundtrack. The game includes multiple levels with increasing difficulty, boss fights, and hidden collectibles throughout the game world.",
+    technologies: ["Godot Engine", "GDScript", "Pixel Art", "Tiled Map Editor"],
+    images: ["platformer1.jpg", "platformer2.jpg"]
+  },
+  {
+    id: "6",
+    title: "Progressive Web App",
+    category: "Frontend Development",
+    description: "A PWA with offline capabilities and push notifications.",
+    longDescription: "A Progressive Web Application that delivers a native-like experience across all devices. The app features offline functionality using Service Workers, push notifications, home screen installation, and optimized loading times. The interface is fully responsive and adapts to different screen sizes.",
+    technologies: ["React", "TypeScript", "PWA", "Service Workers", "IndexedDB"],
+    images: ["pwa1.jpg", "pwa2.jpg"],
+    githubUrl: "https://github.com/nakhlerizk/pwa-project"
+  }
+];
 
 export default Work;

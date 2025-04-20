@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/carousel";
 
 export interface ProjectDetails {
-    id: string;
+    id?: string;
     title: string;
     category: string;
     description: string;

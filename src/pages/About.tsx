@@ -1,8 +1,8 @@
-
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Timeline from '../components/Timeline';
 import { Card, CardContent } from '@/components/ui/card';
 import { type TimelineItem } from '../components/Timeline';
+import { getTimelineItems } from '@/lib/api';
 
 const About = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -10,6 +10,10 @@ const About = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
+
+  const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,70 +37,26 @@ const About = () => {
     return () => observer.disconnect();
   }, []);
 
-  const timelineItems: TimelineItem[] = [
-    {
-      year: 'January 2024 - Currently',
-      title: 'Full Stack Developer',
-      location: 'Code SARL - Jounieh, Lebanon',
-      category: 'work',
-      bullets: [
-        'Mastery of front-end and back-end technologies.',
-        'Effective collaboration with teams to achieve project objectives.',
-        'Creation of complete web applications, from design to production.'
-      ]
-    },
-    {
-      year: 'February 2020 - September 2022',
-      title: 'Maintenance team manager',
-      location: 'GCS Computers Pro - Sarba, Lebanon',
-      category: 'work',
-      bullets: [
-        'Close collaboration within a dynamic team.',
-        'Evolution at the heart of a workshop specializing in the complete repair of various electronic devices.',
-        'Active participation in repair and maintenance projects.'
-      ]
-    },
-    {
-      year: 'September 2019 - January 2020',
-      title: 'Cashier',
-      location: 'Morgan\'s Lane - Kaslik, Lebanon',
-      category: 'work',
-      bullets: [
-        'Development of essential skills in the accurate and efficient processing of financial transactions.',
-        'Commitment to exceptional customer service.',
-        'Warm welcome to customers.'
-      ]
-    },
-    {
-      year: 'June 2019 - August 2019',
-      title: 'Versatile Employee',
-      location: 'McDonald\'s - Kaslik, Lebanon',
-      category: 'work',
-      bullets: [
-        'Acquisition of extensive experience in various operational areas.',
-        'Inventory management.',
-        'Customer service.'
-      ]
-    },
-    {
-      year: 'September 2023 - Currently',
-      title: 'L2 Computer Science',
-      location: 'University of Rouen Normandy - Rouen, France',
-      category: 'education'
-    },
-    {
-      year: 'September 2022 - June 2023',
-      title: 'L1 IEEA',
-      location: 'University of Rouen Normandy - Rouen, France',
-      category: 'education'
-    },
-    {
-      year: 'September 2019 - June 2020',
-      title: 'French Scientific Baccalaureate - Biology',
-      location: 'Sainte-Famille Française - Jounieh, Liban',
-      category: 'education'
-    }
-  ];
+  // Fetch timeline data from API
+  useEffect(() => {
+    const fetchTimelineData = async () => {
+      try {
+        setLoading(true);
+        const data = await getTimelineItems();
+        setTimelineItems(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching timeline data:', err);
+        setError('Failed to load timeline data. Please try again later.');
+        // Fallback to static data if API fails
+        setTimelineItems(fallbackTimelineItems);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTimelineData();
+  }, []);
 
   const skills = [
     { name: "Web Development", items: ["HTML/CSS", "JavaScript", "TypeScript", "React", "Node.js"] },
@@ -166,7 +126,15 @@ const About = () => {
             ref={timelineRef}
             style={{ animationDelay: '0.2s' }}
           >
-            <Timeline items={timelineItems} />
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500 py-8">{error}</div>
+            ) : (
+              <Timeline items={timelineItems} />
+            )}
           </div>
         </div>
       </section>
@@ -201,5 +169,71 @@ const About = () => {
     </div>
   );
 };
+
+// Fallback data in case API fails
+const fallbackTimelineItems: TimelineItem[] = [
+  {
+    year: 'January 2024 - Currently',
+    title: 'Full Stack Developer',
+    location: 'Code SARL - Jounieh, Lebanon',
+    category: 'work',
+    bullets: [
+      'Mastery of front-end and back-end technologies.',
+      'Effective collaboration with teams to achieve project objectives.',
+      'Creation of complete web applications, from design to production.'
+    ]
+  },
+  {
+    year: 'February 2020 - September 2022',
+    title: 'Maintenance team manager',
+    location: 'GCS Computers Pro - Sarba, Lebanon',
+    category: 'work',
+    bullets: [
+      'Close collaboration within a dynamic team.',
+      'Evolution at the heart of a workshop specializing in the complete repair of various electronic devices.',
+      'Active participation in repair and maintenance projects.'
+    ]
+  },
+  {
+    year: 'September 2019 - January 2020',
+    title: 'Cashier',
+    location: 'Morgan\'s Lane - Kaslik, Lebanon',
+    category: 'work',
+    bullets: [
+      'Development of essential skills in the accurate and efficient processing of financial transactions.',
+      'Commitment to exceptional customer service.',
+      'Warm welcome to customers.'
+    ]
+  },
+  {
+    year: 'June 2019 - August 2019',
+    title: 'Versatile Employee',
+    location: 'McDonald\'s - Kaslik, Lebanon',
+    category: 'work',
+    bullets: [
+      'Acquisition of extensive experience in various operational areas.',
+      'Inventory management.',
+      'Customer service.'
+    ]
+  },
+  {
+    year: 'September 2023 - Currently',
+    title: 'L2 Computer Science',
+    location: 'University of Rouen Normandy - Rouen, France',
+    category: 'education'
+  },
+  {
+    year: 'September 2022 - June 2023',
+    title: 'L1 IEEA',
+    location: 'University of Rouen Normandy - Rouen, France',
+    category: 'education'
+  },
+  {
+    year: 'September 2019 - June 2020',
+    title: 'French Scientific Baccalaureate - Biology',
+    location: 'Sainte-Famille Française - Jounieh, Liban',
+    category: 'education'
+  }
+];
 
 export default About;
