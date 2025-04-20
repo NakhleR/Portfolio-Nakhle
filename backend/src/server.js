@@ -56,10 +56,15 @@ if (process.env.NODE_ENV === 'production') {
 app.use(errorHandler);
 
 // Connect to MongoDB
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio';
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(mongoUri)
     .then(() => {
-        console.log('MongoDB Connected');
+        // Extract just the host from the connection string for security in logs
+        const connectionDetails = mongoUri.includes('@')
+            ? `...${mongoUri.substring(mongoUri.indexOf('@'))}`
+            : mongoUri.includes('localhost') ? mongoUri : '(hidden)';
+        console.log(`MongoDB Connected to ${connectionDetails}`);
         app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
     .catch((err) => {

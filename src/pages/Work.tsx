@@ -84,17 +84,20 @@ const Work = () => {
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
 
+    // Base API URL from environment variables
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
     // Log for debugging
     console.log('Processing image path:', imagePath);
 
     if (imagePath.startsWith('http')) {
       return imagePath;
     } else if (imagePath.startsWith('/uploads')) {
-      return `http://localhost:5000${imagePath}`;
+      return `${apiBaseUrl}${imagePath}`;
     } else if (imagePath.includes('/uploads')) {
       // Remove any leading slashes before /uploads to ensure correct path
       const fixedPath = imagePath.substring(imagePath.indexOf('/uploads'));
-      return `http://localhost:5000${fixedPath}`;
+      return `${apiBaseUrl}${fixedPath}`;
     } else {
       return imagePath;
     }

@@ -12,7 +12,8 @@ import {
     type CarouselApi
 } from "@/components/ui/carousel";
 
-const API_URL = 'http://localhost:5000';
+// Use environment variable for base API URL with fallback to localhost for development
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export interface ProjectDetails {
     id?: string;
