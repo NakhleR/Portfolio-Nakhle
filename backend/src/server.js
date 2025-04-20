@@ -82,15 +82,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/projects', projectRoutes);
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-    // Set static folder
-    app.use(express.static(path.join(__dirname, '../../dist')));
+// Add a health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'API server is running' });
+});
 
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../../dist', 'index.html'));
-    });
-}
+// Add explicit OPTIONS handling for CORS preflight
+app.options('*', cors());
 
 // Error Handler
 app.use(errorHandler);
