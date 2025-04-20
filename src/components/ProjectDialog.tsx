@@ -50,6 +50,9 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
 
     // Helper function to get the full URL for an image path
     const getImageUrl = (imagePath: string) => {
+        // If the image path is empty, return empty string
+        if (!imagePath) return '';
+
         // If the image is already a full URL, return it
         if (imagePath.startsWith('http')) {
             return imagePath;
@@ -57,6 +60,10 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
         // If it's a path starting with /uploads, prepend the API URL
         if (imagePath.startsWith('/uploads')) {
             return `${API_URL}${imagePath}`;
+        }
+        // If it contains /uploads but doesn't start with it
+        if (imagePath.includes('/uploads')) {
+            return `${API_URL}/${imagePath}`;
         }
         // Default case, just return the image path
         return imagePath;

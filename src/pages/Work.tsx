@@ -37,12 +37,40 @@ const Work = () => {
       try {
         setLoading(true);
         const data = await getProjects();
-        setProjects(data);
+        console.log('Projects fetched from API:', data);
+
+        // Always show TEST projects at the top, then API projects, then fallback if no API
+        if (data && data.length > 0) {
+          // Filter out any TEST projects from API
+          const testProjects = data.filter(p => p.title.includes('TEST'));
+          const otherProjects = data.filter(p => !p.title.includes('TEST'));
+
+          // If we have test projects from API, use those
+          if (testProjects.length > 0) {
+            console.log('Found TEST projects in API:', testProjects);
+            // Put test projects first
+            setProjects([...testProjects, ...otherProjects]);
+          } else {
+            // If no TEST projects in API, add a fallback TEST and the API projects
+            console.log('No TEST projects in API, adding TEST from fallback');
+            const testProject = fallbackProjects.find(p => p.title === 'TEST');
+            if (testProject) {
+              setProjects([testProject, ...data]);
+            } else {
+              setProjects(data);
+            }
+          }
+        } else {
+          // If no data, use fallback
+          console.log('No projects from API, using fallback');
+          setProjects(fallbackProjects);
+        }
         setError(null);
       } catch (err) {
         console.error('Error fetching projects:', err);
         setError('Failed to load projects. Please try again later.');
         // Fallback to static data if API fails
+        console.log('API error, using fallback projects');
         setProjects(fallbackProjects);
       } finally {
         setLoading(false);
@@ -51,6 +79,26 @@ const Work = () => {
 
     fetchProjects();
   }, []);
+
+  // Debug function to check project images
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return '';
+
+    // Log for debugging
+    console.log('Processing image path:', imagePath);
+
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    } else if (imagePath.startsWith('/uploads')) {
+      return `http://localhost:5000${imagePath}`;
+    } else if (imagePath.includes('/uploads')) {
+      // Remove any leading slashes before /uploads to ensure correct path
+      const fixedPath = imagePath.substring(imagePath.indexOf('/uploads'));
+      return `http://localhost:5000${fixedPath}`;
+    } else {
+      return imagePath;
+    }
+  };
 
   const handleProjectClick = (project: ProjectDetails) => {
     setSelectedProject(project);
@@ -97,14 +145,13 @@ const Work = () => {
                   <div className="aspect-video bg-secondary relative overflow-hidden">
                     {project.images && project.images.length > 0 ? (
                       <img
-                        src={project.images[0].startsWith('/uploads')
-                          ? `http://localhost:5000${project.images[0]}`
-                          : project.images[0]}
+                        src={getImageUrl(project.images[0])}
                         alt={project.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                         onError={(e) => {
                           // Fallback if image fails to load
                           (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                          console.log('Image failed to load:', project.images[0]);
                         }}
                       />
                     ) : (

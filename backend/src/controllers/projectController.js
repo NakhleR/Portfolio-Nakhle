@@ -141,7 +141,7 @@ const uploadProjectImages = async (req, res) => {
 
         res.json({
             success: true,
-            images: imagePaths
+            imageUrls: imagePaths
         });
     } catch (error) {
         res.status(400).json({
@@ -158,4 +158,4 @@ export {
     updateProject,
     deleteProject,
     uploadProjectImages,
-}; 
+};
