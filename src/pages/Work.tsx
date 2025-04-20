@@ -37,22 +37,14 @@ const Work = () => {
       try {
         setLoading(true);
         const data = await getProjects();
-        console.log('Projects fetched from API:', data);
 
-        // Always show TEST projects at the top, then API projects, then fallback if no API
         if (data && data.length > 0) {
-          // Filter out any TEST projects from API
           const testProjects = data.filter(p => p.title.includes('TEST'));
           const otherProjects = data.filter(p => !p.title.includes('TEST'));
 
-          // If we have test projects from API, use those
           if (testProjects.length > 0) {
-            console.log('Found TEST projects in API:', testProjects);
-            // Put test projects first
             setProjects([...testProjects, ...otherProjects]);
           } else {
-            // If no TEST projects in API, add a fallback TEST and the API projects
-            console.log('No TEST projects in API, adding TEST from fallback');
             const testProject = fallbackProjects.find(p => p.title === 'TEST');
             if (testProject) {
               setProjects([testProject, ...data]);
@@ -62,15 +54,11 @@ const Work = () => {
           }
         } else {
           // If no data, use fallback
-          console.log('No projects from API, using fallback');
           setProjects(fallbackProjects);
         }
         setError(null);
       } catch (err) {
-        console.error('Error fetching projects:', err);
         setError('Failed to load projects. Please try again later.');
-        // Fallback to static data if API fails
-        console.log('API error, using fallback projects');
         setProjects(fallbackProjects);
       } finally {
         setLoading(false);
@@ -86,9 +74,6 @@ const Work = () => {
 
     // Base API URL from environment variables
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
-    // Log for debugging
-    console.log('Processing image path:', imagePath);
 
     if (imagePath.startsWith('http')) {
       return imagePath;
@@ -152,9 +137,7 @@ const Work = () => {
                         alt={project.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                         onError={(e) => {
-                          // Fallback if image fails to load
                           (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
-                          console.log('Image failed to load:', project.images[0]);
                         }}
                       />
                     ) : (
