@@ -59,14 +59,11 @@ const Layout = ({ children }: LayoutProps) => {
                 © {new Date().getFullYear()} Nakhle Rizk. All rights reserved.
               </p>
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a href="https://github.com/NakhleR" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
                   GitHub
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a href="https://www.linkedin.com/in/nakhle-rizk-528129256/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
                   LinkedIn
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  Twitter
                 </a>
               </div>
             </div>

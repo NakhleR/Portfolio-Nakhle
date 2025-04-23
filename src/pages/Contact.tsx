@@ -1,5 +1,16 @@
 
 import { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix Leaflet default icon issue
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
 const Contact = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -153,8 +164,25 @@ const Contact = () => {
                     Phone: +33 7 74 81 21 04
                   </p>
                 </div>
-                <div className="aspect-[16/9] bg-secondary rounded-lg flex items-center justify-center mt-8">
-                  <p className="text-muted-foreground">Map</p>
+                <div className="aspect-[16/9] rounded-lg overflow-hidden mt-8">
+                  <MapContainer
+                    center={[49.4431, 1.0993]}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                    className="rounded-lg z-0"
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[49.4431, 1.0993]}>
+                      <Popup>
+                        Rue De Fontenelle<br />
+                        Rouen 76000<br />
+                        France
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
                 </div>
               </div>
             </div>
