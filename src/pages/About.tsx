@@ -3,13 +3,6 @@ import Timeline from '../components/Timeline';
 import { Card, CardContent } from '@/components/ui/card';
 import { type TimelineItem } from '../components/Timeline';
 import { getTimelineItems } from '@/lib/api';
-import {
-  SiReact, SiJavascript, SiTypescript, SiPhp, SiLaravel,
-  SiFlutter, SiDart, SiC, SiCplusplus, SiOcaml,
-  SiUnrealengine, SiMysql
-} from 'react-icons/si';
-import { FaJava } from 'react-icons/fa';
-import { TbBrandThreejs } from 'react-icons/tb';
 
 const About = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -69,48 +62,50 @@ const About = () => {
     {
       name: "Web Development",
       items: [
-        { name: "React.js", icon: SiReact, color: "#61DAFB", level: 65 },
-        { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E", level: 70 },
-        { name: "TypeScript", icon: SiTypescript, color: "#3178C6", level: 60 },
-        { name: "Three.js", icon: TbBrandThreejs, color: "#000000", darkModeInvert: true, level: 45 },
-        { name: "PHP", icon: SiPhp, color: "#777BB4", level: 55 },
-        { name: "Laravel", icon: SiLaravel, color: "#FF2D20", level: 50 }
+        { name: "React.js", imagePath: "/react.png", color: "#61DAFB", level: 65 },
+        { name: "JavaScript", imagePath: "/js.png", color: "#F7DF1E", level: 70 },
+        { name: "TypeScript", imagePath: "/ts.png", color: "#3178C6", level: 60 },
+        { name: "Three.js", imagePath: "/threejs.png", color: "#000000", darkModeInvert: true, level: 45 },
+        { name: "PHP", imagePath: "/php.png", color: "#777BB4", level: 55 },
+        { name: "Laravel", imagePath: "/laravel.png", color: "#FF2D20", level: 50 }
       ]
     },
     {
       name: "App Development",
       items: [
-        { name: "Flutter", icon: SiFlutter, color: "#02569B", level: 60 },
-        { name: "Dart", icon: SiDart, color: "#0175C2", level: 55 },
-        { name: "Bloc", svgPath: "/bloc.webp", color: "#0082FB", level: 40 },
-        { name: "Riverpod", svgPath: "/riverpod.png", color: "#0175C2", level: 35 }
+        { name: "Flutter", imagePath: "/flutter.png", color: "#02569B", level: 60 },
+        { name: "Dart", imagePath: "/dart.png", color: "#0175C2", level: 55 },
+        { name: "Bloc", imagePath: "/bloc.webp", color: "#0082FB", level: 40 },
+        { name: "Riverpod", imagePath: "/riverpod.png", color: "#0175C2", level: 35 }
       ]
     },
     {
       name: "Game Development",
       items: [
-        { name: "Unreal Engine", icon: SiUnrealengine, color: "#0E1128", darkModeInvert: true, level: 50 },
-        { name: "C++", icon: SiCplusplus, color: "#00599C", level: 45 },
-        { name: "C", icon: SiC, color: "#A8B9CC", level: 40 }
+        { name: "Unreal Engine", imagePath: "/unreal.png", color: "#0E1128", darkModeInvert: true, level: 50 },
+        { name: "C++", imagePath: "/cpp.png", color: "#00599C", level: 45 },
+        { name: "C", imagePath: "/c.png", color: "#A8B9CC", level: 40 },
+        { name: "Blender", imagePath: "/blender.png", color: "#478CAB", level: 35 }
       ]
     },
     {
       name: "Programming Languages",
       items: [
-        { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E", level: 70 },
-        { name: "TypeScript", icon: SiTypescript, color: "#3178C6", level: 60 },
-        { name: "C", icon: SiC, color: "#A8B9CC", level: 40 },
-        { name: "C++", icon: SiCplusplus, color: "#00599C", level: 45 },
-        { name: "OCaml", icon: SiOcaml, color: "#EC6813", level: 30 },
-        { name: "PHP", icon: SiPhp, color: "#777BB4", level: 55 },
-        { name: "Java", icon: FaJava, color: "#007396", level: 35 },
-        { name: "Dart", icon: SiDart, color: "#0175C2", level: 55 }
+        { name: "JavaScript", imagePath: "/js.png", color: "#F7DF1E", level: 70 },
+        { name: "TypeScript", imagePath: "/ts.png", color: "#3178C6", level: 60 },
+        { name: "C", imagePath: "/c.png", color: "#A8B9CC", level: 40 },
+        { name: "C++", imagePath: "/cpp.png", color: "#00599C", level: 45 },
+        { name: "OCaml", imagePath: "/ocaml.png", color: "#EC6813", level: 30 },
+        { name: "PHP", imagePath: "/php.png", color: "#777BB4", level: 55 },
+        { name: "Java", imagePath: "/java.png", color: "#007396", level: 35 },
+        { name: "Dart", imagePath: "/dart.png", color: "#0175C2", level: 55 }
       ]
     },
     {
       name: "Databases",
       items: [
-        { name: "SQL", icon: SiMysql, color: "#4479A1", level: 60 }
+        { name: "SQL", imagePath: "/mysql.png", color: "#4479A1", level: 60 },
+        { name: "MongoDB", imagePath: "/mongodb.png", color: "#4DB33D", level: 55 }
       ]
     }
   ];
@@ -194,6 +189,23 @@ const About = () => {
       <section className="py-16">
         <div className="container">
           <h2 className="text-center mb-16">My Skills</h2>
+          <style>
+            {`
+              @keyframes fillBar {
+                from {
+                  transform: scaleX(0);
+                }
+                to {
+                  transform: scaleX(1);
+                }
+              }
+              .skill-bar {
+                animation: fillBar 1.5s ease-out forwards;
+                transform: scaleX(0);
+                transform-origin: left;
+              }
+            `}
+          </style>
           <div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-0"
             ref={skillsRef}
@@ -207,31 +219,22 @@ const About = () => {
                     {skillGroup.items.map((skill, skillIndex) => (
                       <li key={skillIndex}>
                         <div className="flex items-center mb-2">
-                          {skill.icon ? (
-                            <skill.icon
-                              className={`w-4 h-4 mr-3 ${skill.darkModeInvert ? 'dark:invert' : ''}`}
-                              style={{ color: skill.color || undefined }}
-                            />
-                          ) : skill.svgPath ? (
-                            <img
-                              src={skill.svgPath}
-                              alt={skill.name}
-                              width={16}
-                              height={16}
-                              className="mr-3"
-                              style={{ filter: 'none' }}
-                            />
-                          ) : (
-                            <div className="w-4 h-4 mr-3 bg-primary/10 rounded-full"></div>
-                          )}
+                          <img
+                            src={skill.imagePath}
+                            alt={skill.name}
+                            width={16}
+                            height={16}
+                            className={`mr-3 ${skill.darkModeInvert ? 'dark:invert' : ''}`}
+                          />
                           <span className="text-muted-foreground text-sm">{skill.name}</span>
                         </div>
                         <div className="w-full bg-secondary/50 rounded-full h-1.5 mt-1">
                           <div
-                            className="h-1.5 rounded-full"
+                            className="h-1.5 rounded-full skill-bar"
                             style={{
                               width: `${skill.level}%`,
-                              backgroundColor: skill.svgPath && skill.color ? skill.color : (skill.color || 'var(--primary)')
+                              backgroundColor: skill.color || 'var(--primary)',
+                              animationDelay: `${0.2 + (skillIndex * 0.1)}s`
                             }}
                           ></div>
                         </div>
