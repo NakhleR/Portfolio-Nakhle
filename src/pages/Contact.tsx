@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import emailjs from '@emailjs/browser';
 
 // Fix Leaflet default icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -21,6 +22,8 @@ const Contact = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -44,17 +47,41 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ name, email, message });
-    setSubmitted(true);
-    // Reset form
-    setName('');
-    setEmail('');
-    setMessage('');
+    setLoading(true);
+    setError('');
 
-    // Show submitted state temporarily
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 3000);
+    const serviceId = 'service_ar732mj';
+    const templateId = 'template_0wys03s';
+    const publicKey = 'GODvbfC6zE6uiLGdl';
+
+    const templateParams = {
+      from_name: name,
+      from_email: email,
+      message: message,
+      title: 'Contact Us: ' + name
+    };
+
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+        console.log('Email sent successfully:', response);
+        setSubmitted(true);
+        // Reset form
+        setName('');
+        setEmail('');
+        setMessage('');
+
+        // Show submitted state temporarily
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 5000);
+      })
+      .catch((err) => {
+        console.error('Failed to send email:', err);
+        setError('Failed to send your message. Please try again later.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -86,6 +113,19 @@ const Contact = () => {
                   <p className="text-muted-foreground">
                     We've received your message and will respond as soon as possible.
                   </p>
+                </div>
+              ) : error ? (
+                <div className="p-6 bg-red-100 rounded-lg text-center mb-6">
+                  <h3 className="text-xl mb-2 text-red-700">Error</h3>
+                  <p className="text-red-600">
+                    {error}
+                  </p>
+                  <button
+                    onClick={() => setError('')}
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    Try Again
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,9 +172,18 @@ const Contact = () => {
 
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98]"
+                    disabled={loading}
+                    className={`inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
                   >
-                    Send Message
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-background" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending...
+                      </>
+                    ) : 'Send Message'}
                   </button>
                 </form>
               )}
