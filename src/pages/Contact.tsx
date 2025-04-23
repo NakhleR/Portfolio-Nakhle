@@ -1,9 +1,9 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import emailjs from '@emailjs/browser';
+import { DisplacementSphere } from '@/components/DisplacementSphere/DisplacementSphere';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -82,9 +82,12 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Background DisplacementSphere */}
+      <DisplacementSphere />
+
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 relative">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="opacity-0" ref={titleRef}>
@@ -98,10 +101,10 @@ const Contact = () => {
       </section>
 
       {/* Contact Form and Info */}
-      <section className="py-16">
+      <section className="py-16 relative">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="opacity-0" ref={formRef} style={{ animationDelay: '0.2s' }}>
+            <div className="opacity-0 bg-background/80 rounded-lg p-8" ref={formRef} style={{ animationDelay: '0.2s' }}>
               <h2 className="text-2xl mb-8">Contact Us</h2>
 
               {submitted ? (
@@ -187,7 +190,7 @@ const Contact = () => {
             </div>
 
             <div
-              className="opacity-0"
+              className="opacity-0 bg-background/80 rounded-lg p-8"
               ref={infoRef}
               style={{ animationDelay: '0.4s' }}
             >
