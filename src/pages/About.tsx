@@ -230,7 +230,7 @@ const About = () => {
                         </div>
                         <div className="w-full bg-secondary/50 rounded-full h-1.5 mt-1">
                           <div
-                            className="h-1.5 rounded-full skill-bar"
+                            className={`h-1.5 rounded-full skill-bar ${skill.darkModeInvert ? 'dark:bg-white' : ''}`}
                             style={{
                               width: `${skill.level}%`,
                               backgroundColor: skill.color || 'var(--primary)',
