@@ -3,6 +3,13 @@ import Timeline from '../components/Timeline';
 import { Card, CardContent } from '@/components/ui/card';
 import { type TimelineItem } from '../components/Timeline';
 import { getTimelineItems } from '@/lib/api';
+import {
+  SiReact, SiJavascript, SiTypescript, SiPhp, SiLaravel,
+  SiFlutter, SiDart, SiC, SiCplusplus, SiOcaml,
+  SiUnrealengine, SiMysql
+} from 'react-icons/si';
+import { FaJava } from 'react-icons/fa';
+import { TbBrandThreejs } from 'react-icons/tb';
 
 const About = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -59,9 +66,53 @@ const About = () => {
   }, []);
 
   const skills = [
-    { name: "Web Development", items: ["HTML/CSS", "JavaScript", "TypeScript", "React", "Node.js"] },
-    { name: "Game Development", items: ["Unreal Engine", "Unity", "Godot", "Game Design", "3D Modeling"] },
-    { name: "Other Skills", items: ["Git/GitHub", "UI/UX Design", "Problem Solving", "Team Collaboration"] }
+    {
+      name: "Web Development",
+      items: [
+        { name: "React.js", icon: SiReact, color: "#61DAFB", level: 65 },
+        { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E", level: 70 },
+        { name: "TypeScript", icon: SiTypescript, color: "#3178C6", level: 60 },
+        { name: "Three.js", icon: TbBrandThreejs, color: "#000000", darkModeInvert: true, level: 45 },
+        { name: "PHP", icon: SiPhp, color: "#777BB4", level: 55 },
+        { name: "Laravel", icon: SiLaravel, color: "#FF2D20", level: 50 }
+      ]
+    },
+    {
+      name: "App Development",
+      items: [
+        { name: "Flutter", icon: SiFlutter, color: "#02569B", level: 60 },
+        { name: "Dart", icon: SiDart, color: "#0175C2", level: 55 },
+        { name: "Bloc", svgPath: "/bloc.webp", color: "#0082FB", level: 40 },
+        { name: "Riverpod", svgPath: "/riverpod.png", color: "#0175C2", level: 35 }
+      ]
+    },
+    {
+      name: "Game Development",
+      items: [
+        { name: "Unreal Engine", icon: SiUnrealengine, color: "#0E1128", darkModeInvert: true, level: 50 },
+        { name: "C++", icon: SiCplusplus, color: "#00599C", level: 45 },
+        { name: "C", icon: SiC, color: "#A8B9CC", level: 40 }
+      ]
+    },
+    {
+      name: "Programming Languages",
+      items: [
+        { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E", level: 70 },
+        { name: "TypeScript", icon: SiTypescript, color: "#3178C6", level: 60 },
+        { name: "C", icon: SiC, color: "#A8B9CC", level: 40 },
+        { name: "C++", icon: SiCplusplus, color: "#00599C", level: 45 },
+        { name: "OCaml", icon: SiOcaml, color: "#EC6813", level: 30 },
+        { name: "PHP", icon: SiPhp, color: "#777BB4", level: 55 },
+        { name: "Java", icon: FaJava, color: "#007396", level: 35 },
+        { name: "Dart", icon: SiDart, color: "#0175C2", level: 55 }
+      ]
+    },
+    {
+      name: "Databases",
+      items: [
+        { name: "SQL", icon: SiMysql, color: "#4479A1", level: 60 }
+      ]
+    }
   ];
 
   return (
@@ -110,7 +161,7 @@ const About = () => {
               style={{ animationDelay: '0.4s' }}
             >
               <div className="aspect-square bg-secondary rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Profile image</p>
+                <img src="/nakhle.png" alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -144,19 +195,46 @@ const About = () => {
         <div className="container">
           <h2 className="text-center mb-16">My Skills</h2>
           <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 opacity-0"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-0"
             ref={skillsRef}
             style={{ animationDelay: '0.3s' }}
           >
             {skills.map((skillGroup, index) => (
-              <Card key={index} className="bg-background hover:shadow-lg transition-shadow duration-300">
+              <Card key={index} className="bg-background hover:shadow-md transition-shadow duration-300 border-opacity-50">
                 <CardContent className="pt-6">
-                  <h3 className="text-xl mb-4">{skillGroup.name}</h3>
-                  <ul className="space-y-2">
+                  <h3 className="text-lg font-medium mb-6">{skillGroup.name}</h3>
+                  <ul className="space-y-5">
                     {skillGroup.items.map((skill, skillIndex) => (
-                      <li key={skillIndex} className="flex items-center">
-                        <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                        <span className="text-muted-foreground">{skill}</span>
+                      <li key={skillIndex}>
+                        <div className="flex items-center mb-2">
+                          {skill.icon ? (
+                            <skill.icon
+                              className={`w-4 h-4 mr-3 ${skill.darkModeInvert ? 'dark:invert' : ''}`}
+                              style={{ color: skill.color || undefined }}
+                            />
+                          ) : skill.svgPath ? (
+                            <img
+                              src={skill.svgPath}
+                              alt={skill.name}
+                              width={16}
+                              height={16}
+                              className="mr-3"
+                              style={{ filter: 'none' }}
+                            />
+                          ) : (
+                            <div className="w-4 h-4 mr-3 bg-primary/10 rounded-full"></div>
+                          )}
+                          <span className="text-muted-foreground text-sm">{skill.name}</span>
+                        </div>
+                        <div className="w-full bg-secondary/50 rounded-full h-1.5 mt-1">
+                          <div
+                            className="h-1.5 rounded-full"
+                            style={{
+                              width: `${skill.level}%`,
+                              backgroundColor: skill.svgPath && skill.color ? skill.color : (skill.color || 'var(--primary)')
+                            }}
+                          ></div>
+                        </div>
                       </li>
                     ))}
                   </ul>
