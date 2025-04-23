@@ -1,13 +1,16 @@
-
 import DNAPlayback from '@/components/DNAPlayback';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getProjects } from '@/lib/api';
+import { ProjectDetails } from '@/components/ProjectDialog';
 
 const Index = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const [featuredProjects, setFeaturedProjects] = useState<ProjectDetails[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Directly add animation classes after a short delay
@@ -20,6 +23,55 @@ const Index = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const fetchRandomProjects = async () => {
+      try {
+        setLoading(true);
+        const allProjects = await getProjects();
+
+        // Randomly select 2 projects
+        if (allProjects.length > 0) {
+          const shuffled = [...allProjects].sort(() => 0.5 - Math.random());
+          const selected = shuffled.slice(0, Math.min(2, allProjects.length));
+          setFeaturedProjects(selected);
+        } else {
+          // Fallback for empty projects
+          setFeaturedProjects([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+        setFeaturedProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRandomProjects();
+  }, []);
+
+  // Function to get image URL from project
+  const getImageUrl = (project: ProjectDetails) => {
+    if (project.images && project.images.length > 0) {
+      const imagePath = project.images[0];
+
+      // Base API URL from environment variables
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+      if (imagePath.startsWith('http')) {
+        return imagePath;
+      } else if (imagePath.startsWith('/uploads')) {
+        return `${apiBaseUrl}${imagePath}`;
+      } else if (imagePath.includes('/uploads')) {
+        // Remove any leading slashes before /uploads to ensure correct path
+        const fixedPath = imagePath.substring(imagePath.indexOf('/uploads'));
+        return `${apiBaseUrl}${fixedPath}`;
+      } else {
+        return imagePath;
+      }
+    }
+    return null;
+  };
 
   return (
     <div className="min-h-screen">
@@ -97,29 +149,49 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              {
-                title: "Web Application",
-                category: "Full Stack Development",
-                description: "A responsive web application with React and Node.js"
-              },
-              {
-                title: "Game Prototype",
-                category: "Unreal Engine",
-                description: "An interactive 3D game experience"
-              }
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="group cursor-pointer overflow-hidden rounded-lg"
-              >
-                <div className="aspect-[16/9] bg-secondary flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
-                  <p className="text-muted-foreground">Project preview</p>
+            {loading ? (
+              // Loading state
+              [...Array(2)].map((_, index) => (
+                <div key={index} className="aspect-[16/9] bg-secondary animate-pulse rounded-lg" />
+              ))
+            ) : featuredProjects.length > 0 ? (
+              // Display random projects
+              featuredProjects.map((project, index) => (
+                <Link
+                  to={`/work?project=${project.id}`}
+                  key={index}
+                  className="group cursor-pointer overflow-hidden rounded-lg"
+                >
+                  <div className="aspect-[16/9] bg-secondary flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
+                    {getImageUrl(project) ? (
+                      <img
+                        src={getImageUrl(project)}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <p className="text-muted-foreground">Project preview</p>
+                    )}
+                  </div>
+                  <h3 className="mt-4 text-xl">{project.title}</h3>
+                  <p className="text-muted-foreground">{project.category}</p>
+                </Link>
+              ))
+            ) : (
+              // Fallback when no projects are found
+              [...Array(2)].map((_, index) => (
+                <div
+                  key={index}
+                  className="group cursor-pointer overflow-hidden rounded-lg"
+                >
+                  <div className="aspect-[16/9] bg-secondary flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
+                    <p className="text-muted-foreground">Project preview</p>
+                  </div>
+                  <h3 className="mt-4 text-xl">Sample Project</h3>
+                  <p className="text-muted-foreground">Web Development</p>
                 </div>
-                <h3 className="mt-4 text-xl">{item.title}</h3>
-                <p className="text-muted-foreground">{item.category}</p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
