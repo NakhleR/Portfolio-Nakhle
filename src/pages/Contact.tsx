@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import emailjs from '@emailjs/browser';
 
-// Fix Leaflet default icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -65,12 +64,10 @@ const Contact = () => {
       .then((response) => {
         console.log('Email sent successfully:', response);
         setSubmitted(true);
-        // Reset form
         setName('');
         setEmail('');
         setMessage('');
 
-        // Show submitted state temporarily
         setTimeout(() => {
           setSubmitted(false);
         }, 5000);
