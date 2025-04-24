@@ -1,4 +1,6 @@
 import Project from '../models/Project.js';
+import cloudinary from '../config/cloudinaryConfig.js';
+import { Readable } from 'stream';
 
 // @desc    Get all projects
 // @route   GET /api/projects
@@ -136,12 +138,36 @@ const uploadProjectImages = async (req, res) => {
             throw new Error('No files uploaded');
         }
 
-        // Create array of image paths
-        const imagePaths = req.files.map(file => `/uploads/${file.filename}`);
+        const uploadPromises = req.files.map(file => {
+            return new Promise((resolve, reject) => {
+                // Create a stream from buffer
+                const stream = Readable.from(file.buffer);
+
+                // Create upload stream to Cloudinary
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'portfolio-projects',
+                        resource_type: 'image'
+                    },
+                    (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result.secure_url);
+                    }
+                );
+
+                // Pipe the file buffer to the upload stream
+                stream.pipe(uploadStream);
+            });
+        });
+
+        // Wait for all uploads to complete
+        const imageUrls = await Promise.all(uploadPromises);
 
         res.json({
             success: true,
-            imageUrls: imagePaths
+            imageUrls: imageUrls
         });
     } catch (error) {
         res.status(400).json({

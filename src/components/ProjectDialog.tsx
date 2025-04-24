@@ -58,7 +58,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
         // If the image path is empty, return empty string
         if (!imagePath) return '';
 
-        // If the image is already a full URL, return it
+        // If the image is already a full URL (including Cloudinary URLs), return it
         if (imagePath.startsWith('http')) {
             return imagePath;
         }
