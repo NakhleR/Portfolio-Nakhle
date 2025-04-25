@@ -33,7 +33,6 @@ interface ProjectDialogProps {
 const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
-    const [zoomedImage, setZoomedImage] = useState<number | null>(null);
     const [imageAspectRatios, setImageAspectRatios] = useState<Record<number, number>>({});
     const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
@@ -57,14 +56,6 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
             }));
         }
     };
-
-    const toggleZoom = (index: number) => {
-        setZoomedImage(zoomedImage === index ? null : index);
-    };
-
-    useEffect(() => {
-        setZoomedImage(null);
-    }, [currentImageIndex, open]);
 
     useEffect(() => {
         if (!carouselApi) return;
@@ -104,19 +95,16 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                     {project.images && project.images.length > 0 ? (
                         <div className="relative">
                             <Carousel className="w-full" setApi={setCarouselApi}>
-                                <CarouselContent className={zoomedImage !== null ? 'pointer-events-none' : ''}>
+                                <CarouselContent>
                                     {project.images.map((image, index) => (
                                         <CarouselItem key={index}>
                                             <div
-                                                className={`bg-secondary flex items-center justify-center overflow-hidden ${zoomedImage === index
-                                                    ? 'fixed inset-0 z-50 bg-background/90'
-                                                    : isMobileScreenshot(index)
-                                                        ? 'min-h-[500px] flex items-center justify-center'
-                                                        : 'aspect-video'
+                                                className={`bg-secondary flex items-center justify-center overflow-hidden ${isMobileScreenshot(index)
+                                                    ? 'min-h-[500px] flex items-center justify-center'
+                                                    : 'aspect-video'
                                                     }`}
-                                                onClick={() => isMobileScreenshot(index) && toggleZoom(index)}
                                             >
-                                                {isMobileScreenshot(index) && zoomedImage !== index ? (
+                                                {isMobileScreenshot(index) ? (
                                                     <div className="mobile-frame relative bg-black rounded-[30px] p-2 shadow-xl overflow-hidden w-[290px] min-h-[480px] flex items-center justify-center">
                                                         <img
                                                             ref={el => imageRefs.current[index] = el}
@@ -128,58 +116,36 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                                                 (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
                                                             }}
                                                         />
-                                                        <div className="absolute bottom-2 left-2 bg-background/80 text-xs px-2 py-1 rounded-md text-foreground">
-                                                            Tap to zoom
-                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <img
                                                         ref={el => imageRefs.current[index] = el}
                                                         src={getImageUrl(image)}
                                                         alt={`${project.title} - Image ${index + 1}`}
-                                                        className={`
-                                                            ${zoomedImage === index ? 'max-h-[90vh] max-w-[90%] object-contain cursor-zoom-out' : ''}
-                                                            ${!isMobileScreenshot(index) && zoomedImage !== index ? 'w-full h-full max-h-[70vh] object-cover' : ''}
-                                                            transition-transform duration-200
-                                                        `}
+                                                        className="w-full h-full max-h-[70vh] object-cover"
                                                         onLoad={(e) => handleImageLoad(index, e)}
                                                         onError={(e) => {
                                                             (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
                                                         }}
                                                     />
                                                 )}
-                                                {zoomedImage === index && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleZoom(index);
-                                                        }}
-                                                        className="absolute top-4 right-4 bg-background/80 hover:bg-background p-2 rounded-full text-foreground"
-                                                        aria-label="Close zoom view"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                        </svg>
-                                                    </button>
-                                                )}
                                             </div>
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
                                 <CarouselPrevious
-                                    className={`absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 ${zoomedImage !== null ? 'hidden' : ''}`}
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
                                 />
                                 <CarouselNext
-                                    className={`absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 ${zoomedImage !== null ? 'hidden' : ''}`}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
                                 />
                             </Carousel>
-                            {zoomedImage === null && (
+                            {project.images.length > 0 && (
                                 <div className="absolute bottom-2 right-2 bg-background/80 text-foreground text-xs px-2 py-1 rounded-md">
                                     {currentImageIndex + 1} / {project.images.length}
                                 </div>
                             )}
-                            {project.images.length > 1 && zoomedImage === null && (
+                            {project.images.length > 1 && (
                                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                                     {project.images.map((_, index) => (
                                         <button

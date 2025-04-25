@@ -248,12 +248,6 @@
   background-color: #fff;
 }
 
-/* Zoom effect for mobile screenshots */
-.mobile-frame:hover {
-  transform: scale(1.02);
-  transition: transform 0.2s ease;
-}
-
 @media (max-width: 640px) {
   .mobile-frame {
     width: 250px !important;
