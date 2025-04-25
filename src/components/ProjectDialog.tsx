@@ -38,6 +38,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
     const isMobileScreenshot = (imagePath: string): boolean => {
         const filename = imagePath.split('/').pop()?.toLowerCase() || '';
 
+        // Check for common mobile screenshot patterns in filenames
         if (filename.match(/^mobile[1-4](\.[a-z]+)?$/)) {
             return true;
         }
@@ -96,7 +97,12 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                     {project.images.map((image, index) => (
                                         <CarouselItem key={index}>
                                             <div
-                                                className={`bg-secondary flex items-center justify-center overflow-hidden ${zoomedImage === index ? 'fixed inset-0 z-50 bg-background/90' : isMobileScreenshot(image) ? 'min-h-[500px] flex items-center' : 'aspect-video'}`}
+                                                className={`bg-secondary flex items-center justify-center overflow-hidden ${zoomedImage === index
+                                                    ? 'fixed inset-0 z-50 bg-background/90'
+                                                    : isMobileScreenshot(image)
+                                                        ? 'min-h-[500px] flex items-center justify-center'
+                                                        : 'aspect-video'
+                                                    }`}
                                                 onClick={() => isMobileScreenshot(image) && toggleZoom(index)}
                                             >
                                                 <img
@@ -104,7 +110,7 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                                     alt={`${project.title} - Image ${index + 1}`}
                                                     className={`
                                                         ${zoomedImage === index ? 'max-h-[90vh] max-w-[90%] object-contain cursor-zoom-out' : ''}
-                                                        ${isMobileScreenshot(image) && zoomedImage !== index ? 'object-contain h-[500px] w-auto max-w-[280px] mx-auto cursor-zoom-in' : ''}
+                                                        ${isMobileScreenshot(image) && zoomedImage !== index ? 'h-auto max-h-[480px] max-w-[280px] object-contain cursor-zoom-in' : ''}
                                                         ${!isMobileScreenshot(image) && zoomedImage !== index ? 'w-full h-full max-h-[70vh] object-cover' : ''}
                                                         transition-transform duration-200
                                                     `}

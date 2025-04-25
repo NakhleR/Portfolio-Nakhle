@@ -143,12 +143,30 @@ const uploadProjectImages = async (req, res) => {
                 // Create a stream from buffer
                 const stream = Readable.from(file.buffer);
 
+                // Check if the filename indicates it's a mobile screenshot
+                const isMobileImage = file.originalname.toLowerCase().includes('mobile') ||
+                    file.originalname.toLowerCase().includes('phone') ||
+                    file.originalname.toLowerCase().includes('iphone') ||
+                    file.originalname.toLowerCase().includes('android');
+
+                // Different upload options based on image type
+                const uploadOptions = {
+                    folder: 'portfolio-projects',
+                    resource_type: 'image',
+                    quality: 'auto',
+                    fetch_format: 'auto'
+                };
+
+                // For mobile screenshots, ensure we preserve aspect ratio and don't crop
+                if (isMobileImage) {
+                    uploadOptions.width = 375; // Standard mobile width
+                    uploadOptions.crop = 'scale';
+                    uploadOptions.quality = 'auto:best';
+                }
+
                 // Create upload stream to Cloudinary
                 const uploadStream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'portfolio-projects',
-                        resource_type: 'image'
-                    },
+                    uploadOptions,
                     (error, result) => {
                         if (error) {
                             return reject(error);
