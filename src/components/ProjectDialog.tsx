@@ -36,6 +36,30 @@ interface ProjectDialogProps {
 const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+    const [zoomedImage, setZoomedImage] = useState<number | null>(null);
+
+    // Function to detect if an image is a mobile screenshot
+    // This checks if the image filename contains mobile-related keywords
+    // or if it has a portrait aspect ratio typical of mobile screenshots
+    const isMobileScreenshot = (imagePath: string): boolean => {
+        // Check filename for mobile indicators
+        const lowerPath = imagePath.toLowerCase();
+        const mobileKeywords = ['mobile', 'phone', 'smartphone', 'iphone', 'android'];
+        const hasMobileKeyword = mobileKeywords.some(keyword => lowerPath.includes(keyword));
+
+        // If the filename contains mobile keywords, it's likely a mobile screenshot
+        return hasMobileKeyword;
+    };
+
+    // Toggle zoom state for an image
+    const toggleZoom = (index: number) => {
+        setZoomedImage(zoomedImage === index ? null : index);
+    };
+
+    // Reset zoom when carousel changes or dialog closes
+    useEffect(() => {
+        setZoomedImage(null);
+    }, [currentImageIndex, open]);
 
     // Update currentImageIndex when carousel changes
     useEffect(() => {
@@ -84,38 +108,68 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                     {project.images && project.images.length > 0 ? (
                         <div className="relative">
                             <Carousel className="w-full" setApi={setCarouselApi}>
-                                <CarouselContent>
+                                <CarouselContent className={zoomedImage !== null ? 'pointer-events-none' : ''}>
                                     {project.images.map((image, index) => (
                                         <CarouselItem key={index}>
-                                            <div className="aspect-video bg-secondary flex items-center justify-center overflow-hidden">
+                                            <div
+                                                className={`bg-secondary flex items-center justify-center overflow-hidden ${zoomedImage === index ? 'fixed inset-0 z-50 bg-background/90' : 'aspect-video'}`}
+                                                onClick={() => isMobileScreenshot(image) && toggleZoom(index)}
+                                            >
                                                 <img
                                                     src={getImageUrl(image)}
                                                     alt={`${project.title} - Image ${index + 1}`}
-                                                    className="w-full h-full object-cover"
+                                                    className={`
+                                                        ${zoomedImage === index ? 'max-h-[90vh] max-w-[90%] object-contain cursor-zoom-out' : 'max-h-[70vh]'}
+                                                        ${isMobileScreenshot(image) && zoomedImage !== index ? 'object-contain h-full max-w-[85%] mx-auto cursor-zoom-in' : ''}
+                                                        ${!isMobileScreenshot(image) && zoomedImage !== index ? 'w-full h-full object-cover' : ''}
+                                                        transition-transform duration-200
+                                                    `}
                                                     onError={(e) => {
                                                         // Fallback if image fails to load
                                                         (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
                                                     }}
                                                 />
+                                                {isMobileScreenshot(image) && zoomedImage !== index && (
+                                                    <div className="absolute bottom-2 left-2 bg-background/80 text-xs px-2 py-1 rounded-md text-foreground">
+                                                        Tap to zoom
+                                                    </div>
+                                                )}
+                                                {zoomedImage === index && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleZoom(index);
+                                                        }}
+                                                        className="absolute top-4 right-4 bg-background/80 hover:bg-background p-2 rounded-full text-foreground"
+                                                        aria-label="Close zoom view"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                        </svg>
+                                                    </button>
+                                                )}
                                             </div>
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
                                 <CarouselPrevious
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
+                                    className={`absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 ${zoomedImage !== null ? 'hidden' : ''}`}
                                 />
                                 <CarouselNext
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90"
+                                    className={`absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 ${zoomedImage !== null ? 'hidden' : ''}`}
                                 />
                             </Carousel>
 
                             {/* Image counter */}
-                            <div className="absolute bottom-2 right-2 bg-background/80 text-foreground text-xs px-2 py-1 rounded-md">
-                                {currentImageIndex + 1} / {project.images.length}
-                            </div>
+                            {zoomedImage === null && (
+                                <div className="absolute bottom-2 right-2 bg-background/80 text-foreground text-xs px-2 py-1 rounded-md">
+                                    {currentImageIndex + 1} / {project.images.length}
+                                </div>
+                            )}
 
                             {/* Image navigation dots */}
-                            {project.images.length > 1 && (
+                            {project.images.length > 1 && zoomedImage === null && (
                                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                                     {project.images.map((_, index) => (
                                         <button
