@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Carousel,
     CarouselContent,
@@ -34,17 +34,28 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
     const [zoomedImage, setZoomedImage] = useState<number | null>(null);
+    const [imageAspectRatios, setImageAspectRatios] = useState<Record<number, number>>({});
+    const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
-    const isMobileScreenshot = (imagePath: string): boolean => {
-        const filename = imagePath.split('/').pop()?.toLowerCase() || '';
+    const isMobileScreenshot = (index: number): boolean => {
+        // Mobile screenshots typically have tall aspect ratios (height > width)
+        // This is more reliable than checking filenames
+        const aspectRatio = imageAspectRatios[index];
+        if (!aspectRatio) return false;
 
-        // Check for common mobile screenshot patterns in filenames
-        if (filename.match(/^mobile[1-4](\.[a-z]+)?$/)) {
-            return true;
+        // If height is significantly greater than width (aspect ratio < 0.7)
+        // or if it matches typical mobile proportions
+        return aspectRatio < 0.7;
+    };
+
+    const handleImageLoad = (index: number, e: React.SyntheticEvent<HTMLImageElement>) => {
+        const img = e.target as HTMLImageElement;
+        if (img.naturalWidth && img.naturalHeight) {
+            setImageAspectRatios(prev => ({
+                ...prev,
+                [index]: img.naturalWidth / img.naturalHeight
+            }));
         }
-
-        const mobileKeywords = ['mobile', 'phone', 'smartphone', 'iphone', 'android'];
-        return mobileKeywords.some(keyword => filename.includes(keyword));
     };
 
     const toggleZoom = (index: number) => {
@@ -99,29 +110,43 @@ const ProjectDialog = ({ project, open, onOpenChange }: ProjectDialogProps) => {
                                             <div
                                                 className={`bg-secondary flex items-center justify-center overflow-hidden ${zoomedImage === index
                                                     ? 'fixed inset-0 z-50 bg-background/90'
-                                                    : isMobileScreenshot(image)
+                                                    : isMobileScreenshot(index)
                                                         ? 'min-h-[500px] flex items-center justify-center'
                                                         : 'aspect-video'
                                                     }`}
-                                                onClick={() => isMobileScreenshot(image) && toggleZoom(index)}
+                                                onClick={() => isMobileScreenshot(index) && toggleZoom(index)}
                                             >
-                                                <img
-                                                    src={getImageUrl(image)}
-                                                    alt={`${project.title} - Image ${index + 1}`}
-                                                    className={`
-                                                        ${zoomedImage === index ? 'max-h-[90vh] max-w-[90%] object-contain cursor-zoom-out' : ''}
-                                                        ${isMobileScreenshot(image) && zoomedImage !== index ? 'h-auto max-h-[480px] max-w-[280px] object-contain cursor-zoom-in' : ''}
-                                                        ${!isMobileScreenshot(image) && zoomedImage !== index ? 'w-full h-full max-h-[70vh] object-cover' : ''}
-                                                        transition-transform duration-200
-                                                    `}
-                                                    onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
-                                                    }}
-                                                />
-                                                {isMobileScreenshot(image) && zoomedImage !== index && (
-                                                    <div className="absolute bottom-2 left-2 bg-background/80 text-xs px-2 py-1 rounded-md text-foreground">
-                                                        Tap to zoom
+                                                {isMobileScreenshot(index) && zoomedImage !== index ? (
+                                                    <div className="mobile-frame relative bg-black rounded-[30px] p-2 shadow-xl overflow-hidden w-[290px] min-h-[480px] flex items-center justify-center">
+                                                        <img
+                                                            ref={el => imageRefs.current[index] = el}
+                                                            src={getImageUrl(image)}
+                                                            alt={`${project.title} - Image ${index + 1}`}
+                                                            className="w-full h-full object-contain rounded-[20px]"
+                                                            onLoad={(e) => handleImageLoad(index, e)}
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                                                            }}
+                                                        />
+                                                        <div className="absolute bottom-2 left-2 bg-background/80 text-xs px-2 py-1 rounded-md text-foreground">
+                                                            Tap to zoom
+                                                        </div>
                                                     </div>
+                                                ) : (
+                                                    <img
+                                                        ref={el => imageRefs.current[index] = el}
+                                                        src={getImageUrl(image)}
+                                                        alt={`${project.title} - Image ${index + 1}`}
+                                                        className={`
+                                                            ${zoomedImage === index ? 'max-h-[90vh] max-w-[90%] object-contain cursor-zoom-out' : ''}
+                                                            ${!isMobileScreenshot(index) && zoomedImage !== index ? 'w-full h-full max-h-[70vh] object-cover' : ''}
+                                                            transition-transform duration-200
+                                                        `}
+                                                        onLoad={(e) => handleImageLoad(index, e)}
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                                                        }}
+                                                    />
                                                 )}
                                                 {zoomedImage === index && (
                                                     <button
