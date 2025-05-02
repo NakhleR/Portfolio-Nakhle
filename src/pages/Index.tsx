@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getProjects } from '@/lib/api';
 import { ProjectDetails } from '@/components/ProjectDialog';
+import TechCategoryBar from '@/components/TechCategoryBar';
 
 const Index = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -104,6 +105,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <TechCategoryBar />
 
       {/* Skills Section */}
       <section className="py-24 bg-secondary">
