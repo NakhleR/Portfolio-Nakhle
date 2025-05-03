@@ -26,6 +26,7 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
+  const [recaptchaTheme, setRecaptchaTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -44,7 +45,22 @@ const Contact = () => {
     if (formRef.current) observer.observe(formRef.current);
     if (infoRef.current) observer.observe(infoRef.current);
 
-    return () => observer.disconnect();
+    const checkTheme = () => {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setRecaptchaTheme('dark');
+      } else {
+        setRecaptchaTheme('light');
+      }
+    };
+
+    checkTheme(); // Initial check
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', checkTheme); // Listen for changes
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener('change', checkTheme); // Cleanup listener
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -196,9 +212,9 @@ const Contact = () => {
                   <div className="my-4">
                     <ReCAPTCHA
                       ref={recaptchaRef}
-                      sitekey="6Ld3-ywrAAAAAGHfwVxIRQnfQvy5hEpJUdiU77kJ" // Using Google's test key
+                      sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL" // Using Google's test key
                       onChange={handleRecaptchaChange}
-                      className="flex"
+                      theme={recaptchaTheme}
                     />
                     {error && error.includes('reCAPTCHA') && (
                       <p className="text-red-500 text-sm mt-2">{error}</p>
