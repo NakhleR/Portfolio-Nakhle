@@ -226,6 +226,7 @@ const Contact = () => {
                       sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL"
                       onChange={handleRecaptchaChange}
                       theme={effectiveRecaptchaTheme}
+                      key={`recaptcha-${effectiveRecaptchaTheme}`}
                     />
                     {error && error.includes('reCAPTCHA') && (
                       <p className="text-red-500 text-sm mt-2">{error}</p>
