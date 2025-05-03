@@ -17,6 +17,15 @@ export function AsciiEffectOverlay() {
     }
 
     useEffect(() => {
+        // Enable willReadFrequently for better performance with getImageData operations
+        const originalGetContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function (type, attributes) {
+            if (type === '2d') {
+                attributes = { ...attributes, willReadFrequently: true };
+            }
+            return originalGetContext.call(this, type, attributes);
+        };
+
         const effect = new AsciiEffect(gl, ' .:-+*=%@#', {
             invert: false,
         })
@@ -37,6 +46,8 @@ export function AsciiEffectOverlay() {
         return () => {
             gl.domElement.style.display = ''
             effect.domElement.remove()
+            // Restore original getContext method
+            HTMLCanvasElement.prototype.getContext = originalGetContext;
         }
     }, [gl, size])
 

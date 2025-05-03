@@ -108,7 +108,6 @@ const Index = () => {
 
       <TechCategoryBar />
 
-      {/* Skills Section */}
       <section className="py-24 bg-secondary">
         <div className="container">
           <h2 className="text-center mb-16">What I Do</h2>
