@@ -1,9 +1,10 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { DNAHelixModel } from './DNAHelixModel'
 import { AsciiEffectOverlay } from './AsciiEffect'
 import { OrbitControls } from '@react-three/drei'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 
+// Clean loading spinner for production
 const LoadingSpinner = () => (
     <div className="absolute inset-0 flex items-center justify-center bg-background/30 z-10">
         <div className="flex flex-col items-center gap-2">
@@ -12,31 +13,52 @@ const LoadingSpinner = () => (
                     Loading...
                 </span>
             </div>
-            <div className="text-foreground text-sm">Loading DNA model</div>
         </div>
     </div>
 );
 
-const LoadingFallback = () => {
-    const [rotation, setRotation] = useState(0);
 
-    useFrame(() => {
-        setRotation(prev => prev + 0.01);
-    });
+const LoadingFallback = () => null;
+
+
+const ModelLoader = ({ onLoaded }) => {
+    useEffect(() => {
+
+        const timer = setTimeout(() => {
+            onLoaded();
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [onLoaded]);
 
     return null;
 };
 
 export default function DNAPlayback() {
     const [isLoading, setIsLoading] = useState(true);
+    const loadTimeout = useRef(null);
 
+    // Ensure we clean up the timeout on unmount
     useEffect(() => {
-        const timer = setTimeout(() => {
+        // Failsafe timeout in case something goes wrong with loading
+        loadTimeout.current = setTimeout(() => {
             setIsLoading(false);
-        }, 3000);
+        }, 6000); // 6 seconds max loading time
 
-        return () => clearTimeout(timer);
+        return () => {
+            if (loadTimeout.current) {
+                clearTimeout(loadTimeout.current);
+            }
+        };
     }, []);
+
+    // Handler for when the model signals it's loaded
+    const handleModelLoaded = () => {
+        setIsLoading(false);
+        if (loadTimeout.current) {
+            clearTimeout(loadTimeout.current);
+        }
+    };
 
     return (
         <div className="relative w-full h-full min-h-[400px]">
@@ -55,6 +77,7 @@ export default function DNAPlayback() {
                 <directionalLight position={[0, 10, 10]} intensity={2} />
                 <Suspense fallback={<LoadingFallback />}>
                     <DNAHelixModel />
+                    <ModelLoader onLoaded={handleModelLoaded} />
                 </Suspense>
                 <AsciiEffectOverlay />
                 <OrbitControls
