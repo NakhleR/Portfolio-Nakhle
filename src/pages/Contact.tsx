@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import emailjs from '@emailjs/browser';
 import { DisplacementSphere } from '@/components/DisplacementSphere/DisplacementSphere';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -16,6 +17,7 @@ const Contact = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -23,6 +25,7 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -46,6 +49,12 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!recaptchaValue) {
+      setError('Please complete the reCAPTCHA verification.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -57,7 +66,8 @@ const Contact = () => {
       from_name: name,
       from_email: email,
       message: message,
-      title: 'Contact Us: ' + name
+      title: 'Contact Us: ' + name,
+      'g-recaptcha-response': recaptchaValue
     };
 
     emailjs.send(serviceId, templateId, templateParams, publicKey)
@@ -67,6 +77,12 @@ const Contact = () => {
         setName('');
         setEmail('');
         setMessage('');
+        setRecaptchaValue(null);
+
+        // Reset reCAPTCHA
+        if (recaptchaRef.current) {
+          recaptchaRef.current.reset();
+        }
 
         setTimeout(() => {
           setSubmitted(false);
@@ -79,6 +95,13 @@ const Contact = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleRecaptchaChange = (value: string | null) => {
+    setRecaptchaValue(value);
+    if (value) {
+      setError('');
+    }
   };
 
   return (
@@ -170,10 +193,22 @@ const Contact = () => {
                     />
                   </div>
 
+                  <div className="my-4">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey="6Ld3-ywrAAAAAGHfwVxIRQnfQvy5hEpJUdiU77kJ" // Using Google's test key
+                      onChange={handleRecaptchaChange}
+                      className="flex"
+                    />
+                    {error && error.includes('reCAPTCHA') && (
+                      <p className="text-red-500 text-sm mt-2">{error}</p>
+                    )}
+                  </div>
+
                   <button
                     type="submit"
-                    disabled={loading}
-                    className={`inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
+                    disabled={loading || !recaptchaValue}
+                    className={`inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out ${(loading || !recaptchaValue) ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
                   >
                     {loading ? (
                       <>
