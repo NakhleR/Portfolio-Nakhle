@@ -5,6 +5,7 @@ import L from 'leaflet';
 import emailjs from '@emailjs/browser';
 import { DisplacementSphere } from '@/components/DisplacementSphere/DisplacementSphere';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useTheme } from '@/components/ThemeProvider';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -26,7 +27,9 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
-  const [recaptchaTheme, setRecaptchaTheme] = useState<'light' | 'dark'>('light');
+
+  const { theme: appTheme } = useTheme();
+  const [effectiveRecaptchaTheme, setEffectiveRecaptchaTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -45,23 +48,35 @@ const Contact = () => {
     if (formRef.current) observer.observe(formRef.current);
     if (infoRef.current) observer.observe(infoRef.current);
 
-    const checkTheme = () => {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setRecaptchaTheme('dark');
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let systemThemeMediaQuery: MediaQueryList | null = null;
+
+    const updateRecaptchaTheme = () => {
+      let currentTheme: 'light' | 'dark';
+      if (appTheme === 'system') {
+        currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       } else {
-        setRecaptchaTheme('light');
+        currentTheme = appTheme;
       }
+      setEffectiveRecaptchaTheme(currentTheme);
     };
 
-    checkTheme(); // Initial check
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', checkTheme); // Listen for changes
+    updateRecaptchaTheme();
+
+    if (appTheme === 'system') {
+      systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      systemThemeMediaQuery.addEventListener('change', updateRecaptchaTheme);
+    }
 
     return () => {
-      observer.disconnect();
-      mediaQuery.removeEventListener('change', checkTheme); // Cleanup listener
+      if (systemThemeMediaQuery) {
+        systemThemeMediaQuery.removeEventListener('change', updateRecaptchaTheme);
+      }
     };
-  }, []);
+  }, [appTheme]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +110,6 @@ const Contact = () => {
         setMessage('');
         setRecaptchaValue(null);
 
-        // Reset reCAPTCHA
         if (recaptchaRef.current) {
           recaptchaRef.current.reset();
         }
@@ -122,10 +136,8 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background DisplacementSphere */}
       <DisplacementSphere />
 
-      {/* Hero Section */}
       <section className="py-16 md:py-24 relative">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
@@ -139,7 +151,6 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Contact Form and Info */}
       <section className="py-16 relative">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -212,9 +223,9 @@ const Contact = () => {
                   <div className="my-4">
                     <ReCAPTCHA
                       ref={recaptchaRef}
-                      sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL" // Using Google's test key
+                      sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL"
                       onChange={handleRecaptchaChange}
-                      theme={recaptchaTheme}
+                      theme={effectiveRecaptchaTheme}
                     />
                     {error && error.includes('reCAPTCHA') && (
                       <p className="text-red-500 text-sm mt-2">{error}</p>
