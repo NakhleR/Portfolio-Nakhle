@@ -97,7 +97,7 @@ const Index = () => {
               </div>
             </div>
             <div
-              className="rounded-lg h-full overflow-hidden opacity-0"
+              className="rounded-lg h-full overflow-hidden opacity-0 hidden md:block"
               ref={imageRef}
             >
               <DNAPlayback />

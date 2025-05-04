@@ -221,13 +221,17 @@ const Contact = () => {
                   </div>
 
                   <div className="my-4">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL"
-                      onChange={handleRecaptchaChange}
-                      theme={effectiveRecaptchaTheme}
-                      key={`recaptcha-${effectiveRecaptchaTheme}`}
-                    />
+                    <div className="overflow-x-auto">
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey="6LeoBS0rAAAAAORVXUsDnnw1wkzeglzTZtRBDiSL"
+                        onChange={handleRecaptchaChange}
+                        theme={effectiveRecaptchaTheme}
+                        key={`recaptcha-${effectiveRecaptchaTheme}`}
+                        size="normal"
+                        className="transform scale-[0.85] sm:scale-100 origin-left"
+                      />
+                    </div>
                     {error && error.includes('reCAPTCHA') && (
                       <p className="text-red-500 text-sm mt-2">{error}</p>
                     )}
