@@ -121,7 +121,7 @@ export default function DNAPlayback() {
                     style={{
                         position: 'absolute',
                         inset: 0,
-                        zIndex: -1,
+                        zIndex: 1,
                         cursor: "pointer",
                     }}
                     camera={{ position: [0, 0, 20], fov: 50 }}
