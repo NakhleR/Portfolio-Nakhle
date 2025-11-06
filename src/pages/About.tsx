@@ -98,6 +98,7 @@ const About = () => {
         { name: "OCaml", imagePath: "/ocaml.png", color: "#EC6813", level: 30 },
         { name: "PHP", imagePath: "/php.png", color: "#777BB4", level: 55 },
         { name: "Java", imagePath: "/java.png", color: "#007396", level: 35 },
+        { name: "Python", imagePath: "/python-logo-only.svg", color: "#3776AB", level: 50 },
         { name: "Dart", imagePath: "/dart.png", color: "#0175C2", level: 55 }
       ]
     },
