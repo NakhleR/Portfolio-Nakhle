@@ -118,8 +118,8 @@ const Index = () => {
                 description: "Creating responsive and intuitive web applications with modern technologies."
               },
               {
-                title: "Game Development",
-                description: "Building immersive gaming experiences with Unreal Engine and other platforms."
+                title: "AI & Machine Learning",
+                description: "Exploring deep learning, data science, and intelligent automation to build smarter applications."
               },
               {
                 title: "Full Stack Solutions",

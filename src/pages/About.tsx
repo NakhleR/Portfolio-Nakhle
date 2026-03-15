@@ -132,19 +132,19 @@ const About = () => {
               <h2 className="mb-6">My Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  I'm Nakhle Rizk, born on November 20, 2002. I'm a full stack developer with a passion for creating
-                  both web applications and games. My journey began with web development, mastering various frontend
-                  and backend technologies.
+                  I'm Nakhle Rizk, born on November 20, 2002. I'm a full stack developer and AI & machine learning
+                  student with a passion for building intelligent, user-focused applications. My journey began with
+                  web development, mastering various frontend and backend technologies.
                 </p>
                 <p>
-                  My fascination with interactive experiences led me to game development, where I've worked with
-                  Godot and Unity before finding my current focus with Unreal Engine. I enjoy the creative and
-                  technical challenges that come with building immersive digital experiences.
+                  My curiosity for how systems learn and adapt led me to artificial intelligence and machine learning,
+                  where I'm exploring areas like deep learning, data science, and intelligent automation. I enjoy
+                  bridging the gap between robust software engineering and cutting-edge AI research.
                 </p>
                 <p>
                   I approach every project with attention to detail and a focus on user experience, whether
-                  I'm building a responsive web application or designing game mechanics. I'm constantly learning
-                  and expanding my skills to stay current with the latest technologies and best practices.
+                  I'm building a responsive web application or training a machine learning model. I'm constantly
+                  learning and expanding my skills to stay current with the latest technologies and best practices.
                 </p>
               </div>
             </div>
