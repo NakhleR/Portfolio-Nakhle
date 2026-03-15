@@ -121,7 +121,7 @@ const About = () => {
               About Me
             </h1>
             <p className="mt-6 text-xl text-muted-foreground">
-              Full Stack Developer & Game Development Enthusiast
+              Full Stack Developer & AI and Machine Learning Student
             </p>
           </div>
         </div>

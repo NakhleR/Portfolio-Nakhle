@@ -82,7 +82,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 opacity-0" ref={titleRef}>
               <h1 className="text-balance font-medium">
-                Full Stack Developer & Game Development Enthusiast
+                Full Stack Developer & AI and Machine Learning Student
               </h1>
               <p className="text-xl text-muted-foreground max-w-md opacity-0" ref={subtitleRef}>
                 Creating digital experiences that combine functionality, creativity, and technical excellence.
