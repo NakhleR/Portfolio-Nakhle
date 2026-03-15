@@ -241,8 +241,9 @@ const About = () => {
               <motion.div
                 key={activeCategory}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
+                viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.3 }}
                 className="flex flex-wrap justify-center gap-5"
               >
@@ -255,7 +256,8 @@ const About = () => {
                     <motion.div
                       key={skill.name}
                       initial={{ opacity: 0, scale: 0.85 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true, margin: '-30px' }}
                       transition={{ delay: index * 0.06, duration: 0.4, ease: "easeOut" }}
                       className="group relative"
                     >
@@ -277,7 +279,8 @@ const About = () => {
                               strokeLinecap="round"
                               strokeDasharray={circumference}
                               initial={{ strokeDashoffset: circumference }}
-                              animate={{ strokeDashoffset: offset }}
+                              whileInView={{ strokeDashoffset: offset }}
+                              viewport={{ once: true, margin: '-30px' }}
                               transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.06 }}
                             />
                           </svg>

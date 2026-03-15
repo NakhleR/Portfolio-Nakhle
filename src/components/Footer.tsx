@@ -36,10 +36,10 @@ const Footer = () => {
       </div>
 
       {/* Main CTA area */}
-      <div className="container py-24 md:py-36 lg:py-44">
+      <div className="container py-16 sm:py-24 md:py-36 lg:py-44">
         <div ref={headingRef}>
           <motion.p
-            className="text-sm font-medium text-muted-foreground uppercase tracking-[0.2em] mb-8"
+            className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-[0.2em] mb-4 sm:mb-8"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6 }}
@@ -51,7 +51,7 @@ const Footer = () => {
             {/* Line 1: "Let's work" */}
             <div className="overflow-hidden">
               <motion.div
-                className="text-[clamp(3rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight"
+                className="text-[clamp(2.2rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight"
                 initial={{ y: '100%' }}
                 animate={isInView ? { y: 0 } : {}}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -64,7 +64,7 @@ const Footer = () => {
             <div className="overflow-visible flex items-baseline">
               <div className="overflow-hidden">
                 <motion.div
-                  className="text-[clamp(3rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight"
+                  className="text-[clamp(2.2rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight"
                   initial={{ y: '100%' }}
                   animate={isInView ? { y: 0 } : {}}
                   transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -75,7 +75,7 @@ const Footer = () => {
               {/* Scroll lift wrapper for "ther." + arrow */}
               <motion.div className="flex items-baseline" style={{ y: liftY }}>
                 <motion.div
-                  className="text-[clamp(3rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight origin-bottom-left"
+                  className="text-[clamp(2.2rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight origin-bottom-left"
                   initial={{ opacity: 0, y: 40 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
@@ -85,13 +85,13 @@ const Footer = () => {
 
                 {/* Arrow */}
                 <motion.div
-                  className="ml-4 md:ml-8 self-center"
+                  className="ml-2 sm:ml-4 md:ml-8 self-center"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={isInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-foreground/20 flex items-center justify-center transition-all duration-500 group-hover:bg-foreground group-hover:border-foreground group-hover:scale-110">
-                    <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 transition-all duration-500 group-hover:text-background group-hover:rotate-45" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-foreground/20 flex items-center justify-center transition-all duration-500 group-hover:bg-foreground group-hover:border-foreground group-hover:scale-110">
+                    <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 transition-all duration-500 group-hover:text-background group-hover:rotate-45" />
                   </div>
                 </motion.div>
               </motion.div>
@@ -101,21 +101,21 @@ const Footer = () => {
       </div>
 
       {/* Bottom section */}
-      <div className="container pb-8">
-        <div className="h-px bg-border/50 mb-8" />
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="container pb-6 sm:pb-8">
+        <div className="h-px bg-border/50 mb-6 sm:mb-8" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
           {/* Copyright */}
-          <p className="text-xs text-muted-foreground order-3 md:order-1">
+          <p className="text-[10px] sm:text-xs text-muted-foreground order-3 md:order-1">
             &copy; {new Date().getFullYear()} Nakhle Rizk
           </p>
 
           {/* Nav links */}
-          <div className="flex items-center gap-8 order-1 md:order-2">
+          <div className="flex items-center gap-4 sm:gap-8 order-1 md:order-2">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -123,14 +123,14 @@ const Footer = () => {
           </div>
 
           {/* Social links */}
-          <div className="flex items-center gap-6 order-2 md:order-3">
+          <div className="flex items-center gap-4 sm:gap-6 order-2 md:order-3">
             {socialLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 {link.label}
               </a>

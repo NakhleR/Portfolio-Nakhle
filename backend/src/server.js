@@ -33,7 +33,8 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
     'https://portfolio-nakhle.vercel.app',
     'http://localhost:3000',
-    'http://localhost:5173' // Vite's default development port
+    'http://localhost:5173', // Vite's default development port
+    'http://localhost:8080'
 ];
 
 app.use(cors({
@@ -41,16 +42,21 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps, curl requests)
         if (!origin) return callback(null, true);
 
+        // Allow exact matches
         if (allowedOrigins.indexOf(origin) !== -1) {
+            return callback(null, true);
+        }
+
+        // Allow all Vercel preview deployments
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+
+        console.log('CORS blocked origin:', origin);
+        if (process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
-            console.log('CORS blocked origin:', origin);
-            // Allow all origins in development
-            if (process.env.NODE_ENV !== 'production') {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
+            callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,

@@ -192,17 +192,17 @@ const Index = () => {
               <p className="text-lg md:text-xl text-muted-foreground max-w-lg opacity-0 leading-relaxed" ref={subtitleRef}>
                 Building intelligent, user-focused digital experiences that combine modern engineering with cutting-edge AI.
               </p>
-              <div className="flex items-center gap-4 pt-2 opacity-0" ref={ctaRef}>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 opacity-0" ref={ctaRef}>
                 <Link
                   to="/work"
-                  className="group inline-flex items-center justify-center h-12 px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group inline-flex items-center justify-center h-12 px-6 sm:px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base"
                 >
                   View My Projects
                   <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-border font-medium text-foreground transition-all duration-300 hover:bg-secondary hover:border-border/80"
+                  className="inline-flex items-center justify-center h-12 px-6 sm:px-8 rounded-full border border-border font-medium text-foreground transition-all duration-300 hover:bg-secondary hover:border-border/80 text-sm sm:text-base"
                 >
                   Get in Touch
                 </Link>
