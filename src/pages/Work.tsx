@@ -96,14 +96,15 @@ const Work = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-28">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">Portfolio</p>
             <h1 className="opacity-0" ref={titleRef}>
               My Work
             </h1>
-            <p className="mt-6 text-xl text-muted-foreground">
-              Selected projects that showcase my skills in web and game development.
+            <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
+              Selected projects that showcase my skills in web development, AI, and full stack solutions.
             </p>
           </div>
         </div>
@@ -120,14 +121,14 @@ const Work = () => {
             <div className="text-center text-red-500 py-8">{error}</div>
           ) : (
             <div
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
               ref={projectsRef}
               style={{ animationDelay: '0.3s' }}
             >
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-lg overflow-hidden border border-border"
+                  className="group cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/[0.04] dark:hover:shadow-black/20 rounded-2xl overflow-hidden border border-border/50 bg-card hover:border-border"
                   onClick={() => handleProjectClick(project)}
                 >
                   <div className="aspect-video bg-secondary relative overflow-hidden">
@@ -135,7 +136,7 @@ const Work = () => {
                       <img
                         src={getImageUrl(project.images[0])}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
                         }}
@@ -145,22 +146,23 @@ const Work = () => {
                         <p className="text-muted-foreground">No project image</p>
                       </div>
                     )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
-                  <div className='p-4'>
-                    <h3 className="text-2xl mb-2">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">{project.category}</p>
-                    <p className="text-muted-foreground">{project.description}</p>
+                  <div className="p-5">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{project.category}</p>
+                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{project.description}</p>
 
                     {project.technologies && project.technologies.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-4 flex flex-wrap gap-1.5">
                         {project.technologies.slice(0, 3).map((tech, index) => (
-                          <span key={index} className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
+                          <span key={index} className="px-2.5 py-1 text-xs font-medium rounded-full bg-secondary/80 text-muted-foreground">
                             {tech}
                           </span>
                         ))}
                         {project.technologies.length > 3 && (
-                          <span className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
-                            +{project.technologies.length - 3} more
+                          <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-secondary/80 text-muted-foreground">
+                            +{project.technologies.length - 3}
                           </span>
                         )}
                       </div>
@@ -174,10 +176,13 @@ const Work = () => {
       </section>
 
       {/* Process Section */}
-      <section className="py-16 bg-secondary">
+      <section className="py-28 bg-secondary/50">
         <div className="container">
-          <h2 className="text-center mb-16">My Development Process</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Workflow</p>
+            <h2>My Development Process</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { number: "01", title: "Research & Planning", description: "Understanding requirements and planning the approach." },
               { number: "02", title: "Design & Prototype", description: "Creating wireframes and initial prototypes." },
@@ -186,11 +191,11 @@ const Work = () => {
             ].map((step, index) => (
               <div
                 key={index}
-                className="relative transition-transform duration-300 hover:-translate-y-1"
+                className="group relative p-6 rounded-2xl bg-background border border-border/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/[0.03] dark:hover:shadow-black/20 hover:border-border"
               >
-                <div className="text-4xl font-light text-primary/20 mb-4">{step.number}</div>
-                <h3 className="text-xl mb-2">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
+                <div className="font-heading text-5xl font-bold text-primary/[0.07] mb-4 transition-colors duration-500 group-hover:text-primary/[0.12]">{step.number}</div>
+                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>

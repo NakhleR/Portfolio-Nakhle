@@ -1,6 +1,7 @@
 import DNAPlayback from '@/components/DNAPlayback';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Code2, Brain, Layers, ArrowRight } from 'lucide-react';
 import { getProjects } from '@/lib/api';
 import { ProjectDetails } from '@/components/ProjectDialog';
 import TechCategoryBar from '@/components/TechCategoryBar';
@@ -77,27 +78,38 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-32">
         <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 opacity-0" ref={titleRef}>
-              <h1 className="text-balance font-medium">
-                Full Stack Developer & AI and Machine Learning Student
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8 opacity-0" ref={titleRef}>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-secondary/50 text-xs font-medium text-muted-foreground tracking-wide uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                Available for work
+              </div>
+              <h1 className="text-balance font-semibold leading-[1.1]">
+                Full Stack Developer &<br className="hidden sm:block" /> AI and Machine Learning Student
               </h1>
-              <p className="text-xl text-muted-foreground max-w-md opacity-0" ref={subtitleRef}>
-                Creating digital experiences that combine functionality, creativity, and technical excellence.
+              <p className="text-lg md:text-xl text-muted-foreground max-w-lg opacity-0 leading-relaxed" ref={subtitleRef}>
+                Building intelligent, user-focused digital experiences that combine modern engineering with cutting-edge AI.
               </p>
-              <div className="pt-4 opacity-0" ref={ctaRef}>
+              <div className="flex items-center gap-4 pt-2 opacity-0" ref={ctaRef}>
                 <Link
                   to="/work"
-                  className="inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98]"
+                  className="group inline-flex items-center justify-center h-12 px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   View My Projects
+                  <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-border font-medium text-foreground transition-all duration-300 hover:bg-secondary hover:border-border/80"
+                >
+                  Get in Touch
                 </Link>
               </div>
             </div>
             <div
-              className="rounded-lg h-full overflow-hidden opacity-0 hidden md:block"
+              className="rounded-2xl h-full overflow-hidden opacity-0 hidden md:block"
               ref={imageRef}
             >
               <DNAPlayback />
@@ -108,30 +120,39 @@ const Index = () => {
 
       <TechCategoryBar />
 
-      <section className="py-24 bg-secondary">
+      <section className="py-28 bg-secondary/50">
         <div className="container">
-          <h2 className="text-center mb-16">What I Do</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Services</p>
+            <h2>What I Do</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 title: "Web Development",
-                description: "Creating responsive and intuitive web applications with modern technologies."
+                description: "Creating responsive and intuitive web applications with modern technologies and frameworks.",
+                icon: Code2
               },
               {
                 title: "AI & Machine Learning",
-                description: "Exploring deep learning, data science, and intelligent automation to build smarter applications."
+                description: "Exploring deep learning, data science, and intelligent automation to build smarter applications.",
+                icon: Brain
               },
               {
                 title: "Full Stack Solutions",
-                description: "Delivering comprehensive solutions from frontend to backend."
+                description: "Delivering comprehensive solutions from frontend to backend with scalable architecture.",
+                icon: Layers
               }
             ].map((service, index) => (
               <div
                 key={index}
-                className="p-8 rounded-lg bg-background border transition-transform duration-300 hover:translate-y-[-4px]"
+                className="group relative p-8 rounded-2xl bg-background border border-border/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/[0.03] dark:hover:shadow-black/20 hover:border-border"
               >
-                <h3 className="text-xl mb-4">{service.title}</h3>
-                <p className="text-muted-foreground">{service.description}</p>
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 transition-colors duration-500 group-hover:bg-foreground group-hover:text-background">
+                  <service.icon size={22} />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{service.description}</p>
               </div>
             ))}
           </div>
@@ -139,58 +160,66 @@ const Index = () => {
       </section>
 
       {/* Featured Work */}
-      <section className="py-24">
+      <section className="py-28">
         <div className="container">
-          <div className="flex justify-between items-end mb-12">
-            <h2>Featured Projects</h2>
+          <div className="flex justify-between items-end mb-14">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Portfolio</p>
+              <h2>Featured Projects</h2>
+            </div>
             <Link
               to="/work"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 link-underline"
+              className="group text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1"
             >
-              View All Projects
+              View All
+              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {loading ? (
-              // Loading state
               [...Array(2)].map((_, index) => (
-                <div key={index} className="aspect-[16/9] bg-secondary animate-pulse rounded-lg" />
+                <div key={index} className="aspect-[16/9] bg-secondary animate-pulse rounded-2xl" />
               ))
             ) : featuredProjects.length > 0 ? (
-              // Display random projects
               featuredProjects.map((project, index) => (
                 <Link
                   to={`/work?project=${project.id}`}
                   key={index}
-                  className="group cursor-pointer overflow-hidden rounded-lg"
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-500 hover:shadow-xl hover:shadow-black/[0.04] dark:hover:shadow-black/20 hover:border-border"
                 >
-                  <div className="aspect-[16/9] bg-secondary flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
+                  <div className="aspect-[16/9] bg-secondary relative overflow-hidden">
                     {getImageUrl(project) ? (
                       <img
                         src={getImageUrl(project)}
                         alt={project.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <p className="text-muted-foreground">Project preview</p>
+                      <div className="w-full h-full flex items-center justify-center">
+                        <p className="text-muted-foreground">Project preview</p>
+                      </div>
                     )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
-                  <h3 className="mt-4 text-xl">{project.title}</h3>
-                  <p className="text-muted-foreground">{project.category}</p>
+                  <div className="p-5">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">{project.category}</p>
+                    <h3 className="text-xl font-semibold">{project.title}</h3>
+                  </div>
                 </Link>
               ))
             ) : (
-              // Fallback when no projects are found
               [...Array(2)].map((_, index) => (
                 <div
                   key={index}
-                  className="group cursor-pointer overflow-hidden rounded-lg"
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-border/50 bg-card"
                 >
-                  <div className="aspect-[16/9] bg-secondary flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
+                  <div className="aspect-[16/9] bg-secondary flex items-center justify-center">
                     <p className="text-muted-foreground">Project preview</p>
                   </div>
-                  <h3 className="mt-4 text-xl">Sample Project</h3>
-                  <p className="text-muted-foreground">Web Development</p>
+                  <div className="p-5">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Web Development</p>
+                    <h3 className="text-xl font-semibold">Sample Project</h3>
+                  </div>
                 </div>
               ))
             )}
@@ -199,17 +228,21 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-secondary">
-        <div className="container text-center max-w-3xl mx-auto">
+      <section className="py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-secondary/50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-primary/[0.04]" />
+        <div className="container text-center max-w-3xl mx-auto relative">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">Let's Connect</p>
           <h2 className="mb-6">Interested in working together?</h2>
-          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+          <p className="text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
             I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98]"
+            className="group inline-flex items-center justify-center h-12 px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98]"
           >
             Get in Touch
+            <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
       </section>

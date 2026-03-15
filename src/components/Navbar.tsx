@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
 import { Download, Menu, X } from 'lucide-react';
@@ -53,14 +54,14 @@ const Navbar = () => {
     <header
       className={cn(
         "fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out",
-        scrolled ? "py-3 bg-background/80 backdrop-blur-lg border-b" : "py-4",
+        scrolled ? "py-3 bg-background/70 backdrop-blur-xl border-b border-border/50 shadow-sm shadow-black/[0.03] dark:shadow-black/20" : "py-5",
         mobileMenuOpen && isMobile ? "bg-background border-b" : ""
       )}
     >
       <div className="container flex items-center justify-between">
         <Link
           to="/"
-          className="text-xl md:text-2xl font-medium tracking-tight transition-opacity hover:opacity-80"
+          className="text-xl md:text-2xl font-heading font-semibold tracking-tight transition-opacity hover:opacity-80"
           aria-label="Home"
         >
           Nakhle Rizk
@@ -73,11 +74,18 @@ const Navbar = () => {
               key={path}
               to={path}
               className={cn(
-                'text-sm tracking-wide transition-colors relative link-underline',
+                'text-sm tracking-wide transition-colors relative py-1.5',
                 isActive(path) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {label}
+              {isActive(path) && (
+                <motion.div
+                  layoutId="navbar-indicator"
+                  className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-foreground rounded-full"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                />
+              )}
             </Link>
           ))}
 

@@ -52,17 +52,21 @@ const Layout = ({ children }: LayoutProps) => {
         <main className="min-h-screen pt-24 pb-16">
           {children}
         </main>
-        <footer className="py-8 border-t">
+        <footer className="py-12 border-t border-border/50">
           <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Nakhle Rizk. All rights reserved.
-              </p>
-              <div className="flex space-x-4 mt-4 md:mt-0">
-                <a href="https://github.com/NakhleR" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex flex-col items-center md:items-start gap-1">
+                <span className="font-heading font-semibold text-lg tracking-tight">Nakhle Rizk</span>
+                <p className="text-xs text-muted-foreground">
+                  © {new Date().getFullYear()} All rights reserved.
+                </p>
+              </div>
+              <div className="flex items-center gap-6">
+                <a href="https://github.com/NakhleR" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
                   GitHub
                 </a>
-                <a href="https://www.linkedin.com/in/nakhle-rizk-528129256/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <span className="w-1 h-1 rounded-full bg-border" />
+                <a href="https://www.linkedin.com/in/nakhle-rizk-528129256/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
                   LinkedIn
                 </a>
               </div>

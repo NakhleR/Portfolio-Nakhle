@@ -111,13 +111,14 @@ const About = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-28">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">About</p>
             <h1 className="opacity-0" ref={titleRef}>
               About Me
             </h1>
-            <p className="mt-6 text-xl text-muted-foreground">
+            <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
               Full Stack Developer & AI and Machine Learning Student
             </p>
           </div>
@@ -125,10 +126,11 @@ const About = () => {
       </section>
 
       {/* My Story */}
-      <section className="py-16">
+      <section className="py-20">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="opacity-0" ref={contentRef} style={{ animationDelay: '0.2s' }}>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Background</p>
               <h2 className="mb-6">My Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
@@ -149,12 +151,12 @@ const About = () => {
               </div>
             </div>
             <div
-              className="rounded-lg overflow-hidden opacity-0"
+              className="rounded-2xl overflow-hidden opacity-0"
               ref={imageRef}
               style={{ animationDelay: '0.4s' }}
             >
-              <div className="aspect-square bg-secondary rounded-lg flex items-center justify-center">
-                <img src="/nakhle.png" alt="Profile" className="w-full h-full object-cover" />
+              <div className="aspect-square bg-secondary rounded-2xl flex items-center justify-center border border-border/50 shadow-lg shadow-black/[0.04] dark:shadow-black/20">
+                <img src="/nakhle.png" alt="Profile" className="w-full h-full object-cover rounded-2xl" />
               </div>
             </div>
           </div>
@@ -162,9 +164,12 @@ const About = () => {
       </section>
 
       {/* Timeline */}
-      <section className="py-16 bg-secondary">
+      <section className="py-28 bg-secondary/50">
         <div className="container">
-          <h2 className="text-center mb-16">My Journey</h2>
+          <div className="text-center mb-16">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Experience</p>
+            <h2>My Journey</h2>
+          </div>
           <div
             className="opacity-0"
             ref={timelineRef}

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import emailjs from '@emailjs/browser';
+import { MapPin, Mail, Phone } from 'lucide-react';
 import { DisplacementSphere } from '@/components/DisplacementSphere/DisplacementSphere';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useTheme } from '@/components/ThemeProvider';
@@ -135,17 +136,18 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-x-hidden">
       <DisplacementSphere />
 
-      <section className="py-16 md:py-24 relative">
+      <section className="py-20 md:py-28 relative">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">Contact</p>
             <h1 className="opacity-0" ref={titleRef}>
               Get in Touch
             </h1>
-            <p className="mt-6 text-xl text-muted-foreground">
-              Let's discuss how we can help you create something extraordinary.
+            <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
+              Have a project in mind? Let's discuss how we can create something extraordinary together.
             </p>
           </div>
         </div>
@@ -154,8 +156,8 @@ const Contact = () => {
       <section className="py-16 relative">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="opacity-0 bg-background/80 rounded-lg p-8" ref={formRef} style={{ animationDelay: '0.2s' }}>
-              <h2 className="text-2xl mb-8">Contact Us</h2>
+            <div className="opacity-0 bg-background/80 backdrop-blur-sm rounded-2xl p-8 border border-border/50" ref={formRef} style={{ animationDelay: '0.2s' }}>
+              <h2 className="text-2xl font-semibold mb-8">Send a Message</h2>
 
               {submitted ? (
                 <div className="p-6 bg-secondary rounded-lg text-center">
@@ -188,7 +190,8 @@ const Contact = () => {
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full p-3 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      placeholder="Your name"
+                      className="w-full p-3.5 border border-border/60 rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-300"
                       required
                     />
                   </div>
@@ -202,7 +205,8 @@ const Contact = () => {
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-3 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      placeholder="your@email.com"
+                      className="w-full p-3.5 border border-border/60 rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-300"
                       required
                     />
                   </div>
@@ -215,7 +219,8 @@ const Contact = () => {
                       id="message"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      className="w-full p-3 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[150px]"
+                      placeholder="Tell me about your project..."
+                      className="w-full p-3.5 border border-border/60 rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-300 min-h-[150px] resize-none"
                       required
                     />
                   </div>
@@ -240,7 +245,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     disabled={loading || !recaptchaValue}
-                    className={`inline-flex items-center justify-center h-12 px-8 rounded-md bg-foreground text-background transition-transform duration-200 ease-in-out ${(loading || !recaptchaValue) ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
+                    className={`inline-flex items-center justify-center h-12 px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 ${(loading || !recaptchaValue) ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98]'}`}
                   >
                     {loading ? (
                       <>
@@ -257,30 +262,47 @@ const Contact = () => {
             </div>
 
             <div
-              className="opacity-0 bg-background/80 rounded-lg p-8"
+              className="opacity-0 bg-background/80 backdrop-blur-sm rounded-2xl p-8 border border-border/50"
               ref={infoRef}
               style={{ animationDelay: '0.4s' }}
             >
-              <h2 className="text-2xl mb-8">Information</h2>
+              <h2 className="text-2xl font-semibold mb-8">Information</h2>
 
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-xl mb-2">Address</h3>
-                  <p className="text-muted-foreground">
-                    Rue De Fontenelle<br />
-                    Rouen 76000<br />
-                    France
-                  </p>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                    <MapPin size={18} className="text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold mb-1">Address</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Rue De Fontenelle<br />
+                      Rouen 76000, France
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl mb-2">Contact</h3>
-                  <p className="text-muted-foreground">
-                    Email: nakhler2k2@gmail.com<br />
-                    Phone: +33 7 74 81 21 04
-                  </p>
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                    <Mail size={18} className="text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold mb-1">Email</h3>
+                    <p className="text-sm text-muted-foreground">nakhler2k2@gmail.com</p>
+                  </div>
                 </div>
-                <div className="aspect-[16/9] rounded-lg overflow-hidden mt-8">
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                    <Phone size={18} className="text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold mb-1">Phone</h3>
+                    <p className="text-sm text-muted-foreground">+33 7 74 81 21 04</p>
+                  </div>
+                </div>
+
+                <div className="aspect-[16/9] rounded-xl overflow-hidden mt-4 border border-border/50">
                   <MapContainer
                     center={[49.4431, 1.0993]}
                     zoom={13}
