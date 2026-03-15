@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Timeline from '../components/Timeline';
-import { Card, CardContent } from '@/components/ui/card';
 import { type TimelineItem } from '../components/Timeline';
 import { getTimelineItems } from '@/lib/api';
 
@@ -9,11 +9,10 @@ const About = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
-
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,8 +31,6 @@ const About = () => {
     if (contentRef.current) observer.observe(contentRef.current);
     if (imageRef.current) observer.observe(imageRef.current);
     if (timelineRef.current) observer.observe(timelineRef.current);
-    if (skillsRef.current) observer.observe(skillsRef.current);
-
     return () => observer.disconnect();
   }, []);
 
@@ -187,64 +184,124 @@ const About = () => {
       </section>
 
       {/* Skills */}
-      <section className="py-16">
-        <div className="container">
-          <h2 className="text-center mb-16">My Skills</h2>
-          <style>
-            {`
-              @keyframes fillBar {
-                from {
-                  transform: scaleX(0);
-                }
-                to {
-                  transform: scaleX(1);
-                }
-              }
-              .skill-bar {
-                animation: fillBar 1.5s ease-out forwards;
-                transform: scaleX(0);
-                transform-origin: left;
-              }
-            `}
-          </style>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-0"
-            ref={skillsRef}
-            style={{ animationDelay: '0.3s' }}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.03] to-transparent pointer-events-none" />
+        <div className="container relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            {skills.map((skillGroup, index) => (
-              <Card key={index} className="bg-background hover:shadow-md transition-shadow duration-300 border-opacity-50">
-                <CardContent className="pt-6">
-                  <h3 className="text-lg font-medium mb-6">{skillGroup.name}</h3>
-                  <ul className="space-y-5">
-                    {skillGroup.items.map((skill, skillIndex) => (
-                      <li key={skillIndex}>
-                        <div className="flex items-center mb-2">
-                          <img
-                            src={skill.imagePath}
-                            alt={skill.name}
-                            width={16}
-                            height={16}
-                            className={`mr-3 ${skill.darkModeInvert ? 'dark:invert' : ''}`}
-                          />
-                          <span className="text-muted-foreground text-sm">{skill.name}</span>
+            <h2 className="mb-4">My Skills</h2>
+            <p className="text-muted-foreground text-lg">Technologies & tools I work with</p>
+          </motion.div>
+
+          {/* Category Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="flex justify-center mb-16 -mx-4 px-4"
+          >
+            <div className="inline-flex gap-1 p-1.5 rounded-full bg-secondary/60 backdrop-blur-sm border border-border/50 overflow-x-auto max-w-full scrollbar-hide">
+              {skills.map((group, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveCategory(index)}
+                  className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap ${
+                    activeCategory === index
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {activeCategory === index && (
+                    <motion.div
+                      layoutId="activeSkillTab"
+                      className="absolute inset-0 bg-primary rounded-full"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                    />
+                  )}
+                  <span className="relative z-10">{group.name}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Skills Grid */}
+          <div className="max-w-4xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-wrap justify-center gap-5"
+              >
+                {skills[activeCategory].items.map((skill, index) => {
+                  const radius = 34;
+                  const circumference = 2 * Math.PI * radius;
+                  const offset = circumference - (skill.level / 100) * circumference;
+
+                  return (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.06, duration: 0.4, ease: "easeOut" }}
+                      className="group relative"
+                    >
+                      <div className="flex flex-col items-center gap-3 w-[140px] p-5 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm transition-all duration-500 hover:border-border hover:-translate-y-2 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20">
+                        {/* Radial Progress Ring */}
+                        <div className="relative w-[76px] h-[76px]">
+                          <svg className="w-full h-full -rotate-90" viewBox="0 0 76 76">
+                            <circle
+                              cx="38" cy="38" r={radius}
+                              fill="none"
+                              className="stroke-secondary"
+                              strokeWidth="2.5"
+                            />
+                            <motion.circle
+                              cx="38" cy="38" r={radius}
+                              fill="none"
+                              stroke={skill.color}
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeDasharray={circumference}
+                              initial={{ strokeDashoffset: circumference }}
+                              animate={{ strokeDashoffset: offset }}
+                              transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.06 }}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <img
+                              src={skill.imagePath}
+                              alt={skill.name}
+                              className={`w-7 h-7 object-contain transition-transform duration-500 group-hover:scale-110 ${skill.darkModeInvert ? 'dark:invert' : ''}`}
+                            />
+                          </div>
                         </div>
-                        <div className="w-full bg-secondary/50 rounded-full h-1.5 mt-1">
-                          <div
-                            className={`h-1.5 rounded-full skill-bar ${skill.darkModeInvert ? 'dark:bg-white' : ''}`}
-                            style={{
-                              width: `${skill.level}%`,
-                              backgroundColor: skill.color || 'var(--primary)',
-                              animationDelay: `${0.2 + (skillIndex * 0.1)}s`
-                            }}
-                          ></div>
+
+                        {/* Skill Info */}
+                        <div className="text-center">
+                          <p className="text-sm font-medium leading-tight">{skill.name}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{skill.level}%</p>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
+                      </div>
+
+                      {/* Hover Glow Effect */}
+                      <div
+                        className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
+                        style={{ backgroundColor: `${skill.color}18` }}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
