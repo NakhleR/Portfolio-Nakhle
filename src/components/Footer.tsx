@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
@@ -8,13 +8,28 @@ const Footer = () => {
   const headingRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(headingRef, { once: true, margin: '-15%' });
 
+  // Scale the lift amount based on screen width
+  const [liftAmount, setLiftAmount] = useState(-48);
+  useEffect(() => {
+    const updateLift = () => {
+      const w = window.innerWidth;
+      if (w < 480) setLiftAmount(-16);
+      else if (w < 640) setLiftAmount(-24);
+      else if (w < 768) setLiftAmount(-32);
+      else setLiftAmount(-48);
+    };
+    updateLift();
+    window.addEventListener('resize', updateLift);
+    return () => window.removeEventListener('resize', updateLift);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end end'],
   });
 
-  // "ther." lifts off as user scrolls
-  const liftY = useTransform(scrollYProgress, [0.4, 0.85], [0, -48]);
+  // "ther." lifts off as user scrolls — scaled to screen size
+  const liftY = useTransform(scrollYProgress, [0.4, 0.85], [0, liftAmount]);
 
   const navLinks = [
     { label: 'Home', to: '/' },
