@@ -1,7 +1,9 @@
 import DNAPlayback from '@/components/DNAPlayback';
+import AbstractLines from '@/components/AbstractLines';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Code2, Brain, Layers, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { getProjects } from '@/lib/api';
 import { ProjectDetails } from '@/components/ProjectDialog';
 import TechCategoryBar from '@/components/TechCategoryBar';
@@ -159,6 +161,75 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Philosophy Statement — Scroll Stop */}
+      <section className="py-32 md:py-44 relative overflow-hidden">
+        <AbstractLines variant="diagonal" className="opacity-60" />
+        <div className="container relative">
+          <div className="max-w-5xl mx-auto space-y-10">
+            <motion.p
+              className="text-sm font-medium text-muted-foreground uppercase tracking-[0.25em]"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6 }}
+            >
+              Philosophy
+            </motion.p>
+
+            {/* Quote — left aligned */}
+            <motion.blockquote
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+            >
+              "The greatest obstacle to discovery is not ignorance
+            </motion.blockquote>
+
+            {/* Quote continued — right aligned */}
+            <motion.blockquote
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic text-right text-muted-foreground"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              - it is the illusion of knowledge."
+            </motion.blockquote>
+
+            {/* Attribution — right aligned */}
+            <motion.p
+              className="text-sm md:text-base text-muted-foreground text-right tracking-wide"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+            >
+              — Daniel J. Boorstin
+            </motion.p>
+
+            <motion.p
+              className="text-sm md:text-base text-muted-foreground/70 max-w-lg ml-auto text-right leading-relaxed"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6, delay: 0.55 }}
+            >
+              In AI and software engineering, the hardest bugs aren't what you don't know — they're the assumptions you never question. This quote drives how I approach every problem.
+            </motion.p>
+
+            <motion.div
+              className="w-16 h-px bg-foreground/20 ml-auto"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.8, delay: 0.65 }}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Featured Work */}
       <section className="py-28">
         <div className="container">
@@ -227,25 +298,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-secondary/50" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-primary/[0.04]" />
-        <div className="container text-center max-w-3xl mx-auto relative">
-          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">Let's Connect</p>
-          <h2 className="mb-6">Interested in working together?</h2>
-          <p className="text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-            I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
-          </p>
-          <Link
-            to="/contact"
-            className="group inline-flex items-center justify-center h-12 px-8 rounded-full bg-foreground text-background font-medium transition-all duration-300 hover:shadow-lg hover:shadow-foreground/10 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            Get in Touch
-            <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 };
