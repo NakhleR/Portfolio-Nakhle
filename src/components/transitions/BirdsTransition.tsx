@@ -481,7 +481,7 @@ void main() {
   return (
     <div
       ref={mountRef}
-      className={`fixed inset-0 z-50 bg-white ${isTransitioning ? 'block' : 'hidden'}`}
+      className={`fixed inset-0 z-[60] bg-white ${isTransitioning ? 'block' : 'hidden'}`}
       style={{ pointerEvents: isTransitioning ? 'auto' : 'none' }}
     />
   );
