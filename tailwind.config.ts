@@ -21,11 +21,15 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: [
+					'Inter',
 					'-apple-system',
 					'BlinkMacSystemFont',
-					'San Francisco',
-					'Helvetica Neue',
-					'Helvetica',
+					'sans-serif',
+				],
+				heading: [
+					'Space Grotesk',
+					'-apple-system',
+					'BlinkMacSystemFont',
 					'sans-serif',
 				],
 			},
