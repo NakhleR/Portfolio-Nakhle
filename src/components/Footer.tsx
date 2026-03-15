@@ -72,27 +72,28 @@ const Footer = () => {
                   toge
                 </motion.div>
               </div>
-              <motion.div
-                className="text-[clamp(3rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight origin-bottom-left"
-                style={{ y: liftY }}
-                initial={{ opacity: 0, y: 40 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              >
-                ther.
-              </motion.div>
+              {/* Scroll lift wrapper for "ther." + arrow */}
+              <motion.div className="flex items-baseline" style={{ y: liftY }}>
+                <motion.div
+                  className="text-[clamp(3rem,10vw,9rem)] font-heading font-semibold leading-[0.95] tracking-tight origin-bottom-left"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  ther.
+                </motion.div>
 
-              {/* Arrow */}
-              <motion.div
-                className="ml-4 md:ml-8 self-center"
-                style={{ y: liftY }}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-foreground/20 flex items-center justify-center transition-all duration-500 group-hover:bg-foreground group-hover:border-foreground group-hover:scale-110">
-                  <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 transition-all duration-500 group-hover:text-background group-hover:rotate-45" />
-                </div>
+                {/* Arrow */}
+                <motion.div
+                  className="ml-4 md:ml-8 self-center"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full border border-foreground/20 flex items-center justify-center transition-all duration-500 group-hover:bg-foreground group-hover:border-foreground group-hover:scale-110">
+                    <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 transition-all duration-500 group-hover:text-background group-hover:rotate-45" />
+                  </div>
+                </motion.div>
               </motion.div>
             </div>
           </Link>

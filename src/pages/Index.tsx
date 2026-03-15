@@ -121,7 +121,7 @@ const Index = () => {
       if (subtitleRef.current) subtitleRef.current.classList.add('animate-fade-in');
       if (ctaRef.current) ctaRef.current.classList.add('animate-fade-in');
       if (imageRef.current) imageRef.current.classList.add('animate-fade-in');
-    }, 4580);
+    }, 2580);
 
     return () => clearTimeout(timer);
   }, []);

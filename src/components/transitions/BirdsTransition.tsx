@@ -17,7 +17,7 @@ const BirdsTransition: React.FC<BirdFlockingProps> = ({
   width = 32,
   height = 32,
   birdCount = 1024,
-  duration = 4500,
+  duration = 2500,
   pathType = 'figure8'
 }) => {
   const location = useLocation();
@@ -36,6 +36,7 @@ const BirdsTransition: React.FC<BirdFlockingProps> = ({
         setIsTransitioning(false);
         document.body.style.overflow = '';
         animationCompleteRef.current = true;
+        window.dispatchEvent(new Event('birdsTransitionComplete'));
         prevLocation.current = location;
       }, duration);
     }
