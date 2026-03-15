@@ -3,10 +3,108 @@ import AbstractLines from '@/components/AbstractLines';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Code2, Brain, Layers, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { getProjects } from '@/lib/api';
 import { ProjectDetails } from '@/components/ProjectDialog';
 import TechCategoryBar from '@/components/TechCategoryBar';
+
+const springConfig = { stiffness: 80, damping: 30, mass: 0.5 };
+
+const PhilosophySection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Raw transforms smoothed with springs to eliminate stutter
+  const leftYRaw = useTransform(scrollYProgress, [0, 1], [50, -50]);
+  const rightYRaw = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+  const captionYRaw = useTransform(scrollYProgress, [0, 1], [-15, 25]);
+  const linesScaleRaw = useTransform(scrollYProgress, [0, 0.5, 1], [0.97, 1.03, 0.97]);
+
+  const leftY = useSpring(leftYRaw, springConfig);
+  const rightY = useSpring(rightYRaw, springConfig);
+  const captionY = useSpring(captionYRaw, springConfig);
+  const linesScale = useSpring(linesScaleRaw, springConfig);
+
+  return (
+    <section ref={sectionRef} className="py-32 md:py-44 relative overflow-hidden">
+      <motion.div style={{ scale: linesScale, willChange: 'transform' }}>
+        <AbstractLines variant="diagonal" className="opacity-60" />
+      </motion.div>
+      <div className="container relative">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <motion.p
+            className="text-sm font-medium text-muted-foreground uppercase tracking-[0.25em] will-change-transform"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+          >
+            Philosophy
+          </motion.p>
+
+          {/* Quote — left aligned, drifts up on scroll */}
+          <motion.blockquote
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic will-change-transform"
+            style={{ y: leftY }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+          >
+            "The greatest obstacle to discovery is not ignorance
+          </motion.blockquote>
+
+          {/* Quote continued — right aligned, drifts down on scroll */}
+          <motion.blockquote
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic text-right text-muted-foreground will-change-transform"
+            style={{ y: rightY }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            — it is the illusion of knowledge."
+          </motion.blockquote>
+
+          {/* Attribution — right aligned */}
+          <motion.p
+            className="text-sm md:text-base text-muted-foreground text-right tracking-wide will-change-transform"
+            style={{ y: captionY }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+          >
+            — Daniel J. Boorstin
+          </motion.p>
+
+          <motion.p
+            className="text-sm md:text-base text-muted-foreground/70 max-w-lg ml-auto text-right leading-relaxed will-change-transform"
+            style={{ y: captionY }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+          >
+            In AI and software engineering, the hardest bugs aren't what you don't know — they're the assumptions you never question. This quote drives how I approach every problem.
+          </motion.p>
+
+          <motion.div
+            className="w-16 h-px bg-foreground/20 ml-auto will-change-transform"
+            style={{ y: captionY }}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const Index = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -78,7 +176,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       {/* Hero Section */}
       <section className="py-20 md:py-32">
         <div className="container">
@@ -162,73 +260,7 @@ const Index = () => {
       </section>
 
       {/* Philosophy Statement — Scroll Stop */}
-      <section className="py-32 md:py-44 relative overflow-hidden">
-        <AbstractLines variant="diagonal" className="opacity-60" />
-        <div className="container relative">
-          <div className="max-w-5xl mx-auto space-y-10">
-            <motion.p
-              className="text-sm font-medium text-muted-foreground uppercase tracking-[0.25em]"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6 }}
-            >
-              Philosophy
-            </motion.p>
-
-            {/* Quote — left aligned */}
-            <motion.blockquote
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-            >
-              "The greatest obstacle to discovery is not ignorance
-            </motion.blockquote>
-
-            {/* Quote continued — right aligned */}
-            <motion.blockquote
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-semibold leading-[1.15] tracking-tight italic text-right text-muted-foreground"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              - it is the illusion of knowledge."
-            </motion.blockquote>
-
-            {/* Attribution — right aligned */}
-            <motion.p
-              className="text-sm md:text-base text-muted-foreground text-right tracking-wide"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6, delay: 0.45 }}
-            >
-              — Daniel J. Boorstin
-            </motion.p>
-
-            <motion.p
-              className="text-sm md:text-base text-muted-foreground/70 max-w-lg ml-auto text-right leading-relaxed"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6, delay: 0.55 }}
-            >
-              In AI and software engineering, the hardest bugs aren't what you don't know — they're the assumptions you never question. This quote drives how I approach every problem.
-            </motion.p>
-
-            <motion.div
-              className="w-16 h-px bg-foreground/20 ml-auto"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.8, delay: 0.65 }}
-            />
-          </div>
-        </div>
-      </section>
+      <PhilosophySection />
 
       {/* Featured Work */}
       <section className="py-28">
