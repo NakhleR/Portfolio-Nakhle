@@ -1,7 +1,8 @@
 import DNAPlayback from '@/components/DNAPlayback';
-import ThinkerPlayback from '@/components/ThinkerPlayback';
 import AbstractLines from '@/components/AbstractLines';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+
+const ThinkerPlayback = lazy(() => import('@/components/ThinkerPlayback'));
 import { Link } from 'react-router-dom';
 import { Code2, Brain, Layers, ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -114,7 +115,9 @@ const PhilosophySection = () => {
         className="absolute -bottom-10 left-[8%] w-[420px] h-[520px] md:w-[500px] md:h-[620px] hidden md:block"
         style={{ y: thinkerY, opacity: thinkerOpacity, willChange: 'transform, opacity' }}
       >
-        <ThinkerPlayback />
+        <Suspense fallback={null}>
+          <ThinkerPlayback />
+        </Suspense>
       </motion.div>
     </section>
   );

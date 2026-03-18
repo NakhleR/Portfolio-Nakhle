@@ -2,7 +2,7 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 import { useEffect } from 'react'
 
 export function DNAHelixModel() {
-    const gltf = useGLTF('/DNA.glb')
+    const gltf = useGLTF('/DNA.glb', 'https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
     const { actions, names } = useAnimations(gltf.animations, gltf.scene)
 
     useEffect(() => {

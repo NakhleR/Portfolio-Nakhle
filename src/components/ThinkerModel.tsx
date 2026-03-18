@@ -9,7 +9,7 @@ const material = new THREE.MeshPhongMaterial({
 })
 
 export function ThinkerModel() {
-    const gltf = useGLTF('/thinker.glb')
+    const gltf = useGLTF('/thinker.glb', 'https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
 
     useEffect(() => {
         gltf.scene.traverse((child) => {
