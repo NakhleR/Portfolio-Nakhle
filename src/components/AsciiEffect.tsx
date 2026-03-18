@@ -4,7 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { AsciiEffect } from 'three/examples/jsm/effects/AsciiEffect'
 import { useTheme } from '@/components/ThemeProvider'
 
-export function AsciiEffectOverlay() {
+export function AsciiEffectOverlay({ resolution }: { resolution?: number } = {}) {
     const { scene, camera, gl, size } = useThree()
     const effectRef = useRef<AsciiEffect>()
     const { theme } = useTheme()
@@ -28,6 +28,7 @@ export function AsciiEffectOverlay() {
 
         const effect = new AsciiEffect(gl, ' .:-+*=%@#', {
             invert: false,
+            resolution: resolution ?? 0.15,
         })
         effect.setSize(size.width, size.height)
 

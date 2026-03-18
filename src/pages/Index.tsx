@@ -1,4 +1,5 @@
 import DNAPlayback from '@/components/DNAPlayback';
+import ThinkerPlayback from '@/components/ThinkerPlayback';
 import AbstractLines from '@/components/AbstractLines';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -23,10 +24,15 @@ const PhilosophySection = () => {
   const captionYRaw = useTransform(scrollYProgress, [0, 1], [-15, 25]);
   const linesScaleRaw = useTransform(scrollYProgress, [0, 0.5, 1], [0.97, 1.03, 0.97]);
 
+  const thinkerYRaw = useTransform(scrollYProgress, [0, 1], [60, -40]);
+  const thinkerOpacityRaw = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
   const leftY = useSpring(leftYRaw, springConfig);
   const rightY = useSpring(rightYRaw, springConfig);
   const captionY = useSpring(captionYRaw, springConfig);
   const linesScale = useSpring(linesScaleRaw, springConfig);
+  const thinkerY = useSpring(thinkerYRaw, springConfig);
+  const thinkerOpacity = useSpring(thinkerOpacityRaw, springConfig);
 
   return (
     <section ref={sectionRef} className="py-32 md:py-44 relative overflow-hidden">
@@ -102,6 +108,14 @@ const PhilosophySection = () => {
           />
         </div>
       </div>
+
+      {/* Thinker ASCII — bottom-left corner */}
+      <motion.div
+        className="absolute -bottom-10 left-[8%] w-[420px] h-[520px] md:w-[500px] md:h-[620px] hidden md:block"
+        style={{ y: thinkerY, opacity: thinkerOpacity, willChange: 'transform, opacity' }}
+      >
+        <ThinkerPlayback />
+      </motion.div>
     </section>
   );
 };
