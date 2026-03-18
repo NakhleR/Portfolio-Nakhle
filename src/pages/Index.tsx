@@ -12,7 +12,7 @@ import TechCategoryBar from '@/components/TechCategoryBar';
 
 const springConfig = { stiffness: 80, damping: 30, mass: 0.5 };
 
-const PhilosophySection = ({ isDesktop }: { isDesktop: boolean }) => {
+const PhilosophySection = ({ isDesktop, mountKey }: { isDesktop: boolean; mountKey: number }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -116,8 +116,12 @@ const PhilosophySection = ({ isDesktop }: { isDesktop: boolean }) => {
           className="absolute -bottom-10 left-[8%] w-[420px] h-[520px] md:w-[500px] md:h-[620px]"
           style={{ y: thinkerY, opacity: thinkerOpacity, willChange: 'transform, opacity' }}
         >
-          <Suspense fallback={null}>
-            <ThinkerPlayback />
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-foreground/20 border-t-foreground" />
+            </div>
+          }>
+            <ThinkerPlayback key={mountKey} />
           </Suspense>
         </motion.div>
       )}
@@ -126,15 +130,20 @@ const PhilosophySection = ({ isDesktop }: { isDesktop: boolean }) => {
 };
 
 const useIsDesktop = () => {
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  );
+  const [mountKey, setMountKey] = useState(0);
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 768px)');
-    setIsDesktop(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    const handler = (e: MediaQueryListEvent) => {
+      setIsDesktop(e.matches);
+      if (e.matches) setMountKey((k) => k + 1);
+    };
     mql.addEventListener('change', handler);
     return () => mql.removeEventListener('change', handler);
   }, []);
-  return isDesktop;
+  return { isDesktop, mountKey };
 };
 
 const Index = () => {
@@ -144,7 +153,7 @@ const Index = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const [featuredProjects, setFeaturedProjects] = useState<ProjectDetails[]>([]);
   const [loading, setLoading] = useState(true);
-  const isDesktop = useIsDesktop();
+  const { isDesktop, mountKey } = useIsDesktop();
 
   useEffect(() => {
     // Directly add animation classes after a short delay
@@ -245,8 +254,12 @@ const Index = () => {
                 className="rounded-2xl h-full overflow-hidden opacity-0"
                 ref={imageRef}
               >
-                <Suspense fallback={null}>
-                  <DNAPlayback />
+                <Suspense fallback={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-foreground/20 border-t-foreground" />
+                  </div>
+                }>
+                  <DNAPlayback key={mountKey} />
                 </Suspense>
               </div>
             )}
@@ -296,7 +309,7 @@ const Index = () => {
       </section>
 
       {/* Philosophy Statement — Scroll Stop */}
-      <PhilosophySection isDesktop={isDesktop} />
+      <PhilosophySection isDesktop={isDesktop} mountKey={mountKey} />
 
       {/* Featured Work */}
       <section className="py-28">
