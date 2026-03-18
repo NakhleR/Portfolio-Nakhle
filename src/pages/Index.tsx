@@ -12,7 +12,7 @@ import TechCategoryBar from '@/components/TechCategoryBar';
 
 const springConfig = { stiffness: 80, damping: 30, mass: 0.5 };
 
-const PhilosophySection = () => {
+const PhilosophySection = ({ isDesktop }: { isDesktop: boolean }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -111,16 +111,30 @@ const PhilosophySection = () => {
       </div>
 
       {/* Thinker ASCII — bottom-left corner */}
-      <motion.div
-        className="absolute -bottom-10 left-[8%] w-[420px] h-[520px] md:w-[500px] md:h-[620px] hidden md:block"
-        style={{ y: thinkerY, opacity: thinkerOpacity, willChange: 'transform, opacity' }}
-      >
-        <Suspense fallback={null}>
-          <ThinkerPlayback />
-        </Suspense>
-      </motion.div>
+      {isDesktop && (
+        <motion.div
+          className="absolute -bottom-10 left-[8%] w-[420px] h-[520px] md:w-[500px] md:h-[620px]"
+          style={{ y: thinkerY, opacity: thinkerOpacity, willChange: 'transform, opacity' }}
+        >
+          <Suspense fallback={null}>
+            <ThinkerPlayback />
+          </Suspense>
+        </motion.div>
+      )}
     </section>
   );
+};
+
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 768px)');
+    setIsDesktop(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return isDesktop;
 };
 
 const Index = () => {
@@ -130,6 +144,7 @@ const Index = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const [featuredProjects, setFeaturedProjects] = useState<ProjectDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     // Directly add animation classes after a short delay
@@ -225,14 +240,16 @@ const Index = () => {
                 </Link>
               </div>
             </div>
-            <div
-              className="rounded-2xl h-full overflow-hidden opacity-0 hidden md:block"
-              ref={imageRef}
-            >
-              <Suspense fallback={null}>
-                <DNAPlayback />
-              </Suspense>
-            </div>
+            {isDesktop && (
+              <div
+                className="rounded-2xl h-full overflow-hidden opacity-0"
+                ref={imageRef}
+              >
+                <Suspense fallback={null}>
+                  <DNAPlayback />
+                </Suspense>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -279,7 +296,7 @@ const Index = () => {
       </section>
 
       {/* Philosophy Statement — Scroll Stop */}
-      <PhilosophySection />
+      <PhilosophySection isDesktop={isDesktop} />
 
       {/* Featured Work */}
       <section className="py-28">
