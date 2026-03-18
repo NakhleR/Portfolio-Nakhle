@@ -1,7 +1,7 @@
-import DNAPlayback from '@/components/DNAPlayback';
 import AbstractLines from '@/components/AbstractLines';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 
+const DNAPlayback = lazy(() => import('@/components/DNAPlayback'));
 const ThinkerPlayback = lazy(() => import('@/components/ThinkerPlayback'));
 import { Link } from 'react-router-dom';
 import { Code2, Brain, Layers, ArrowRight } from 'lucide-react';
@@ -229,7 +229,9 @@ const Index = () => {
               className="rounded-2xl h-full overflow-hidden opacity-0 hidden md:block"
               ref={imageRef}
             >
-              <DNAPlayback />
+              <Suspense fallback={null}>
+                <DNAPlayback />
+              </Suspense>
             </div>
           </div>
         </div>

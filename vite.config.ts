@@ -22,6 +22,17 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          'framer': ['framer-motion'],
+          'ui': ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+  },
   assetsInclude: ['**/*.glb', '**/*.gltf'],
   optimizeDeps: {
     esbuildOptions: {

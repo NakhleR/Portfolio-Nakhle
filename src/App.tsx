@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,13 +9,14 @@ import FadeTransition from "./components/transitions/FadeTransition";
 import BirdsTransition from "./components/transitions/BirdsTransition";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./lib/AuthContext";
-import Index from "./pages/Index";
-import About from "./pages/About";
-import Work from "./pages/Work";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+
+const Index = lazy(() => import("./pages/Index"));
+const About = lazy(() => import("./pages/About"));
+const Work = lazy(() => import("./pages/Work"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const queryClient = new QueryClient();
 
@@ -27,15 +29,17 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <BirdsTransition />
-            <Routes>
-              <Route path="/" element={<Layout><FadeTransition><Index /></FadeTransition></Layout>} />
-              <Route path="/about" element={<Layout><FadeTransition><About /></FadeTransition></Layout>} />
-              <Route path="/work" element={<Layout><FadeTransition><Work /></FadeTransition></Layout>} />
-              <Route path="/contact" element={<Layout><FadeTransition><Contact /></FadeTransition></Layout>} />
-              <Route path="/login" element={<FadeTransition><Login /></FadeTransition>} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="*" element={<Layout><FadeTransition><NotFound /></FadeTransition></Layout>} />
-            </Routes>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route path="/" element={<Layout><FadeTransition><Index /></FadeTransition></Layout>} />
+                <Route path="/about" element={<Layout><FadeTransition><About /></FadeTransition></Layout>} />
+                <Route path="/work" element={<Layout><FadeTransition><Work /></FadeTransition></Layout>} />
+                <Route path="/contact" element={<Layout><FadeTransition><Contact /></FadeTransition></Layout>} />
+                <Route path="/login" element={<FadeTransition><Login /></FadeTransition>} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="*" element={<Layout><FadeTransition><NotFound /></FadeTransition></Layout>} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
