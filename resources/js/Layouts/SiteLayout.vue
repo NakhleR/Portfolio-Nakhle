@@ -1,11 +1,57 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { Download, Menu, X, Moon, Sun, ArrowUpRight } from "lucide-vue-next";
 import BirdsTransition from "../Components/BirdsTransition.vue";
 const page = usePage();
 const menu = ref(false);
 const dark = ref(document.documentElement.classList.contains("dark"));
+const footer = ref<HTMLElement | null>(null);
+const liftedText = ref<HTMLElement | null>(null);
+let disposeFooterMotion = () => {};
+
+onMounted(() => {
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+
+    function updateLift() {
+        frame = 0;
+        if (!footer.value || !liftedText.value) return;
+        const { top, height } = footer.value.getBoundingClientRect();
+        const progress = height > 0 ? (innerHeight - top) / height : 0;
+        const liftProgress = Math.min(1, Math.max(0, (progress - 0.4) / 0.45));
+        const distance =
+            innerWidth < 480
+                ? 16
+                : innerWidth < 640
+                  ? 24
+                  : innerWidth < 768
+                    ? 32
+                    : 48;
+        const lift = reducedMotion.matches ? 0 : -distance * liftProgress;
+        liftedText.value.style.transform = `translateY(${lift}px)`;
+    }
+
+    function scheduleLift() {
+        if (!frame) frame = requestAnimationFrame(updateLift);
+    }
+
+    window.addEventListener("scroll", scheduleLift, { passive: true });
+    window.addEventListener("resize", scheduleLift);
+    reducedMotion.addEventListener("change", scheduleLift);
+    const observer = new ResizeObserver(scheduleLift);
+    if (footer.value) observer.observe(footer.value);
+    scheduleLift();
+
+    disposeFooterMotion = () => {
+        cancelAnimationFrame(frame);
+        window.removeEventListener("scroll", scheduleLift);
+        window.removeEventListener("resize", scheduleLift);
+        reducedMotion.removeEventListener("change", scheduleLift);
+        observer.disconnect();
+    };
+});
+onBeforeUnmount(() => disposeFooterMotion());
 const links = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
@@ -98,16 +144,33 @@ function toggleTheme() {
             </nav>
         </header>
         <main id="main" class="pt-24"><slot /></main>
-        <footer class="container">
+        <footer ref="footer" class="container">
             <div class="border-t border-border/50 py-20 md:py-32">
                 <p class="eyebrow mb-6">Have a project in mind?</p>
-                <Link href="/contact" class="inline-flex items-end gap-8 group"
-                    ><span
-                        class="font-heading font-semibold tracking-tight leading-[.95] text-[clamp(3rem,10vw,9rem)]"
-                        >Let's work<br />together.</span
-                    ><ArrowUpRight
-                        class="w-10 h-10 md:w-20 md:h-20 mb-2 transition-transform group-hover:rotate-45"
-                /></Link>
+                <Link
+                    href="/contact"
+                    class="inline-block group"
+                    aria-label="Let's work together"
+                >
+                    <span
+                        aria-hidden="true"
+                        class="block font-heading font-semibold tracking-tight leading-[.95] text-[clamp(2.2rem,10vw,9rem)]"
+                    >
+                        <span class="block">Let's work</span>
+                        <span class="flex items-baseline">
+                            <span>toge</span>
+                            <span
+                                ref="liftedText"
+                                class="footer-lift flex items-baseline"
+                            >
+                                <span>ther.</span>
+                                <ArrowUpRight
+                                    class="self-center ml-2 sm:ml-4 md:ml-8 w-9 h-9 sm:w-12 sm:h-12 md:w-20 md:h-20 transition-transform group-hover:rotate-45"
+                                />
+                            </span>
+                        </span>
+                    </span>
+                </Link>
             </div>
             <div
                 class="border-t border-border/50 py-7 flex flex-wrap items-center justify-between gap-6 text-sm text-muted-foreground"

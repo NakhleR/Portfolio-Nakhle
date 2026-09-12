@@ -46,6 +46,8 @@ onMounted(async () => {
     const controls = new OrbitControls(camera, effect.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.maxPolarAngle = Math.PI / 2;
     controls.autoRotate = props.model === "dna";
     controls.autoRotateSpeed = 0.8;
     let mixer: InstanceType<typeof THREE.AnimationMixer> | undefined;
@@ -109,7 +111,14 @@ onMounted(async () => {
     let last = 0;
     function render(time: number) {
         frame = requestAnimationFrame(render);
-        if (!alive || !visible || !hasSize || document.hidden || time - last < 50) return;
+        if (
+            !alive ||
+            !visible ||
+            !hasSize ||
+            document.hidden ||
+            time - last < 50
+        )
+            return;
         last = time;
         const delta = Math.min(timer.getDelta(), 0.1);
         if (!reduced) {
