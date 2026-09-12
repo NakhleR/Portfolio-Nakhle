@@ -37,7 +37,11 @@ const project = computed(
                     aria-controls="project-preview"
                     @click="selected = index"
                 >
-                    <span>{{ projectCategoryLabel(item.category) }}</span
+                    <span class="showcase-option-copy">
+                        <span>{{ projectCategoryLabel(item.category) }}</span>
+                        <span class="showcase-option-title">{{
+                            item.title
+                        }}</span> </span
                     ><ArrowRight :size="20" aria-hidden="true" />
                 </button>
             </div>

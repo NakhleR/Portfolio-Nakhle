@@ -282,6 +282,19 @@ html.menu-open {
 }
 .showcase-selector button svg {
     opacity: 0;
+    flex-shrink: 0;
+}
+.showcase-option-copy {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+.showcase-option-title {
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .showcase-selector button[aria-pressed="true"] {
     background: var(--ink);
@@ -304,7 +317,8 @@ html.menu-open {
     overflow: hidden;
     border-radius: 16px;
     height: clamp(380px, 36vw, 560px);
-    background: #d1d99e;
+    background: var(--ink);
+    color: var(--paper);
 }
 .showcase-image img {
     width: 100%;
@@ -1084,22 +1098,22 @@ html.menu-open {
         max-width: 42ch;
     }
     .showcase-selector {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
-        overflow-x: auto;
         width: 100%;
         margin-block: 25px 20px;
-        padding-bottom: 6px;
-        scrollbar-width: thin;
     }
     .showcase-selector button {
-        width: auto;
-        flex-shrink: 0;
+        width: 100%;
         min-height: 44px;
         border: 1px solid #9da65c;
-        border-radius: 22px;
-        padding: 10px 15px;
+        border-radius: 8px;
+        padding: 10px 12px;
         font-size: 12px;
+    }
+    .showcase-option-title {
+        display: none;
     }
     .showcase-selector button svg {
         display: none;

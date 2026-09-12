@@ -195,7 +195,7 @@ The sticky header hides after downward travel (12px) and returns after upward tr
 
 ### Interactive showcase
 
-A pressed selector swaps the real project image, caption and destination together through a short out-in transition. It is manually selected; it does not auto-advance. Selected desktop rows invert to ink and citron; mobile rows become compact outlined pills. An empty state replaces unavailable project content.
+A pressed selector swaps the real project image, caption and destination together through a short out-in transition. It is manually selected; it does not auto-advance. Selected desktop rows show discipline and project name, inverting to ink and citron. Mobile category controls form a compact two-column grid so all choices remain visible. Preview images retain their full content against an ink background. An empty state replaces unavailable project content.
 
 ### Graphics and motion
 
