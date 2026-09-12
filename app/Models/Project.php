@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Image\Enums\Constraint;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Project extends Model implements HasMedia
 {
@@ -35,5 +37,22 @@ class Project extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')->useDisk('public')->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // Keep animated GIF uploads intact rather than converting them to a still.
+        if ($media?->mime_type === 'image/gif') {
+            return;
+        }
+
+        $this->addMediaConversion('display')
+            ->performOnCollections('images')
+            ->width(1600, [Constraint::PreserveAspectRatio, Constraint::DoNotUpsize])
+            ->format('webp')
+            ->quality(85)
+            ->nonOptimized()
+            ->withResponsiveImages()
+            ->nonQueued();
     }
 }

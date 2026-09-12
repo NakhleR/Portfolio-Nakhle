@@ -9,6 +9,7 @@ import {
     Code2,
 } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
+import ProjectImage from "../Components/ProjectImage.vue";
 import { projectCategoryLabel } from "../data/projectCategories";
 import { technologyIcon } from "../data/technologyIcons";
 import type { Project } from "../types";
@@ -97,8 +98,9 @@ function imageLoaded(event: Event, src: string) {
                             :aria-label="`Open ${project.title} cover image at full size`"
                             class="case-image-link"
                         >
-                            <img
-                                :src="project.images[0]"
+                            <ProjectImage
+                                :project="project"
+                                sizes="(min-width: 1680px) 1544px, 92vw"
                                 :alt="`${project.title} — overview`"
                                 width="1200"
                                 height="1000"
@@ -224,8 +226,10 @@ function imageLoaded(event: Event, src: string) {
                                         :aria-label="`Open ${project.title} image ${index + 2} at full size`"
                                         class="case-image-link"
                                     >
-                                        <img
-                                            :src="image"
+                                        <ProjectImage
+                                            :project="project"
+                                            :index="index + 1"
+                                            sizes="(max-width: 767px) 92vw, (min-width: 1680px) 1200px, 75vw"
                                             :alt="`${project.title} — image ${index + 2}`"
                                             loading="lazy"
                                             decoding="async"

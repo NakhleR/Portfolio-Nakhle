@@ -16,6 +16,10 @@ class ProjectResource extends JsonResource
             'technologies' => $this->technologies ?? [], 'liveUrl' => $this->liveUrl, 'githubUrl' => $this->githubUrl,
             'order' => $this->order,
             'images' => $this->getMedia('images')->map(fn ($media) => $media->getUrl())->values(),
+            'imageVariants' => $this->getMedia('images')->map(fn ($media) => [
+                'src' => $media->getAvailableUrl(['display']),
+                'srcset' => $media->hasGeneratedConversion('display') ? $media->getSrcset('display') : '',
+            ])->values(),
             'media' => $this->getMedia('images')->map(fn ($media) => ['id' => $media->id, 'url' => $media->getUrl(), 'name' => $media->file_name])->values(),
             'createdAt' => $this->created_at?->toISOString(), 'updatedAt' => $this->updated_at?->toISOString(),
         ];

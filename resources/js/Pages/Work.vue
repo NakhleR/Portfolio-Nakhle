@@ -3,9 +3,9 @@ import { ref, computed } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import ProjectCard from "../Components/ProjectCard.vue";
-import type { Project } from "../types";
+import type { ProjectCardData } from "../types";
 import { projectCategoryLabel } from "../data/projectCategories";
-const props = defineProps<{ projects: Project[] }>();
+const props = defineProps<{ projects: ProjectCardData[] }>();
 const category = ref("All");
 const categories = computed(() => [
     "All",

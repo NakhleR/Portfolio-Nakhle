@@ -25,7 +25,12 @@ const timelineCategory = ref("all");
                 <figure class="portrait" data-intro-fade>
                     <div class="portrait-frame">
                         <img
-                            src="/nakhle.png"
+                            src="/nakhle-960.webp"
+                            srcset="
+                                /nakhle-480.webp 480w,
+                                /nakhle-960.webp 960w
+                            "
+                            sizes="(max-width: 767px) 90vw, (min-width: 1680px) 540px, 36vw"
                             alt="Nakhle Rizk"
                             width="800"
                             height="1000"

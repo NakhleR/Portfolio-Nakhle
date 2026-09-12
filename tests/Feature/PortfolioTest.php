@@ -62,7 +62,7 @@ class PortfolioTest extends TestCase
         $this->get('/work/missing')->assertNotFound();
     }
 
-    public function test_home_showcase_receives_projects_across_disciplines(): void
+    public function test_home_does_not_fetch_unused_projects(): void
     {
         foreach (['Game Development', 'Web Development', 'App Development', 'AI/ML'] as $order => $category) {
             Project::create([...$this->payload(), 'category' => $category, 'order' => $order]);
@@ -70,10 +70,7 @@ class PortfolioTest extends TestCase
 
         $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page
             ->component('Home')
-            ->has('projects', 4)
-            ->where('projects.0.category', 'Game Development')
-            ->where('projects.3.category', 'AI/ML')
-            ->missing('projects.0.legacy_document'));
+            ->missing('projects'));
     }
 
     public function test_public_api_preserves_ids_order_and_never_exposes_archive_fields(): void
@@ -164,6 +161,17 @@ class PortfolioTest extends TestCase
         $media = $project->fresh()->getFirstMedia('images');
         $this->assertNotNull($media);
         Storage::disk('public')->assertExists($media->id.'/'.$media->file_name);
+        $this->assertTrue($media->hasGeneratedConversion('display'));
+        Storage::disk('public')->assertExists($media->getPathRelativeToRoot('display'));
+        $this->getJson('/api/projects/'.$project->mongo_id)
+            ->assertJsonPath('images.0', $media->getUrl())
+            ->assertJsonPath('imageVariants.0.src', $media->getUrl('display'));
+        $this->assertStringContainsString('640w', $media->getSrcset('display'));
+        $this->assertSame([640, 480], array_slice(getimagesize($media->getPath('display')), 0, 2));
+        $media->update(['generated_conversions' => []]);
+        $this->getJson('/api/projects/'.$project->mongo_id)
+            ->assertJsonPath('imageVariants.0.src', $media->getUrl())
+            ->assertJsonPath('imageVariants.0.srcset', '');
         $other = $this->project();
         $this->deleteJson('/dashboard/projects/'.$other->mongo_id.'/media/'.$media->id)->assertNotFound();
         $this->deleteJson('/dashboard/projects/'.$project->mongo_id.'/media/'.$media->id)->assertOk();
@@ -177,6 +185,35 @@ class PortfolioTest extends TestCase
         $this->postJson('/dashboard/projects/'.$project->mongo_id.'/media', ['file' => UploadedFile::fake()->create('script.php', 1, 'text/x-php')])->assertUnprocessable()->assertJsonValidationErrors('file');
         $this->postJson('/dashboard/projects/'.$project->mongo_id.'/media', ['file' => UploadedFile::fake()->image('huge.png')->size(20481)])->assertUnprocessable();
         $this->assertDatabaseCount('media', 0);
+    }
+
+    public function test_gif_media_keeps_its_original_format(): void
+    {
+        $project = $this->project();
+        $media = $project->addMedia(UploadedFile::fake()->image('animation.gif', 80, 60))->toMediaCollection('images');
+
+        $this->assertFalse($media->hasGeneratedConversion('display'));
+        $this->getJson('/api/projects/'.$project->mongo_id)
+            ->assertJsonPath('images.0', $media->getUrl())
+            ->assertJsonPath('imageVariants.0.src', $media->getUrl())
+            ->assertJsonPath('imageVariants.0.srcset', '');
+    }
+
+    public function test_work_archive_only_receives_cover_media_and_summary_fields(): void
+    {
+        $project = $this->project();
+        foreach (['cover.png', 'detail.png'] as $name) {
+            $project->addMedia(UploadedFile::fake()->image($name, 80, 60))->toMediaCollection('images');
+        }
+
+        $this->get('/work')->assertInertia(fn (Assert $page) => $page
+            ->has('projects.0.images', 1)
+            ->has('projects.0.imageVariants', 1)
+            ->missing('projects.0.longDescription')
+            ->missing('projects.0.media'));
+        $this->get('/work/'.$project->mongo_id)->assertInertia(fn (Assert $page) => $page
+            ->has('project.images', 2)
+            ->where('project.longDescription', 'Details'));
     }
 
     public function test_project_delete_removes_media_files(): void

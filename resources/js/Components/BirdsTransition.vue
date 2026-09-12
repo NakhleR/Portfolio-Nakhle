@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { claimBirdsIntro } from "../graphics/introState";
 const host = ref<HTMLElement | null>(null);
-const visible = ref(!matchMedia("(prefers-reduced-motion: reduce)").matches);
+const visible = ref(claimBirdsIntro());
 const emit = defineEmits<{ complete: [] }>();
 let stop = () => {};
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -23,7 +24,7 @@ onMounted(async () => {
     }
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    timer = setTimeout(finish, 2500);
+    timer = setTimeout(finish, 1200);
     try {
         const { startBirds } = await import("../graphics/birds");
         if (!alive || !visible.value || !host.value) return;

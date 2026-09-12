@@ -165,7 +165,7 @@ The public system is flat. Background changes, fine dividers, image clipping and
 
 ## Shapes
 
-Fields and desktop showcase selectors have gently rounded corners; media apertures use a larger radius. Pills distinguish filters and actions, while circles carry compact icon controls. Body sections remain open rather than boxed. Preserve complete screenshots inside apertures with `object-fit: contain`; the owner portrait uses a cover crop.
+Fields and desktop showcase selectors have gently rounded corners; media apertures use a larger radius. Pills distinguish filters and actions, while circles carry compact icon controls. Body sections remain open rather than boxed. Display responsive WebP copies inside apertures with `object-fit: contain`, keeping full-size links pointed at the untouched originals; the owner portrait uses a cover crop.
 
 ## Components
 
@@ -203,7 +203,7 @@ The stage dynamically loads after the birds intro and near the viewport, using o
 
 Keep the original birds transition, displacement-sphere shader and colors, DNA and Thinker. Model controls permit horizontal orbit only, with zoom and pan disabled. Model loading begins near the viewport (120px margin); rendering pauses offscreen and in hidden tabs, uses pixel ratio (1), samples the ASCII grid at (0.22), and caps active drawing near (30fps). Reduced motion disables automatic rotation and animation updates. The DNA is a full-section background with camera framing shifted on wide screens and fitted on narrow screens. Its original embedded animation plays while visible, with automatic camera rotation disabled and horizontal dragging retained. Foreground links remain clickable and vertical touch scrolling stays native.
 
-The sphere uses pixel ratio (1), a (30fps) animation cap, viewport/tab visibility gates and a static reduced-motion rendering. The birds transition has a (2500ms) exit timer and is skipped under reduced motion. Dispose WebGL resources and observers when components unmount.
+The sphere uses pixel ratio (1), a (30fps) animation cap, viewport/tab visibility gates and a static reduced-motion rendering. The unchanged birds shader runs once per document load with a (1200ms) exit timer; internal Inertia visits skip it, as does reduced motion. Dispose WebGL resources and observers when components unmount.
 
 GSAP handles introductory line reveals, one-time section reveals and the footer's scroll-linked letter lift. Lenis smooth wheel behavior is limited to fine pointers with motion enabled; touch scrolling remains native. Reduced motion removes public CSS transitions and GSAP motion. Do not introduce new continuous animation.
 

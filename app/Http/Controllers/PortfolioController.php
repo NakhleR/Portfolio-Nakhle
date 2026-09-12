@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProjectCardResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TimelineResource;
 use App\Models\Project;
@@ -15,7 +16,7 @@ class PortfolioController extends Controller
 {
     public function home(): Response
     {
-        return Inertia::render('Home', ['projects' => ProjectResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
+        return Inertia::render('Home');
     }
 
     public function about(): Response
@@ -29,7 +30,7 @@ class PortfolioController extends Controller
             return to_route('work.show', ['project' => $request->string('project')->toString()]);
         }
 
-        return Inertia::render('Work', ['projects' => ProjectResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
+        return Inertia::render('Work', ['projects' => ProjectCardResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
     }
 
     public function project(Project $project): Response
