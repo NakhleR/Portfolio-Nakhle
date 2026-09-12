@@ -183,7 +183,7 @@ async function initialize() {
                     }
                 });
                 scene.add(object);
-                if (props.model !== "dna" && gltf.animations.length) {
+                if (gltf.animations.length) {
                     mixer = new THREE.AnimationMixer(object);
                     mixer.clipAction(gltf.animations[0]).play();
                 }
