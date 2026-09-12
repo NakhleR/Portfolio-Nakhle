@@ -153,7 +153,7 @@ The pairing is direct and compact. Headings use tight tracking and balanced wrap
 
 The public shell caps at (1680px), with a fluid gutter from the frontmatter. Sections commonly use desktop vertical space (100px), reducing to (65px) on mobile. Asymmetric two-column groups use broad gaps, often (8vw), rather than equal cards for every content type.
 
-At (1100px), the header and showcase become more compact. At (767px) and below, primary content groups stack, the archive becomes one column, sticky secondary content becomes static, and the showcase selector becomes a horizontal row above its image. Project detail has an additional (1000px) adjustment. The desktop motion condition starts at (768px).
+At (1100px), the header and showcase become more compact. At (767px) and below, primary content groups stack, the archive becomes one column, sticky secondary content becomes static, and the showcase selector becomes a two-column grid above its 3D stage. Project detail has an additional (1000px) adjustment. The desktop motion condition starts at (768px).
 
 The archive alternates a full-width image with paired projects. Case galleries fit original screenshots without cropping, pairing portrait images and allowing landscape images to span the gallery. These are current surface patterns, not mandatory layouts for every future page.
 
@@ -195,7 +195,9 @@ The sticky header hides after downward travel (12px) and returns after upward tr
 
 ### Interactive showcase
 
-A pressed selector swaps the real project image, caption and destination together through a short out-in transition. It is manually selected; it does not auto-advance. Selected desktop rows show discipline and project name, inverting to ink and citron. Mobile category controls form a compact two-column grid so all choices remain visible. Preview images retain their full content against an ink background. An empty state replaces unavailable project content.
+The citron homepage banner has rounded corners (24–44px). Its four discipline buttons select original procedural hard-surface 3D objects: a layered processor, mobile device, modular browser workstation, and game controller. Objects sit directly on the citron field with shared cream, graphite, metal, and copper materials. Each has its own mechanical animation, with horizontal drag controls and an explicit pause button. The work archive remains accessible through “Explore all work.” Mobile controls retain a two-column grid.
+
+The stage dynamically loads after the birds intro and near the viewport, using one transparent renderer. Static parts are merged by material within articulated groups. Only the selected object is retained; geometry, materials, and textures are disposed on switching and unmount. Animation targets 30fps, caps pixel ratio at 1 on mobile and 1.5 on desktop, and pauses when offscreen or the document is hidden. Reduced motion renders a still composition and retains manual dragging. GSAP handles short object entrances. A text fallback keeps category navigation usable without WebGL.
 
 ### Graphics and motion
 

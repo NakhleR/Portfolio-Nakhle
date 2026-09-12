@@ -242,7 +242,9 @@ html.menu-open {
     gap: clamp(36px, 5vw, 84px);
     background: var(--citron);
     color: var(--ink);
-    padding-block: 64px 46px;
+    padding-block: 58px 42px;
+    border-radius: clamp(24px, 3vw, 44px);
+    overflow: hidden;
 }
 .studio-showcase :focus-visible {
     outline-color: var(--ink);
@@ -284,18 +286,6 @@ html.menu-open {
     opacity: 0;
     flex-shrink: 0;
 }
-.showcase-option-copy {
-    display: grid;
-    gap: 4px;
-    min-width: 0;
-}
-.showcase-option-title {
-    font-size: 12px;
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 .showcase-selector button[aria-pressed="true"] {
     background: var(--ink);
     color: var(--citron);
@@ -309,34 +299,87 @@ html.menu-open {
 .showcase-stage {
     min-width: 0;
 }
-.showcase-project {
-    display: block;
-}
-.showcase-image {
+/* A shared transparent stage keeps the objects part of the citron field. */
+.object-showcase {
     position: relative;
-    overflow: hidden;
-    border-radius: 16px;
     height: clamp(380px, 36vw, 560px);
-    background: var(--ink);
-    color: var(--paper);
+    isolation: isolate;
 }
-.showcase-image img {
+.object-canvas {
+    position: absolute;
+    inset: 0;
+    cursor: grab;
+}
+.object-canvas:active {
+    cursor: grabbing;
+}
+.object-canvas canvas {
+    display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
 }
-.showcase-open {
+.object-shadow {
     position: absolute;
-    bottom: 22px;
-    right: 22px;
+    z-index: -1;
+    bottom: 6%;
+    left: 24%;
+    width: 52%;
+    height: 10%;
+    border-radius: 50%;
+    background: #344018;
+    filter: blur(22px);
+    opacity: 0;
+    transition: opacity 250ms ease;
+}
+.is-ready .object-shadow {
+    opacity: 0.16;
+}
+.object-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+.object-hint {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    font-size: 11px;
+    color: #4b542a;
+    pointer-events: none;
+}
+.object-playback {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
-    width: 60px;
-    height: 60px;
+    border: 1px solid #a7b35b;
     border-radius: 50%;
-    background: var(--citron);
-    color: var(--ink);
-    transition: transform 180ms var(--ease-out);
+    transition: background-color 160ms ease;
+}
+.object-playback:hover {
+    background: #d4df74;
+}
+.object-playback:active {
+    background: #c5d168;
+}
+.showcase-caption p {
+    margin-top: 7px;
+    font-size: 13px;
+    color: #4b542a;
+}
+.showcase-index {
+    font-variant-numeric: tabular-nums;
+}
+.showcase-index > span {
+    opacity: 0.5;
 }
 .showcase-caption {
     display: flex;
@@ -356,20 +399,6 @@ html.menu-open {
     font-size: 12px;
     flex-shrink: 0;
     padding-top: 5px;
-}
-.showcase-enter-active,
-.showcase-leave-active {
-    transition:
-        opacity 160ms ease,
-        transform 160ms var(--ease-out);
-}
-.showcase-enter-from {
-    opacity: 0;
-    transform: translateY(8px);
-}
-.showcase-leave-to {
-    opacity: 0;
-    transform: translateY(-6px);
 }
 .studio-statement {
     position: relative;
@@ -974,9 +1003,6 @@ html.menu-open {
     .showcase-selector button:not([aria-pressed="true"]):hover {
         background: #d3dd74;
     }
-    .showcase-project:hover .showcase-open {
-        transform: rotate(45deg);
-    }
     .filter-list button:not([aria-pressed="true"]):hover {
         background: hsl(var(--secondary));
     }
@@ -1124,24 +1150,16 @@ html.menu-open {
         padding: 10px 12px;
         font-size: 12px;
     }
-    .showcase-option-title {
-        display: none;
-    }
     .showcase-selector button svg {
         display: none;
     }
     .showcase-intro > .studio-link {
         margin-bottom: 24px;
     }
-    .showcase-image {
+    .object-showcase {
         height: auto;
-        aspect-ratio: 1.2;
-    }
-    .showcase-open {
-        width: 48px;
-        height: 48px;
-        bottom: 16px;
-        right: 16px;
+        aspect-ratio: 1.1;
+        min-height: 280px;
     }
     .showcase-caption {
         display: flex;

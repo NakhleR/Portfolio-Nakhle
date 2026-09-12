@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount, provide } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, ArrowDown, Menu, X, Sun, Moon } from "lucide-vue-next";
 import { usePortfolioMotion } from "../composables/usePortfolioMotion";
@@ -17,6 +17,12 @@ const links = [
     { href: "/contact", label: "Contact" },
 ];
 const { reveal } = usePortfolioMotion(root);
+const introComplete = ref(false);
+provide("portfolioIntroComplete", introComplete);
+function finishIntro() {
+    introComplete.value = true;
+    reveal();
+}
 let scrollFrame = 0;
 let previousScroll = 0;
 let directionDistance = 0;
@@ -87,7 +93,7 @@ function toggleTheme() {
 </script>
 <template>
     <div ref="root" class="site-shell">
-        <BirdsTransition @complete="reveal" />
+        <BirdsTransition @complete="finishIntro" />
         <a class="skip-link" href="#main">Skip to content</a>
         <header
             ref="header"

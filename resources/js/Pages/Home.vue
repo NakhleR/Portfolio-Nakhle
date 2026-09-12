@@ -1,35 +1,12 @@
 <script setup lang="ts">
 import { Head, Link } from "@inertiajs/vue3";
 import { ArrowUpRight } from "lucide-vue-next";
-import { computed, defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from "vue";
 import SiteLayout from "../Layouts/SiteLayout.vue";
-import ProjectShowcase from "../Components/ProjectShowcase.vue";
-import { projectCategoryLabel } from "../data/projectCategories";
-import type { Project } from "../types";
+import DisciplineShowcase from "../Components/DisciplineShowcase.vue";
 const ModelScene = defineAsyncComponent(
     () => import("../Components/ModelScene.vue"),
 );
-const props = defineProps<{ projects: Project[] }>();
-const featured = computed(() => {
-    const categories = [
-        ...new Set(
-            props.projects.map((project) =>
-                projectCategoryLabel(project.category),
-            ),
-        ),
-    ];
-    return categories
-        .reverse()
-        .map((category) =>
-            [...props.projects]
-                .reverse()
-                .find(
-                    (project) =>
-                        projectCategoryLabel(project.category) === category,
-                )!,
-        )
-        .slice(0, 4);
-});
 const services = [
     {
         title: "Web development",
@@ -51,7 +28,7 @@ const services = [
 <template>
     <div>
         <Head title="Developer & creative problem solver" /><SiteLayout>
-            <ProjectShowcase :projects="featured" />
+            <DisciplineShowcase />
             <section class="studio-statement">
                 <div class="shell studio-statement-content">
                     <div class="studio-statement-copy">
