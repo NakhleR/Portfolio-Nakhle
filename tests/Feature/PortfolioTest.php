@@ -49,6 +49,19 @@ class PortfolioTest extends TestCase
         $this->get('/sitemap.xml')->assertOk()->assertSee('/about');
     }
 
+    public function test_project_details_preserve_content_and_legacy_links(): void
+    {
+        $project = $this->project();
+        $this->get('/work/'.$project->mongo_id)->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Project')
+            ->where('project.id', $project->mongo_id)
+            ->where('project.longDescription', 'Details')
+            ->where('project.technologies', ['Vue', 'Laravel'])
+            ->missing('project.legacy_document'));
+        $this->get('/work?project='.$project->mongo_id)->assertRedirect('/work/'.$project->mongo_id);
+        $this->get('/work/missing')->assertNotFound();
+    }
+
     public function test_public_api_preserves_ids_order_and_never_exposes_archive_fields(): void
     {
         $later = $this->project();
@@ -180,6 +193,6 @@ class PortfolioTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $this->post('/login', ['email' => 'missing@example.com', 'password' => 'wrong']);
         }
-        $this->post('/login',['email' => 'missing@example.com', 'password' => 'wrong'])->assertTooManyRequests();
+        $this->post('/login', ['email' => 'missing@example.com', 'password' => 'wrong'])->assertTooManyRequests();
     }
 }

@@ -3,164 +3,215 @@ import { onMounted, onBeforeUnmount, ref } from "vue";
 const props = defineProps<{ model: "dna" | "thinker" }>();
 const host = ref<HTMLDivElement | null>(null);
 const failed = ref(false);
+let alive = true;
 let dispose = () => {};
-onMounted(async () => {
-    const THREE = await import("three");
-    const [
-        { GLTFLoader },
-        { DRACOLoader },
-        { OrbitControls },
-        { AsciiEffect },
-    ] = await Promise.all([
-        import("three/addons/loaders/GLTFLoader.js"),
-        import("three/addons/loaders/DRACOLoader.js"),
-        import("three/addons/controls/OrbitControls.js"),
-        import("three/addons/effects/AsciiEffect.js"),
-    ]);
+let visibility: IntersectionObserver | undefined;
+
+onMounted(() => {
     if (!host.value) return;
-    let renderer: InstanceType<typeof THREE.WebGLRenderer>;
-    try {
-        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    } catch {
-        failed.value = true;
-        return;
-    }
-    const scene = new THREE.Scene(),
-        camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 0, props.model === "dna" ? 20 : 8);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-    const light = new THREE.DirectionalLight(0xffffff, 2.5);
-    light.position.set(5, 10, 7);
-    scene.add(light);
-    const fill = new THREE.DirectionalLight(0xffffff, 1);
-    fill.position.set(-4, 5, -3);
-    scene.add(fill);
-    const effect = new AsciiEffect(renderer, " .:-+*=%@#", {
-        invert: false,
-        resolution: 0.22,
-    });
-    effect.domElement.style.backgroundColor = "transparent";
-    effect.domElement.style.color = "inherit";
-    effect.domElement.setAttribute("aria-hidden", "true");
-    host.value.appendChild(effect.domElement);
-    const controls = new OrbitControls(camera, effect.domElement);
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.minPolarAngle = Math.PI / 2;
-    controls.maxPolarAngle = Math.PI / 2;
-    controls.autoRotate = props.model === "dna";
-    controls.autoRotateSpeed = 0.8;
-    let mixer: InstanceType<typeof THREE.AnimationMixer> | undefined;
-    let alive = true,
-        visible = true,
-        frame = 0;
-    let hasSize = false;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const loader = new GLTFLoader(),
-        draco = new DRACOLoader();
-    draco.setDecoderPath("/draco/");
-    loader.setDRACOLoader(draco);
-    loader.load(
-        props.model === "dna" ? "/DNA.glb" : "/thinker.glb",
-        (gltf) => {
-            if (!alive) return;
-            const object = gltf.scene;
-            if (props.model === "dna") {
-                object.scale.setScalar(4);
-                object.rotation.z = Math.PI / 3;
-            } else {
-                object.scale.setScalar(2.5);
-                object.position.y = -2;
-                object.traverse((child) => {
-                    if (child instanceof THREE.Mesh)
-                        child.material = new THREE.MeshPhongMaterial({
-                            color: 0xffffff,
-                            shininess: 60,
-                        });
-                });
-            }
-            scene.add(object);
-            if (gltf.animations.length) {
-                mixer = new THREE.AnimationMixer(object);
-                mixer.clipAction(gltf.animations[0]).play();
-            }
-            if (hasSize) effect.render(scene, camera);
+    let started = false;
+    visibility = new IntersectionObserver(
+        ([entry]) => {
+            if (!entry.isIntersecting || started) return;
+            started = true;
+            void initialize();
         },
-        undefined,
-        () => {
-            failed.value = true;
-        },
+        { rootMargin: "120px" },
     );
-    function resize() {
-        if (!host.value) return;
-        const { width, height } = host.value.getBoundingClientRect();
-        hasSize = width > 0 && height > 0;
-        if (!hasSize) return;
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        effect.setSize(width, height);
-    }
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(host.value);
-    resize();
-    const observer = new IntersectionObserver((entries) => {
-        visible = entries[0].isIntersecting;
-    });
-    observer.observe(host.value);
-    const timer = new THREE.Clock();
-    let last = 0;
-    function render(time: number) {
-        frame = requestAnimationFrame(render);
-        if (
-            !alive ||
-            !visible ||
-            !hasSize ||
-            document.hidden ||
-            time - last < 50
-        )
-            return;
-        last = time;
-        const delta = Math.min(timer.getDelta(), 0.1);
-        if (!reduced) {
-            controls.update();
-            mixer?.update(delta);
-        }
-        effect.render(scene, camera);
-    }
-    frame = requestAnimationFrame(render);
-    dispose = () => {
-        alive = false;
-        cancelAnimationFrame(frame);
-        resizeObserver.disconnect();
-        observer.disconnect();
-        controls.dispose();
-        draco.dispose();
-        renderer.dispose();
-        scene.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
+    visibility.observe(host.value);
+});
+
+async function initialize() {
+    try {
+        const [
+            THREE,
+            { GLTFLoader },
+            { DRACOLoader },
+            { OrbitControls },
+            { AsciiEffect },
+        ] = await Promise.all([
+            import("three"),
+            import("three/addons/loaders/GLTFLoader.js"),
+            import("three/addons/loaders/DRACOLoader.js"),
+            import("three/addons/controls/OrbitControls.js"),
+            import("three/addons/effects/AsciiEffect.js"),
+        ]);
+        if (!alive || !host.value) return;
+        const renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: false,
+        });
+        renderer.setPixelRatio(1);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+        camera.position.z = props.model === "dna" ? 20 : 8;
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        const key = new THREE.DirectionalLight(0xffffff, 2.5);
+        key.position.set(5, 10, 7);
+        const fill = new THREE.DirectionalLight(0xffffff, 1);
+        fill.position.set(-4, 5, -3);
+        scene.add(key, fill);
+        const effect = new AsciiEffect(renderer, " .:-+*=%@#", {
+            invert: false,
+            resolution: 0.22,
+        });
+        effect.domElement.style.color = "inherit";
+        effect.domElement.style.backgroundColor = "transparent";
+        effect.domElement.setAttribute("aria-hidden", "true");
+        host.value.appendChild(effect.domElement);
+        const controls = new OrbitControls(camera, effect.domElement);
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.minPolarAngle = Math.PI / 2;
+        controls.maxPolarAngle = Math.PI / 2;
+        controls.autoRotateSpeed = 0.8;
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+        let mixer: InstanceType<typeof THREE.AnimationMixer> | undefined;
+        let visible = false,
+            hasSize = false,
+            frame = 0,
+            last = 0;
+        const draco = new DRACOLoader().setDecoderPath("/draco/");
+        const loader = new GLTFLoader().setDRACOLoader(draco);
+        function disposeObject(object: InstanceType<typeof THREE.Object3D>) {
+            object.traverse((child) => {
+                if (!(child instanceof THREE.Mesh)) return;
                 child.geometry.dispose();
                 for (const material of Array.isArray(child.material)
                     ? child.material
                     : [child.material])
                     material.dispose();
+            });
+        }
+        function draw(now: number) {
+            frame = 0;
+            if (!alive || !visible || !hasSize || document.hidden) return;
+            if (now - last >= 33 || reduced.matches) {
+                const delta = Math.min((now - last) / 1000, 0.05);
+                last = now;
+                if (!reduced.matches) {
+                    controls.update(delta);
+                    mixer?.update(delta);
+                }
+                effect.render(scene, camera);
+            }
+            if (!reduced.matches && (controls.autoRotate || mixer)) schedule();
+        }
+        function schedule() {
+            if (!frame && alive && visible && !document.hidden)
+                frame = requestAnimationFrame(draw);
+        }
+        function resize() {
+            if (!host.value) return;
+            const { width, height } = host.value.getBoundingClientRect();
+            hasSize = width > 0 && height > 0;
+            if (!hasSize) return;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            controls.update();
+            effect.setSize(width, height);
+            // ASCII samples this grid anyway; avoid rendering discarded pixels.
+            renderer.setSize(
+                Math.ceil(width * 0.22),
+                Math.ceil(height * 0.22),
+                false,
+            );
+            schedule();
+        }
+        function motionPreference() {
+            controls.autoRotate = props.model === "dna" && !reduced.matches;
+            schedule();
+        }
+        const sizeObserver = new ResizeObserver(resize);
+        sizeObserver.observe(host.value);
+        const renderObserver = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            if (visible) schedule();
+            else {
+                cancelAnimationFrame(frame);
+                frame = 0;
             }
         });
-        effect.domElement.remove();
-    };
+        renderObserver.observe(host.value);
+        document.addEventListener("visibilitychange", schedule);
+        reduced.addEventListener("change", motionPreference);
+        controls.addEventListener("change", schedule);
+        motionPreference();
+        resize();
+        dispose = () => {
+            cancelAnimationFrame(frame);
+            sizeObserver.disconnect();
+            renderObserver.disconnect();
+            document.removeEventListener("visibilitychange", schedule);
+            reduced.removeEventListener("change", motionPreference);
+            controls.dispose();
+            draco.dispose();
+            mixer?.stopAllAction();
+            disposeObject(scene);
+            renderer.dispose();
+            effect.domElement.remove();
+        };
+        loader.load(
+            props.model === "dna" ? "/DNA.glb" : "/thinker.glb",
+            (gltf) => {
+                if (!alive) {
+                    disposeObject(gltf.scene);
+                    return;
+                }
+                const object = gltf.scene;
+                object.scale.setScalar(props.model === "dna" ? 4 : 2.5);
+                if (props.model === "dna") object.rotation.z = Math.PI / 3;
+                else object.position.y = -2;
+                object.traverse((child) => {
+                    if (
+                        props.model === "thinker" &&
+                        child instanceof THREE.Mesh
+                    ) {
+                        for (const material of Array.isArray(child.material)
+                            ? child.material
+                            : [child.material])
+                            material.dispose();
+                        child.material = new THREE.MeshPhongMaterial({
+                            color: 0xffffff,
+                            shininess: 60,
+                        });
+                    }
+                });
+                scene.add(object);
+                if (gltf.animations.length) {
+                    mixer = new THREE.AnimationMixer(object);
+                    mixer.clipAction(gltf.animations[0]).play();
+                }
+                resize();
+            },
+            undefined,
+            () => {
+                if (alive) failed.value = true;
+            },
+        );
+    } catch {
+        if (alive) failed.value = true;
+    }
+}
+onBeforeUnmount(() => {
+    alive = false;
+    visibility?.disconnect();
+    dispose();
 });
-onBeforeUnmount(() => dispose());
 </script>
 <template>
     <div
         ref="host"
         class="model-scene"
         :aria-label="
-            model === 'dna' ? 'Animated DNA helix' : 'The Thinker sculpture'
+            model === 'dna'
+                ? 'Interactive DNA helix — drag left or right'
+                : 'The Thinker sculpture — drag left or right'
         "
         role="img"
     >
-        <p v-if="failed" class="text-muted-foreground text-sm">
-            3D preview is unavailable on this device.
+        <p v-if="failed" class="model-fallback">
+            The 3D preview is unavailable on this device.
         </p>
     </div>
 </template>

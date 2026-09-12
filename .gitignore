@@ -33,3 +33,6 @@ Thumbs.db
 *.ejson
 /database/*.sqlite*
 /migration-backups/
+/.impeccable/review/
+/.impeccable/build/
+/.impeccable/mocks/

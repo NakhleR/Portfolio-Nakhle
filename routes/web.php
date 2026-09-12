@@ -18,6 +18,7 @@ use Inertia\Inertia;
 Route::get('/', [PortfolioController::class, 'home'])->name('home');
 Route::get('/about', [PortfolioController::class, 'about'])->name('about');
 Route::get('/work', [PortfolioController::class, 'work'])->name('work');
+Route::get('/work/{project}', [PortfolioController::class, 'project'])->name('work.show');
 Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
 Route::middleware('guest')->group(function (): void {

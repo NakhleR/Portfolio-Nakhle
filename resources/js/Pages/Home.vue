@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from "@inertiajs/vue3";
-import { Code2, Brain, Layers, ArrowRight } from "lucide-vue-next";
+import { ArrowUpRight, ArrowDown } from "lucide-vue-next";
 import { defineAsyncComponent } from "vue";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import ProjectCard from "../Components/ProjectCard.vue";
@@ -11,176 +11,147 @@ const ModelScene = defineAsyncComponent(
 defineProps<{ projects: Project[] }>();
 const services = [
     {
-        title: "Web Development",
-        description:
-            "Creating responsive and intuitive web applications with modern technologies and frameworks.",
-        icon: Code2,
+        title: "Web development",
+        text: "Responsive, intuitive applications. Thoughtful interfaces, reliable backends, and the detail that connects them.",
+        tools: "Frontend · Backend · APIs",
     },
     {
-        title: "AI & Machine Learning",
-        description:
-            "Exploring deep learning, data science, and intelligent automation to build smarter applications.",
-        icon: Brain,
+        title: "AI & machine learning",
+        text: "Exploring how systems learn and adapt through deep learning, data science, and intelligent automation.",
+        tools: "Deep learning · Data science",
     },
     {
-        title: "Full Stack Solutions",
-        description:
-            "Delivering comprehensive solutions from frontend to backend with scalable architecture.",
-        icon: Layers,
+        title: "Full stack solutions",
+        text: "Connecting all the pieces, from a first prototype to a complete application built with room to grow.",
+        tools: "Architecture · Databases · Deployment",
     },
-];
-const technologies = [
-    "FRONTEND",
-    "BACKEND",
-    "MOBILE",
-    "UI/UX",
-    "DATABASE",
-    "DEVOPS",
-    "WEB",
-    "ARCHITECTURE",
-    "CLOUD",
-    "API",
-    "REACT",
-    "NODEJS",
-    "TYPESCRIPT",
-    "NEXTJS",
-    "EXPRESS",
-    "MONGODB",
-    "MYSQL",
-    "FLUTTER",
-    "RIVERPOD",
-    "BLOC",
 ];
 </script>
 <template>
     <div>
-        <Head title="Full Stack Developer & AI Student" /><SiteLayout>
-            <section class="py-20 md:py-32">
-                <div class="container grid lg:grid-cols-2 gap-16 items-center">
-                    <div class="space-y-8 page-enter">
-                        <span class="badge"
-                            ><span
-                                class="w-1.5 h-1.5 rounded-full bg-green-500"
-                            />Available for work</span
-                        >
-                        <h1 class="font-semibold leading-[1.1] text-balance">
-                            Full Stack Developer &amp;<br
-                                class="hidden sm:block"
-                            />
-                            AI and Machine Learning Student
+        <Head title="Developer & creative problem solver" /><SiteLayout>
+            <section class="home-hero shell">
+                <div class="hero-topline" data-intro-fade>
+                    <span>Full stack developer / AI &amp; ML student</span
+                    ><span class="availability"><i /> Available for work</span>
+                </div>
+                <div class="hero-composition">
+                    <div class="hero-copy">
+                        <h1 class="hero-title">
+                            <span class="line-mask"
+                                ><span data-intro>A curious</span></span
+                            ><span class="line-mask"
+                                ><span data-intro>mind.</span></span
+                            ><span class="line-mask"
+                                ><span data-intro class="accent-text"
+                                    >A builder's</span
+                                ></span
+                            ><span class="line-mask"
+                                ><span data-intro class="accent-text"
+                                    >instinct.</span
+                                ></span
+                            >
                         </h1>
-                        <p
-                            class="text-lg md:text-xl text-muted-foreground max-w-lg"
-                        >
-                            Building intelligent, user-focused digital
-                            experiences that combine modern engineering with
-                            cutting-edge AI.
-                        </p>
-                        <div class="flex flex-wrap gap-4">
-                            <Link href="/work" class="button"
-                                >View My Projects<ArrowRight :size="16" /></Link
-                            ><Link href="/contact" class="button secondary"
-                                >Get in Touch</Link
+                        <div class="hero-description" data-intro-fade>
+                            <p>
+                                I'm Nakhle. I build digital experiences at the
+                                intersection of software engineering and
+                                artificial intelligence.
+                            </p>
+                            <Link href="/work" class="round-link"
+                                ><span class="round-icon"
+                                    ><ArrowUpRight :size="24" /></span
+                                ><span>Explore my work</span></Link
                             >
                         </div>
                     </div>
-                    <div class="hidden lg:block">
-                        <ModelScene model="dna" />
-                    </div>
-                </div>
-            </section>
-            <div
-                class="overflow-hidden border-y border-border/50 py-5"
-                aria-label="Technology expertise"
-            >
-                <div class="marquee">
-                    <span
-                        v-for="(name, i) in [...technologies, ...technologies]"
-                        :key="i"
-                        class="text-sm tracking-widest text-muted-foreground whitespace-nowrap"
-                        >{{ name }} <span class="mx-7 opacity-30">/</span></span
-                    >
-                </div>
-            </div>
-            <section class="section bg-secondary/50">
-                <div class="container">
-                    <div class="section-heading">
-                        <p class="eyebrow mb-3">Services</p>
-                        <h2>What I Do</h2>
-                    </div>
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <article
-                            v-for="service in services"
-                            :key="service.title"
-                            class="panel p-8"
-                        >
-                            <div
-                                class="w-12 h-12 rounded-xl bg-secondary grid place-items-center mb-6"
+                    <div class="hero-art" data-intro-fade>
+                        <div class="model-stage">
+                            <ModelScene model="dna" />
+                        </div>
+                        <div class="art-caption">
+                            <span>Human curiosity. Digital possibilities.</span
+                            ><span class="drag-caption"
+                                >Drag to explore
+                                <span aria-hidden="true">↔</span></span
                             >
-                                <component :is="service.icon" :size="22" />
-                            </div>
-                            <h3 class="text-xl font-semibold mb-3">
-                                {{ service.title }}
-                            </h3>
-                            <p class="text-muted-foreground">
-                                {{ service.description }}
-                            </p>
-                        </article>
+                        </div>
                     </div>
                 </div>
+                <div class="hero-baseline">
+                    <span>Engineering with intent.</span
+                    ><a href="#selected-work" class="text-link"
+                        >Scroll to discover <ArrowDown :size="15"
+                    /></a>
+                </div>
             </section>
-            <section class="section relative overflow-hidden">
-                <div class="container grid md:grid-cols-2 gap-12 items-center">
-                    <div class="hidden md:block">
-                        <ModelScene model="thinker" />
-                    </div>
-                    <div class="space-y-8">
-                        <p class="eyebrow">My philosophy</p>
-                        <blockquote
-                            class="text-3xl md:text-5xl font-heading font-semibold tracking-tight leading-tight italic"
+            <section id="selected-work" class="work-section shell">
+                <div class="section-bar">
+                    <h2 data-reveal>
+                        Selected work<span class="accent-text">.</span>
+                    </h2>
+                    <Link href="/work" class="text-link"
+                        >View all projects <ArrowUpRight :size="18"
+                    /></Link>
+                </div>
+                <div class="selected-grid">
+                    <Link
+                        v-for="(project, index) in projects"
+                        :key="project.id"
+                        :href="'/work?project=' + project.id"
+                        class="project-link"
+                        data-reveal
+                        ><ProjectCard :project="project" :index="index"
+                    /></Link>
+                </div>
+                <p v-if="!projects.length" class="empty-state">
+                    New work is on its way.
+                </p>
+            </section>
+            <section class="approach-section">
+                <div class="shell approach-grid">
+                    <div class="approach-aside">
+                        <span class="small-label"
+                            >Always learning. Always building.</span
                         >
+                        <div class="thinker-stage">
+                            <ModelScene model="thinker" />
+                        </div>
+                        <Link href="/about" class="text-link"
+                            >A little more about me <ArrowUpRight :size="18"
+                        /></Link>
+                    </div>
+                    <div class="approach-copy">
+                        <h2 data-reveal>
+                            Good software starts with<br /><span
+                                class="accent-text"
+                                >better questions.</span
+                            >
+                        </h2>
+                        <p class="approach-lead">
+                            The most interesting part of a problem is often the
+                            assumption hiding underneath it.
+                        </p>
+                        <blockquote>
                             “The greatest obstacle to discovery is not ignorance
-                            <span class="text-muted-foreground"
-                                >— it is the illusion of knowledge.”</span
+                            — it is the illusion of knowledge.”<cite
+                                >— Daniel J. Boorstin</cite
                             >
                         </blockquote>
-                        <p class="text-right text-muted-foreground">
-                            — Daniel J. Boorstin
-                        </p>
-                        <p class="text-muted-foreground text-right">
-                            In AI and software engineering, the hardest bugs
-                            aren't what you don't know — they're the assumptions
-                            you never question. This quote drives how I approach
-                            every problem.
-                        </p>
-                    </div>
-                </div>
-            </section>
-            <section class="section">
-                <div class="container">
-                    <div class="flex items-end justify-between gap-4 mb-14">
-                        <div>
-                            <p class="eyebrow mb-3">Portfolio</p>
-                            <h2>Featured Projects</h2>
+                        <div class="expertise-list">
+                            <article
+                                v-for="service in services"
+                                :key="service.title"
+                            >
+                                <h3>
+                                    {{ service.title
+                                    }}<ArrowUpRight :size="22" />
+                                </h3>
+                                <p>{{ service.text }}</p>
+                                <span>{{ service.tools }}</span>
+                            </article>
                         </div>
-                        <Link
-                            href="/work"
-                            class="text-sm flex items-center gap-2"
-                            >View All <ArrowRight :size="14"
-                        /></Link>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <Link
-                            v-for="project in projects"
-                            :key="project.id"
-                            :href="'/work?project=' + project.id"
-                            class="group"
-                            ><ProjectCard :project="project"
-                        /></Link>
-                    </div>
-                    <p v-if="!projects.length" class="text-muted-foreground">
-                        Projects will appear here soon.
-                    </p>
                 </div>
             </section>
         </SiteLayout>

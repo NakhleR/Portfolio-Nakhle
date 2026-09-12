@@ -1,0 +1,190 @@
+{
+  "cplusplus": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "unrealengine": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "react": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "threedotjs": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "tailwindcss": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "flutter": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "dotnet": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "python": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "pytorch": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "scikitlearn": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "opencv": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "streamlit": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "numpy": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "pandas": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "nvidia": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "tensorflow": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "typescript": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "javascript": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "vite": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "gsap": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "cssmodules": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "radixui": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "shadcnui": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "reactquery": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "reacthookform": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "zod": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "i18next": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "reactrouter": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "laravel": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "vuedotjs": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "inertia": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "postgresql": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "rekaui": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "chartdotjs": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "konva": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "express": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "mongodb": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "php": {
+    "source": "https://github.com/simple-icons/simple-icons",
+    "license": "CC0-1.0"
+  },
+  "matplotlib": {
+    "source": "https://github.com/devicons/devicon",
+    "license": "MIT"
+  },
+  "seaborn": {
+    "source": "https://github.com/devicons/devicon",
+    "license": "MIT"
+  },
+  "emailjs": {
+    "source": "https://github.com/devicons/devicon",
+    "license": "MIT"
+  },
+  "lenis": {
+    "source": "https://lenis.darkroom.engineering/apple-touch-icon.png",
+    "license": "Brand asset; trademarks belong to their respective owners"
+  },
+  "tiptap": {
+    "source": "https://cdn.prod.website-files.com/645a9acecda2e0594fac6126/657b06d9fe0642a8d7efeabc_tiptap_webclip.png",
+    "license": "Brand asset; trademarks belong to their respective owners"
+  },
+  "filepond": {
+    "source": "https://raw.githubusercontent.com/pqina/filepond-github-assets/master/logo.svg",
+    "license": "Brand asset"
+  },
+  "spatie": {
+    "source": "https://spatie.be/apple-touch-icon.png",
+    "license": "Brand asset; trademarks belong to their respective owners"
+  },
+  "reactthreefiber": {
+    "source": "https://github.com/pmndrs/react-three-fiber/blob/master/example/favicon.svg",
+    "license": "MIT"
+  },
+  "recharts": {
+    "source": "https://raw.githubusercontent.com/recharts/recharts/HEAD/www/public/logo.svg",
+    "license": "Brand asset"
+  }
+}

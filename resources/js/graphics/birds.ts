@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { GPUComputationRenderer } from "three/addons/misc/GPUComputationRenderer.js";
+
+// Original pre-migration BirdsTransition; only the Vue lifecycle adapter differs.
 export function startBirds(container: HTMLElement) {
     const width = 32,
         height = 32,
@@ -233,20 +235,20 @@ void main() {
   vec3 selfVelocity = texture2D(textureVelocity, uv).xyz;
   vec3 velocity = selfVelocity;
   float limit = 9.0;
-
+  
   // Simplified path following using single target point
   vec3 pathDirection = normalize(targetPoint - selfPosition);
   velocity += pathDirection * delta * pathForce;
-
+  
   // Basic boundary avoidance
   if(abs(selfPosition.x) > 400.0) {
     velocity.x -= sign(selfPosition.x) * delta * 5.0;
   }
-
+  
   if(abs(selfPosition.y) > 400.0) {
     velocity.y -= sign(selfPosition.y) * delta * 5.0;
   }
-
+  
   if(abs(selfPosition.z) > 400.0) {
     velocity.z -= sign(selfPosition.z) * delta * 5.0;
   }
@@ -400,7 +402,7 @@ void main() {
     const error = gpuCompute.init();
     if (error) console.error(error);
 
-    const uniforms: Record<string, { value: any }> = {
+    const uniforms: Record<string, THREE.IUniform> = {
         color: { value: new THREE.Color(0xff2200) },
         texturePosition: { value: null },
         textureVelocity: { value: null },
@@ -480,6 +482,6 @@ void main() {
         birdMesh.geometry.dispose();
         renderer.dispose();
         material.dispose();
-        if (container) container.innerHTML = "";
+        renderer.domElement.remove();
     };
 }

@@ -1,8 +1,9 @@
 import "../css/app.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/space-grotesk/500.css";
-import "@fontsource/space-grotesk/600.css";
+import "../css/portfolio.css";
+import "@fontsource/inter/latin-400.css";
+import "@fontsource/inter/latin-500.css";
+import "@fontsource/archivo/latin-500.css";
+import "@fontsource/archivo/latin-600.css";
 import { createApp, h, type DefineComponent } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 const pages = import.meta.glob<{ default: DefineComponent }>(
@@ -18,5 +19,5 @@ createInertiaApp({
             .use(plugin)
             .mount(el);
     },
-    progress: { color: "#777" },
+    progress: { color: "#a94027" },
 });

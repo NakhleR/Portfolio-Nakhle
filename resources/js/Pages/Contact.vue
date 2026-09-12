@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
-import { MapPin, Mail, Phone, ArrowRight } from "lucide-vue-next";
+import { ArrowUpRight, ArrowRight } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 const LocationMap = defineAsyncComponent(
     () => import("../Components/LocationMap.vue"),
@@ -20,148 +20,177 @@ function submit() {
 </script>
 <template>
     <div>
-        <Head title="Contact" /><SiteLayout
-            ><div class="relative overflow-hidden">
+        <Head title="Let's talk" /><SiteLayout>
+            <div class="contact-scene">
                 <DisplacementSphere />
-                <section class="page-heading">
-                    <p class="eyebrow">Contact</p>
-                    <h1>Get in Touch</h1>
-                    <p>
-                        Have a project in mind? Let's discuss how we can create
-                        something extraordinary together.
-                    </p>
-                </section>
-                <section class="section pt-4">
-                    <div class="container grid lg:grid-cols-2 gap-12">
-                        <div class="panel p-8">
-                            <h2 class="text-2xl mb-8">Send a Message</h2>
-                            <p
-                                v-if="page.props.flash.success"
-                                role="status"
-                                class="success-message"
+                <section class="contact-hero shell">
+                    <div class="contact-hero-copy">
+                        <h1>
+                            <span class="line-mask"
+                                ><span data-intro>Something</span></span
+                            ><span class="line-mask"
+                                ><span data-intro class="accent-text"
+                                    >on your mind?</span
+                                ></span
                             >
-                                {{ page.props.flash.success }}
-                            </p>
-                            <form @submit.prevent="submit" class="space-y-5">
-                                <div>
-                                    <label for="contact-name">Name</label
-                                    ><input
-                                        id="contact-name"
-                                        v-model="form.name"
-                                        autocomplete="name"
-                                        required
-                                        maxlength="255"
-                                    />
-                                    <p
-                                        v-if="form.errors.name"
-                                        class="field-error"
-                                    >
-                                        {{ form.errors.name }}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label for="contact-email">Email</label
-                                    ><input
-                                        id="contact-email"
-                                        v-model="form.email"
-                                        type="email"
-                                        autocomplete="email"
-                                        required
-                                        maxlength="255"
-                                    />
-                                    <p
-                                        v-if="form.errors.email"
-                                        class="field-error"
-                                    >
-                                        {{ form.errors.email }}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label for="contact-message">Message</label
-                                    ><textarea
-                                        id="contact-message"
-                                        v-model="form.message"
-                                        rows="6"
-                                        minlength="10"
-                                        maxlength="10000"
-                                        required
-                                    />
-                                    <p
-                                        v-if="form.errors.message"
-                                        class="field-error"
-                                    >
-                                        {{ form.errors.message }}
-                                    </p>
-                                </div>
-                                <div class="hidden" aria-hidden="true">
-                                    <label for="website">Website</label
-                                    ><input
-                                        id="website"
-                                        v-model="form.website"
-                                        tabindex="-1"
-                                        autocomplete="off"
-                                    />
-                                </div>
-                                <button
-                                    class="button"
-                                    :disabled="form.processing"
-                                >
-                                    {{
-                                        form.processing
-                                            ? "Sending…"
-                                            : "Send Message"
-                                    }}<ArrowRight :size="16" />
-                                </button>
-                            </form>
-                        </div>
-                        <div class="panel p-8">
-                            <h2 class="text-2xl mb-8">Information</h2>
-                            <div class="space-y-7 mb-8">
-                                <div class="flex gap-4">
-                                    <MapPin :size="20" />
-                                    <div>
-                                        <h3 class="text-base font-semibold">
-                                            Address
-                                        </h3>
-                                        <p
-                                            class="text-sm text-muted-foreground"
-                                        >
-                                            Rue De Fontenelle<br />Rouen 76000,
-                                            France
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-4">
-                                    <Mail :size="20" />
-                                    <div>
-                                        <h3 class="text-base font-semibold">
-                                            Email
-                                        </h3>
-                                        <a
-                                            href="mailto:nakhler2k2@gmail.com"
-                                            class="text-sm text-muted-foreground"
-                                            >nakhler2k2@gmail.com</a
-                                        >
-                                    </div>
-                                </div>
-                                <div class="flex gap-4">
-                                    <Phone :size="20" />
-                                    <div>
-                                        <h3 class="text-base font-semibold">
-                                            Phone
-                                        </h3>
-                                        <a
-                                            href="tel:+33774812104"
-                                            class="text-sm text-muted-foreground"
-                                            >+33 7 74 81 21 04</a
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-                            <LocationMap />
-                        </div>
+                        </h1>
+                        <p data-intro-fade>
+                            A new project, an opportunity, or an interesting
+                            problem. I'd love to hear about it.
+                        </p>
+                        <a
+                            href="mailto:nakhler2k2@gmail.com"
+                            class="contact-email"
+                            data-intro-fade
+                            >nakhler2k2@gmail.com <ArrowUpRight
+                        /></a>
                     </div>
-                </section></div
-        ></SiteLayout>
+                </section>
+                <section class="shell contact-layout">
+                    <div class="contact-form">
+                        <h2>Let's start a conversation.</h2>
+                        <p
+                            v-if="page.props.flash.success"
+                            role="status"
+                            class="success-message"
+                        >
+                            {{ page.props.flash.success }}
+                        </p>
+                        <form @submit.prevent="submit">
+                            <div class="contact-field">
+                                <label for="contact-name">Your name</label
+                                ><input
+                                    id="contact-name"
+                                    v-model="form.name"
+                                    placeholder="How should I call you?"
+                                    autocomplete="name"
+                                    required
+                                    maxlength="255"
+                                    :aria-invalid="!!form.errors.name"
+                                    :aria-describedby="
+                                        form.errors.name
+                                            ? 'name-error'
+                                            : undefined
+                                    "
+                                />
+                                <p
+                                    v-if="form.errors.name"
+                                    id="name-error"
+                                    class="field-error"
+                                >
+                                    {{ form.errors.name }}
+                                </p>
+                            </div>
+                            <div class="contact-field">
+                                <label for="contact-email">Email address</label
+                                ><input
+                                    id="contact-email"
+                                    v-model="form.email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    autocomplete="email"
+                                    required
+                                    maxlength="255"
+                                    :aria-invalid="!!form.errors.email"
+                                    :aria-describedby="
+                                        form.errors.email
+                                            ? 'email-error'
+                                            : undefined
+                                    "
+                                />
+                                <p
+                                    v-if="form.errors.email"
+                                    id="email-error"
+                                    class="field-error"
+                                >
+                                    {{ form.errors.email }}
+                                </p>
+                            </div>
+                            <div class="contact-field">
+                                <label for="contact-message"
+                                    >What do you have in mind?</label
+                                ><textarea
+                                    id="contact-message"
+                                    v-model="form.message"
+                                    placeholder="Tell me a little about your idea…"
+                                    rows="4"
+                                    minlength="10"
+                                    maxlength="10000"
+                                    required
+                                    :aria-invalid="!!form.errors.message"
+                                    :aria-describedby="
+                                        form.errors.message
+                                            ? 'message-error'
+                                            : undefined
+                                    "
+                                />
+                                <p
+                                    v-if="form.errors.message"
+                                    id="message-error"
+                                    class="field-error"
+                                >
+                                    {{ form.errors.message }}
+                                </p>
+                            </div>
+                            <div class="hidden" aria-hidden="true">
+                                <label for="website">Website</label
+                                ><input
+                                    id="website"
+                                    v-model="form.website"
+                                    tabindex="-1"
+                                    autocomplete="off"
+                                />
+                            </div>
+                            <button
+                                class="button send-button"
+                                :disabled="form.processing"
+                            >
+                                {{
+                                    form.processing
+                                        ? "Sending…"
+                                        : "Send message"
+                                }}<ArrowRight :size="20" />
+                            </button>
+                        </form>
+                    </div>
+                    <aside class="contact-details">
+                        <h2>Find me here.</h2>
+                        <dl>
+                            <div>
+                                <dt>Based in</dt>
+                                <dd>
+                                    Rue De Fontenelle<br />Rouen 76000, France
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Call me</dt>
+                                <dd>
+                                    <a href="tel:+33774812104"
+                                        >+33 7 74 81 21 04</a
+                                    >
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Elsewhere</dt>
+                                <dd class="contact-social">
+                                    <a
+                                        href="https://github.com/NakhleR"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        >GitHub <ArrowUpRight :size="16" /></a
+                                    ><a
+                                        href="https://www.linkedin.com/in/nakhle-rizk-528129256/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        >LinkedIn <ArrowUpRight :size="16"
+                                    /></a>
+                                </dd>
+                            </div>
+                        </dl>
+                        <div class="contact-map"><LocationMap /></div>
+                    </aside>
+                </section>
+            </div>
+        </SiteLayout>
     </div>
 </template>

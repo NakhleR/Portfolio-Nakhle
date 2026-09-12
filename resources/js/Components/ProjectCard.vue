@@ -1,28 +1,37 @@
 <script setup lang="ts">
+import { ArrowUpRight } from "lucide-vue-next";
 import type { Project } from "../types";
-defineProps<{ project: Project }>();
+import { projectCategoryLabel } from "../data/projectCategories";
+withDefaults(defineProps<{ project: Project; index?: number }>(), { index: 0 });
 </script>
 <template>
-    <article class="project-card">
-        <div class="aspect-video bg-secondary overflow-hidden">
+    <article class="folio-card">
+        <div class="folio-image">
             <img
                 v-if="project.images[0]"
                 :src="project.images[0]"
                 :alt="project.title"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
-            /><span
-                v-else
-                class="h-full flex items-center justify-center text-muted-foreground"
-                >Project preview</span
-            >
+                decoding="async"
+                width="1200"
+                height="800"
+            />
+            <span v-else class="image-placeholder">{{ project.title }}</span>
+            <span class="project-open" aria-hidden="true"
+                ><ArrowUpRight :size="25"
+            /></span>
         </div>
-        <div class="p-5">
-            <p class="eyebrow mb-2">{{ project.category }}</p>
-            <h3 class="text-xl font-semibold">{{ project.title }}</h3>
-            <p class="text-sm text-muted-foreground mt-3 line-clamp-2">
-                {{ project.description }}
-            </p>
+        <div class="folio-meta">
+            <h3>{{ project.title }}</h3>
+            <span>{{ projectCategoryLabel(project.category) }}</span>
+        </div>
+        <p class="folio-summary">{{ project.description }}</p>
+        <div class="folio-tools">
+            <span
+                v-for="(tool, i) in project.technologies.slice(0, 3)"
+                :key="i"
+                >{{ tool }}</span
+            >
         </div>
     </article>
 </template>

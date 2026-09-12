@@ -45,6 +45,7 @@ function key(event: KeyboardEvent) {
     <dialog
         ref="dialog"
         class="portfolio-dialog"
+        data-lenis-prevent
         @cancel.prevent="close"
         @click="
             (e) => {

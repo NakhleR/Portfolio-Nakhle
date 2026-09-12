@@ -27,7 +27,7 @@ export default {
                     "sans-serif",
                 ],
                 heading: [
-                    "Space Grotesk",
+                    "Archivo",
                     "-apple-system",
                     "BlinkMacSystemFont",
                     "sans-serif",

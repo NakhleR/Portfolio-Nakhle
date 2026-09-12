@@ -1,132 +1,79 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { Head } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import ProjectCard from "../Components/ProjectCard.vue";
-import ProjectDialog from "../Components/ProjectDialog.vue";
 import type { Project } from "../types";
+import { projectCategoryLabel } from "../data/projectCategories";
 const props = defineProps<{ projects: Project[] }>();
-const selected = ref<Project | null>(null),
-    category = ref("All");
+const category = ref("All");
 const categories = computed(() => [
     "All",
-    ...new Set(props.projects.map((p) => p.category)),
+    ...new Set(props.projects.map((p) => projectCategoryLabel(p.category))),
 ]);
 const filtered = computed(() =>
     props.projects.filter(
-        (p) => category.value === "All" || p.category === category.value,
+        (p) =>
+            category.value === "All" ||
+            projectCategoryLabel(p.category) === category.value,
     ),
 );
-function open(project: Project) {
-    selected.value = project;
-    const url = new URL(location.href);
-    url.searchParams.set("project", project.id);
-    history.replaceState(history.state, "", url);
-}
-function close() {
-    selected.value = null;
-    const url = new URL(location.href);
-    url.searchParams.delete("project");
-    history.replaceState(history.state, "", url);
-}
-onMounted(() => {
-    const id = new URLSearchParams(location.search).get("project");
-    selected.value = props.projects.find((p) => p.id === id) || null;
-});
-const process = [
-    {
-        number: "01",
-        title: "Research & Planning",
-        description: "Understanding requirements and planning the approach.",
-    },
-    {
-        number: "02",
-        title: "Design & Prototype",
-        description: "Creating wireframes and initial prototypes.",
-    },
-    {
-        number: "03",
-        title: "Development",
-        description: "Implementing the solution with clean, maintainable code.",
-    },
-    {
-        number: "04",
-        title: "Testing & Deployment",
-        description: "Thorough testing and smooth deployment.",
-    },
-];
 </script>
 <template>
     <div>
-        <Head title="Work" /><SiteLayout
-            ><section class="page-heading">
-                <p class="eyebrow">Portfolio</p>
-                <h1>My Work</h1>
-                <p>
-                    A collection of projects showcasing my skills and expertise.
-                </p>
-            </section>
-            <section class="pb-24">
-                <div class="container">
-                    <div class="tabs mb-12">
+        <Head title="Selected work" /><SiteLayout>
+            <section class="inner-hero shell">
+                <div class="inner-hero-title">
+                    <h1>
+                        <span class="line-mask"
+                            ><span data-intro>Ideas into</span></span
+                        ><span class="line-mask"
+                            ><span data-intro class="accent-text"
+                                >something real.</span
+                            ></span
+                        >
+                    </h1>
+                    <p data-intro-fade>
+                        A collection of things I've built, problems I've worked
+                        through, and ideas I've followed. From web applications
+                        to games and beyond.
+                    </p>
+                </div>
+                <div class="work-filter-row">
+                    <span class="small-label"
+                        >The project archive
+                        <span class="archive-count"
+                            >({{ projects.length }})</span
+                        ></span
+                    >
+                    <div class="filter-list" aria-label="Project categories">
                         <button
                             v-for="item in categories"
                             :key="item"
-                            class="tab"
-                            :class="{ active: category === item }"
                             :aria-pressed="category === item"
                             @click="category = item"
                         >
                             {{ item }}
                         </button>
                     </div>
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-                        <button
-                            v-for="project in filtered"
-                            :key="project.id"
-                            class="text-left group"
-                            :aria-label="'View ' + project.title"
-                            @click="open(project)"
-                        >
-                            <ProjectCard :project="project" />
-                        </button>
-                    </div>
-                    <p
-                        v-if="!filtered.length"
-                        class="text-center text-muted-foreground py-16"
+                </div>
+            </section>
+            <section class="shell archive-section">
+                <div class="archive-grid">
+                    <Link
+                        v-for="(project, index) in filtered"
+                        :key="project.id"
+                        class="project-link"
+                        :aria-label="'View ' + project.title"
+                        :href="`/work/${project.id}`"
                     >
-                        No projects in this category yet.
-                    </p>
+                        <ProjectCard :project="project" :index="index" />
+                    </Link>
                 </div>
+                <p v-if="!filtered.length" class="empty-state" role="status">
+                    No projects in this category yet.
+                </p>
             </section>
-            <section class="section bg-secondary/50">
-                <div class="container">
-                    <div class="section-heading">
-                        <p class="eyebrow mb-3">Workflow</p>
-                        <h2>My Development Process</h2>
-                    </div>
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div
-                            v-for="step in process"
-                            :key="step.number"
-                            class="panel p-6"
-                        >
-                            <div
-                                class="font-heading text-5xl font-bold opacity-10 mb-4"
-                            >
-                                {{ step.number }}
-                            </div>
-                            <h3 class="text-lg font-semibold mb-2">
-                                {{ step.title }}
-                            </h3>
-                            <p class="text-sm text-muted-foreground">
-                                {{ step.description }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <ProjectDialog :project="selected" @close="close"
-        /></SiteLayout>
+        </SiteLayout>
     </div>
 </template>
