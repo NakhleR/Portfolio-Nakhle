@@ -97,7 +97,12 @@ function toggleTheme() {
         >
             <div class="shell header-inner">
                 <Link href="/" class="wordmark" aria-label="Nakhle Rizk home"
-                    >nakhle rizk<span class="brand-period">.</span></Link
+                    ><span class="brand-symbol" aria-hidden="true">nr.</span
+                    ><span class="brand-name"
+                        >Nakhle Rizk<span
+                            >Developer &amp; creative thinker</span
+                        ></span
+                    ></Link
                 >
                 <nav class="desktop-nav" aria-label="Main navigation">
                     <Link
@@ -105,7 +110,13 @@ function toggleTheme() {
                         :key="link.href"
                         :href="link.href"
                         :aria-current="
-                            page.url.split('?')[0] === link.href
+                            (
+                                link.href === '/'
+                                    ? page.url.split('?')[0] === '/'
+                                    : page.url
+                                          .split('?')[0]
+                                          .startsWith(link.href)
+                            )
                                 ? 'page'
                                 : undefined
                         "
@@ -155,7 +166,13 @@ function toggleTheme() {
                         :key="link.href"
                         :href="link.href"
                         :aria-current="
-                            page.url.split('?')[0] === link.href
+                            (
+                                link.href === '/'
+                                    ? page.url.split('?')[0] === '/'
+                                    : page.url
+                                          .split('?')[0]
+                                          .startsWith(link.href)
+                            )
                                 ? 'page'
                                 : undefined
                         "
@@ -170,10 +187,6 @@ function toggleTheme() {
         <main id="main"><slot /></main>
         <footer class="portfolio-footer">
             <div class="shell">
-                <div class="footer-top">
-                    <span>Good things start with a conversation.</span
-                    ><span>Open to work &amp; collaborations</span>
-                </div>
                 <Link
                     href="/contact"
                     class="footer-cta"
@@ -187,6 +200,7 @@ function toggleTheme() {
                                 ><span>ther.</span><ArrowUpRight /></span></span
                     ></span>
                 </Link>
+                <p class="mb-8 text-sm">Open to work &amp; collaborations</p>
                 <div class="footer-bottom">
                     <span>© {{ new Date().getFullYear() }} Nakhle Rizk</span>
                     <a href="mailto:nakhler2k2@gmail.com" class="text-link"

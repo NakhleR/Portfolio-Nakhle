@@ -27,10 +27,10 @@ function submit() {
                     <div class="contact-hero-copy">
                         <h1>
                             <span class="line-mask"
-                                ><span data-intro>Something</span></span
+                                ><span data-intro>Good things</span></span
                             ><span class="line-mask"
                                 ><span data-intro class="accent-text"
-                                    >on your mind?</span
+                                    >start here.</span
                                 ></span
                             >
                         </h1>

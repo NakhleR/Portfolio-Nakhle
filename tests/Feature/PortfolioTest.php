@@ -62,6 +62,20 @@ class PortfolioTest extends TestCase
         $this->get('/work/missing')->assertNotFound();
     }
 
+    public function test_home_showcase_receives_projects_across_disciplines(): void
+    {
+        foreach (['Game Development', 'Web Development', 'App Development', 'AI/ML'] as $order => $category) {
+            Project::create([...$this->payload(), 'category' => $category, 'order' => $order]);
+        }
+
+        $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Home')
+            ->has('projects', 4)
+            ->where('projects.0.category', 'Game Development')
+            ->where('projects.3.category', 'AI/ML')
+            ->missing('projects.0.legacy_document'));
+    }
+
     public function test_public_api_preserves_ids_order_and_never_exposes_archive_fields(): void
     {
         $later = $this->project();

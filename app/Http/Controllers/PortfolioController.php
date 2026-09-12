@@ -15,7 +15,7 @@ class PortfolioController extends Controller
 {
     public function home(): Response
     {
-        return Inertia::render('Home', ['projects' => ProjectResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->limit(2)->get())->resolve()]);
+        return Inertia::render('Home', ['projects' => ProjectResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
     }
 
     public function about(): Response

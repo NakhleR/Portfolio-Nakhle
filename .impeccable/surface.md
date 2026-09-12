@@ -1,15 +1,13 @@
-# Public portfolio direction
-MODE: Experience.
-WORLD: A contemporary exhibition catalogue for computational work: warm uncoated paper, ink, rust spot colour, oversized Archivo type, precise rules, image-led compositions.
-GROUNDING: Nakhle is a full stack developer and AI student; projects across software, games and intelligent systems are real portfolio proof.
-DIRECTIONS considered: software monograph; design-school thesis; film programme; research atlas; architectural folio; open-studio wall; exhibition catalogue (assigned seventh, seed 33c3b0ba).
-Challenger verdicts: terminal and BBS declined for client readability; exhibition world inherits their consistent state language. Print-poster challenger competitive on visual force but weaker for technical reading; inherit its typographic commitment.
-FIRST VIEW: Giant typographic statement in an asymmetric composition, live DNA model integrated as visual evidence, concise role and direct work link.
-VISITOR PATH: Identity and live work -> selected projects -> engineering/AI approach -> biography and contact. Work supports category exploration and full existing galleries.
-SIGNATURE: Two-stage masked heading arrival, restrained media parallax, footer letters lift with scroll. Horizontal model dragging remains.
-PALETTE: paper #f1efe8, ink #232521, rust #a94027; dark warm ink with pale text and clay accents.
-TYPE: self-hosted Archivo 500/600/700 for display and Inter 400/500 for reading; max display 96px, -0.04em tracking floor.
-LAYOUT: fluid gutter, 1440px maximum, asymmetric project grid, rules instead of card chrome. Mobile stacks content without horizontal overflow.
-STATE: fast button feedback; native accessible dialog; clear contact feedback; visible focus; reduced-motion native scroll with static visible content.
-IMPLEMENTATION: GSAP scoped contexts with cleanup, one Lenis instance per public layout, no smooth touch override. GPU scenes lazy and visibility gated; all real images remain unchanged.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+# Public portfolio — studio direction
+
+Mode: Experience. User approved a project-first studio: citron, deep ink, an interactive showcase and bold typography. Build directly in Vue. Prior version saved on main at 188fe7f.
+
+## Direction contract
+THESIS: An open studio of working software; projects lead instead of a text-led introduction.
+OWN-WORLD: Citron #e4ed87, deep ink #20251e, cool porcelain #f4f5ef. Bold Archivo, large rounded image apertures, compact outlined controls, expansive quiet space.
+STORY: Preview different disciplines, open real projects, discover the person and methods, make contact.
+FIRST VIEWPORT: Compact persistent navigation; a left-hand statement and project selector beside a dominant image stage. Selection replaces preview and project link. Mobile places controls directly above the image. DNA and Thinker appear in the following studio section.
+FORM: Industrial-design contact sheet, seventh grounded candidate; seed 5995483a. The user explicitly selected this studio direction.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+
+Constraints: Original birds, sphere shader/colors, horizontal-only models, all records and media, technology logos, CV, contact form, filters and scroll-up navigation. No new continuous animation. Backend/admin behavior remains established.

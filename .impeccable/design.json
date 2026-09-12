@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T17:58:36.814Z",
+  "title": "Design System: Nakhle Rizk Studio",
+  "extensions": {
+    "colorMeta": {
+      "citron": {
+        "role": "primary",
+        "displayName": "Citron",
+        "tonalRamp": [
+          "oklch(15.00% 0.1263 113.01)",
+          "oklch(26.43% 0.1263 113.01)",
+          "oklch(37.86% 0.1263 113.01)",
+          "oklch(49.29% 0.1263 113.01)",
+          "oklch(60.71% 0.1263 113.01)",
+          "oklch(72.14% 0.1263 113.01)",
+          "oklch(83.57% 0.1263 113.01)",
+          "oklch(95.00% 0.1263 113.01)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.0148 136.71)",
+          "oklch(26.43% 0.0148 136.71)",
+          "oklch(37.86% 0.0148 136.71)",
+          "oklch(49.29% 0.0148 136.71)",
+          "oklch(60.71% 0.0148 136.71)",
+          "oklch(72.14% 0.0148 136.71)",
+          "oklch(83.57% 0.0148 136.71)",
+          "oklch(95.00% 0.0148 136.71)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15.00% 0.0080 114.22)",
+          "oklch(26.43% 0.0080 114.22)",
+          "oklch(37.86% 0.0080 114.22)",
+          "oklch(49.29% 0.0080 114.22)",
+          "oklch(60.71% 0.0080 114.22)",
+          "oklch(72.14% 0.0080 114.22)",
+          "oklch(83.57% 0.0080 114.22)",
+          "oklch(95.00% 0.0080 114.22)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Background",
+        "tonalRamp": [
+          "oklch(15.00% 0.0078 114.22)",
+          "oklch(26.43% 0.0078 114.22)",
+          "oklch(37.86% 0.0078 114.22)",
+          "oklch(49.29% 0.0078 114.22)",
+          "oklch(60.71% 0.0078 114.22)",
+          "oklch(72.14% 0.0078 114.22)",
+          "oklch(83.57% 0.0078 114.22)",
+          "oklch(95.00% 0.0078 114.22)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Foreground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0140 136.78)",
+          "oklch(26.43% 0.0140 136.78)",
+          "oklch(37.86% 0.0140 136.78)",
+          "oklch(49.29% 0.0140 136.78)",
+          "oklch(60.71% 0.0140 136.78)",
+          "oklch(72.14% 0.0140 136.78)",
+          "oklch(83.57% 0.0140 136.78)",
+          "oklch(95.00% 0.0140 136.78)"
+        ]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Secondary",
+        "tonalRamp": [
+          "oklch(15.00% 0.0136 114.34)",
+          "oklch(26.43% 0.0136 114.34)",
+          "oklch(37.86% 0.0136 114.34)",
+          "oklch(49.29% 0.0136 114.34)",
+          "oklch(60.71% 0.0136 114.34)",
+          "oklch(72.14% 0.0136 114.34)",
+          "oklch(83.57% 0.0136 114.34)",
+          "oklch(95.00% 0.0136 114.34)"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Muted Foreground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0159 135.00)",
+          "oklch(26.43% 0.0159 135.00)",
+          "oklch(37.86% 0.0159 135.00)",
+          "oklch(49.29% 0.0159 135.00)",
+          "oklch(60.71% 0.0159 135.00)",
+          "oklch(72.14% 0.0159 135.00)",
+          "oklch(83.57% 0.0159 135.00)",
+          "oklch(95.00% 0.0159 135.00)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "tonalRamp": [
+          "oklch(15.00% 0.0150 121.78)",
+          "oklch(26.43% 0.0150 121.78)",
+          "oklch(37.86% 0.0150 121.78)",
+          "oklch(49.29% 0.0150 121.78)",
+          "oklch(60.71% 0.0150 121.78)",
+          "oklch(72.14% 0.0150 121.78)",
+          "oklch(83.57% 0.0150 121.78)",
+          "oklch(95.00% 0.0150 121.78)"
+        ]
+      },
+      "spot": {
+        "role": "primary",
+        "displayName": "Spot",
+        "tonalRamp": [
+          "oklch(15.00% 0.0798 126.09)",
+          "oklch(26.43% 0.0798 126.09)",
+          "oklch(37.86% 0.0798 126.09)",
+          "oklch(49.29% 0.0798 126.09)",
+          "oklch(60.71% 0.0798 126.09)",
+          "oklch(72.14% 0.0798 126.09)",
+          "oklch(83.57% 0.0798 126.09)",
+          "oklch(95.00% 0.0798 126.09)"
+        ]
+      },
+      "error": {
+        "role": "neutral",
+        "displayName": "Error",
+        "tonalRamp": [
+          "oklch(15.00% 0.1684 30.84)",
+          "oklch(26.43% 0.1684 30.84)",
+          "oklch(37.86% 0.1684 30.84)",
+          "oklch(49.29% 0.1684 30.84)",
+          "oklch(60.71% 0.1684 30.84)",
+          "oklch(72.14% 0.1684 30.84)",
+          "oklch(83.57% 0.1684 30.84)",
+          "oklch(95.00% 0.1684 30.84)"
+        ]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Dark Background",
+        "tonalRamp": [
+          "oklch(15.00% 0.0112 136.77)",
+          "oklch(26.43% 0.0112 136.77)",
+          "oklch(37.86% 0.0112 136.77)",
+          "oklch(49.29% 0.0112 136.77)",
+          "oklch(60.71% 0.0112 136.77)",
+          "oklch(72.14% 0.0112 136.77)",
+          "oklch(83.57% 0.0112 136.77)",
+          "oklch(95.00% 0.0112 136.77)"
+        ]
+      },
+      "dark-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Foreground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0078 114.22)",
+          "oklch(26.43% 0.0078 114.22)",
+          "oklch(37.86% 0.0078 114.22)",
+          "oklch(49.29% 0.0078 114.22)",
+          "oklch(60.71% 0.0078 114.22)",
+          "oklch(72.14% 0.0078 114.22)",
+          "oklch(83.57% 0.0078 114.22)",
+          "oklch(95.00% 0.0078 114.22)"
+        ]
+      },
+      "dark-secondary": {
+        "role": "neutral",
+        "displayName": "Dark Secondary",
+        "tonalRamp": [
+          "oklch(15.00% 0.0141 136.76)",
+          "oklch(26.43% 0.0141 136.76)",
+          "oklch(37.86% 0.0141 136.76)",
+          "oklch(49.29% 0.0141 136.76)",
+          "oklch(60.71% 0.0141 136.76)",
+          "oklch(72.14% 0.0141 136.76)",
+          "oklch(83.57% 0.0141 136.76)",
+          "oklch(95.00% 0.0141 136.76)"
+        ]
+      },
+      "dark-muted-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Muted Foreground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0204 121.91)",
+          "oklch(26.43% 0.0204 121.91)",
+          "oklch(37.86% 0.0204 121.91)",
+          "oklch(49.29% 0.0204 121.91)",
+          "oklch(60.71% 0.0204 121.91)",
+          "oklch(72.14% 0.0204 121.91)",
+          "oklch(83.57% 0.0204 121.91)",
+          "oklch(95.00% 0.0204 121.91)"
+        ]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Dark Border",
+        "tonalRamp": [
+          "oklch(15.00% 0.0196 135.06)",
+          "oklch(26.43% 0.0196 135.06)",
+          "oklch(37.86% 0.0196 135.06)",
+          "oklch(49.29% 0.0196 135.06)",
+          "oklch(60.71% 0.0196 135.06)",
+          "oklch(72.14% 0.0196 135.06)",
+          "oklch(83.57% 0.0196 135.06)",
+          "oklch(95.00% 0.0196 135.06)"
+        ]
+      },
+      "dark-error": {
+        "role": "neutral",
+        "displayName": "Dark Error",
+        "tonalRamp": [
+          "oklch(15.00% 0.1014 32.06)",
+          "oklch(26.43% 0.1014 32.06)",
+          "oklch(37.86% 0.1014 32.06)",
+          "oklch(49.29% 0.1014 32.06)",
+          "oklch(60.71% 0.1014 32.06)",
+          "oklch(72.14% 0.1014 32.06)",
+          "oklch(83.57% 0.1014 32.06)",
+          "oklch(95.00% 0.1014 32.06)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Archivo display",
+        "purpose": "Standard public page headings; showcase and long case titles have local adaptations."
+      },
+      "headline": {
+        "displayName": "Archivo headline",
+        "purpose": "Section introductions."
+      },
+      "title": {
+        "displayName": "Project title",
+        "purpose": "Archive captions."
+      },
+      "body": {
+        "displayName": "Inter body",
+        "purpose": "Supporting text; long prose has local size and leading."
+      },
+      "label": {
+        "displayName": "Inter label",
+        "purpose": "Compact labels and metadata."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Public CSS transforms."
+      },
+      {
+        "name": "control-state",
+        "value": "160ms ease",
+        "purpose": "Navigation, filters and case action color changes."
+      },
+      {
+        "name": "header",
+        "value": "180ms var(--ease-out)",
+        "purpose": "Scroll-direction header transform; focus restores immediately."
+      },
+      {
+        "name": "showcase",
+        "value": "160ms; opacity and transform",
+        "purpose": "Manual project selection, out-in; entrance 8px, exit -6px."
+      },
+      {
+        "name": "intro",
+        "value": "1.05s expo.out; stagger 0.09s",
+        "purpose": "Masked introduction lines after birds transition."
+      },
+      {
+        "name": "section-reveal",
+        "value": "0.85s power3.out; y: 32px; once",
+        "purpose": "Sections entering at top 94%."
+      },
+      {
+        "name": "footer-lift",
+        "value": "scrub: 0.2; y: -48px desktop / -16px mobile",
+        "purpose": "Scroll-linked split-word footer lift."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "No CSS transitions, GSAP motion or birds; static sphere and no model automatic updates."
+      },
+      {
+        "name": "webgl-budget",
+        "value": "pixelRatio: 1; approximately 30fps",
+        "purpose": "Sphere/model drawing pauses offscreen or in hidden tabs; models load near viewport and render at ASCII sample resolution."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "public-compact",
+        "value": "1100px"
+      },
+      {
+        "name": "case-compact",
+        "value": "1000px"
+      },
+      {
+        "name": "mobile-max",
+        "value": "767px"
+      },
+      {
+        "name": "desktop-motion-min",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Send button",
+      "kind": "button",
+      "refersTo": "button-send",
+      "description": "Full-width contact form submit action.",
+      "html": "<button class=\"ds-send\">Send message <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></button>",
+      "css": ".ds-send{display:inline-flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:12px 24px;border:0;border-radius:28px;background:hsl(var(--foreground,103 10% 13%));color:hsl(var(--background,70 23% 95%));font-size:14px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;transition:transform 140ms var(--ease-out,cubic-bezier(.22,1,.36,1))}.ds-send:active{transform:scale(.97)}.ds-send:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}.ds-send:disabled{cursor:wait;opacity:.6}@media(prefers-reduced-motion:reduce){.ds-send{transition:none!important}}"
+    },
+    {
+      "name": "Primary case action",
+      "kind": "button",
+      "refersTo": "button-case-primary",
+      "description": "Citron link to the project's website.",
+      "html": "<a class=\"ds-case ds-case-primary\" href=\"#project\">Visit website <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></a>",
+      "css": ".ds-case-primary{background:var(--citron,#e4ed87)!important;color:var(--ink,#20251e)!important;border-color:transparent!important}.ds-case{display:inline-flex;align-items:center;justify-content:space-between;gap:24px;min-height:48px;padding:12px 22px;border:1px solid hsl(var(--border,80 9% 77%));border-radius:26px;font-size:13px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;text-decoration:none;color:hsl(var(--foreground,103 10% 13%));transition:background-color 160ms ease,color 160ms ease}.ds-case:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}@media(hover:hover) and (pointer:fine){.ds-case:hover{background:hsl(var(--foreground,103 10% 13%));color:hsl(var(--background,70 23% 95%))}}@media(hover:hover) and (pointer:fine){.ds-case-primary:hover{background:hsl(var(--foreground,103 10% 13%))!important;color:hsl(var(--background,70 23% 95%))!important}}@media(prefers-reduced-motion:reduce){.ds-case-primary,.ds-case{transition:none!important}}"
+    },
+    {
+      "name": "Secondary case action",
+      "kind": "button",
+      "refersTo": "button-case-secondary",
+      "description": "Outlined source-code link.",
+      "html": "<a class=\"ds-case\" href=\"#source\">Source code <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></a>",
+      "css": ".ds-case{display:inline-flex;align-items:center;justify-content:space-between;gap:24px;min-height:48px;padding:12px 22px;border:1px solid hsl(var(--border,80 9% 77%));border-radius:26px;font-size:13px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;text-decoration:none;color:hsl(var(--foreground,103 10% 13%));transition:background-color 160ms ease,color 160ms ease}.ds-case:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}@media(hover:hover) and (pointer:fine){.ds-case:hover{background:hsl(var(--foreground,103 10% 13%));color:hsl(var(--background,70 23% 95%))}}@media(prefers-reduced-motion:reduce){.ds-case{transition:none!important}}"
+    },
+    {
+      "name": "Contact input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labeled field on the secondary surface; invalid and focus states remain explicit.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-name\">Name</label><input id=\"ds-name\" placeholder=\"Your name\" /></div>",
+      "css": ".ds-field{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;color:hsl(var(--foreground,103 10% 13%))}.ds-field label{display:block;font-size:13px;font-weight:500;margin-bottom:12px}.ds-field input{width:100%;background:hsl(var(--secondary,70 18% 89%));color:inherit;border:1px solid transparent;border-radius:8px;padding:16px;font-size:16px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;box-shadow:none;caret-color:var(--spot,#495c28)}.ds-field input::placeholder{color:hsl(var(--muted-foreground,100 5% 35%));opacity:1}.ds-field input:focus,.ds-field input:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:3px}.ds-field input[aria-invalid=true]{border-color:#b53423}@media(prefers-reduced-motion:reduce){.ds-field{transition:none!important}}"
+    },
+    {
+      "name": "Desktop navigation",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "Compact navigation with a filled current-page pill.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Example navigation\"><a href=\"#home\">Home</a><a href=\"#work\" aria-current=\"page\">Work</a><a href=\"#about\">About</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:4px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;}.ds-nav a{display:inline-flex;align-items:center;padding:12px 20px;border-radius:24px;font-size:13px;min-height:44px;color:hsl(var(--foreground,103 10% 13%));text-decoration:none;transition:background-color 160ms ease}.ds-nav a[aria-current=page]{background:hsl(var(--foreground,103 10% 13%));color:hsl(var(--background,70 23% 95%))}.ds-nav a:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}@media(hover:hover) and (pointer:fine){.ds-nav a:not([aria-current=page]):hover{background:hsl(var(--secondary,70 18% 89%))}}@media(prefers-reduced-motion:reduce){.ds-nav{transition:none!important}}"
+    },
+    {
+      "name": "Filter chip",
+      "kind": "chip",
+      "refersTo": "filter-selected",
+      "description": "Outlined category toggle with citron pressed state.",
+      "html": "<div class=\"ds-filters\"><button aria-pressed=\"true\">All work</button><button aria-pressed=\"false\">Web development</button></div>",
+      "css": ".ds-filters{display:flex;flex-wrap:wrap;gap:8px}.ds-filters button{min-height:44px;padding:10px 20px;border:1px solid hsl(var(--border,80 9% 77%));border-radius:24px;font-size:13px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:transparent;color:hsl(var(--foreground,103 10% 13%));cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-filters button[aria-pressed=true]{background:var(--citron,#e4ed87);color:var(--ink,#20251e);border-color:transparent}.ds-filters button:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}@media(hover:hover) and (pointer:fine){.ds-filters button:not([aria-pressed=true]):hover{background:hsl(var(--secondary,70 18% 89%))}}@media(prefers-reduced-motion:reduce){.ds-filters{transition:none!important}}"
+    },
+    {
+      "name": "Project card",
+      "kind": "card",
+      "refersTo": "project-media",
+      "description": "Open project composition; snippet uses the existing no-image title fallback.",
+      "html": "<a class=\"ds-project\" href=\"#project\"><div class=\"ds-media\"><span class=\"ds-placeholder\">Project title</span><span class=\"ds-open\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></span></div><div class=\"ds-meta\"><h3>Project title</h3><span>Web development</span></div></a>",
+      "css": ".ds-project{display:block;min-width:0;text-decoration:none;color:hsl(var(--foreground,103 10% 13%));font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;}.ds-media{position:relative;overflow:hidden;background:hsl(var(--secondary,70 18% 89%));border-radius:16px;aspect-ratio:1.4}.ds-placeholder{display:grid;place-items:center;height:100%;font-size:28px;padding:24px}.ds-open{position:absolute;right:20px;bottom:20px;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--citron,#e4ed87);color:var(--ink,#20251e)}.ds-meta{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-top:20px}.ds-meta h3{font:600 clamp(24px,2.7vw,38px) Archivo,sans-serif;letter-spacing:-.03em;margin:0}.ds-meta>span{font-size:12px;color:hsl(var(--muted-foreground,100 5% 35%))}.ds-project:focus-visible{outline:2px solid var(--spot,#495c28);outline-offset:5px;}.ds-media img{width:100%;height:100%;object-fit:contain;transition:transform 220ms var(--ease-out,cubic-bezier(.22,1,.36,1))}@media(hover:hover) and (pointer:fine){.ds-project:hover .ds-media img{transform:scale(1.025)}}@media(prefers-reduced-motion:reduce){.ds-project,.ds-media,.ds-placeholder,.ds-open,.ds-meta{transition:none!important}}"
+    },
+    {
+      "name": "Showcase selector",
+      "kind": "custom",
+      "refersTo": "showcase-selector-active",
+      "description": "Manual project selector; pressed state changes the live image and destination in Vue.",
+      "html": "<div class=\"ds-select\"><button aria-pressed=\"true\">Web development <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></button><button aria-pressed=\"false\">AI &amp; machine learning <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></button></div>",
+      "css": ".ds-select{padding:16px;background:var(--citron,#e4ed87);color:var(--ink,#20251e)}.ds-select button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:48px;padding:12px 16px;border:0;border-radius:8px;text-align:left;font-size:14px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:transparent;color:inherit;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-select button svg{opacity:0}.ds-select button[aria-pressed=true]{background:var(--ink,#20251e);color:var(--citron,#e4ed87)}.ds-select button[aria-pressed=true] svg{opacity:1}.ds-select button:focus-visible{outline:2px solid var(--ink,#20251e);outline-offset:5px}@media(hover:hover) and (pointer:fine){.ds-select button:not([aria-pressed=true]):hover{background:#d3dd74}}@media(prefers-reduced-motion:reduce){.ds-select{transition:none!important}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "An open studio of working software",
+    "overview": "Citron display fields, deep ink and cool porcelain give the portfolio a clear, confident studio character. Bold Archivo headings introduce the work; quieter Inter copy leaves room for real software screenshots and the owner's story. Rounded image apertures and compact controls sit within generous, flat layouts.\n\nThis documents the implemented public Vue portfolio. The selected direction and first-surface composition remain in `.impeccable/surface.md` (seed `5995483a`); durable product commitments remain in `PRODUCT.md`. The visual authority is the direct Vue implementation, with no image comp.",
+    "keyCharacteristics": [
+      "Bold headings with restrained supporting copy.",
+      "Citron display fields and theme-aware porcelain or ink reading surfaces.",
+      "Large image apertures with compact outlined or filled controls.",
+      "Original graphics, deliberate interaction and motion that respects visibility."
+    ],
+    "rules": [
+      {
+        "name": "The Fixed Display Field Rule",
+        "body": "Citron-and-ink display fields retain their identity in both themes; reading surfaces use semantic theme tokens.",
+        "section": "colors"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "Use tonal separation and structural rules for ordinary containers; preserve the unshadowed public interface.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use semantic tokens for reading surfaces and fixed citron/ink for display fields.",
+      "**Do** keep full project screenshots legible, with genuine technology marks and real project metadata.",
+      "**Do** preserve visible focus, pressed/current state, reduced-motion behavior and WebGL performance gates.",
+      "**Do** preserve migrated original media byte-for-byte; retain provenance in the external migration snapshot and `public/technology-icons/sources.json`."
+    ],
+    "donts": [
+      "**Don't** replace the original birds, sphere appearance, DNA or Thinker as part of routine styling.",
+      "**Don't** add new continuous animation or turn model controls into unrestricted orbit.",
+      "**Don't** write provenance metadata into preserved media files.",
+      "**Don't** turn the first-surface composition into a requirement for every page or apply this public system to private administration without a separate review."
+    ]
+  }
+}

@@ -15,11 +15,9 @@ const timelineCategory = ref("all");
             <section class="inner-hero shell about-heading">
                 <h1>
                     <span class="line-mask"
-                        ><span data-intro>Behind the work,</span></span
+                        ><span data-intro>Curiosity is</span></span
                     ><span class="line-mask"
-                        ><span data-intro class="accent-text"
-                            >a curious human.</span
-                        ></span
+                        ><span data-intro>the constant.</span></span
                     >
                 </h1>
             </section>

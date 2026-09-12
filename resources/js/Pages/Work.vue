@@ -26,11 +26,9 @@ const filtered = computed(() =>
                 <div class="inner-hero-title">
                     <h1>
                         <span class="line-mask"
-                            ><span data-intro>Ideas into</span></span
+                            ><span data-intro>Work in</span></span
                         ><span class="line-mask"
-                            ><span data-intro class="accent-text"
-                                >something real.</span
-                            ></span
+                            ><span data-intro>many forms.</span></span
                         >
                     </h1>
                     <p data-intro-fade>
@@ -40,7 +38,7 @@ const filtered = computed(() =>
                     </p>
                 </div>
                 <div class="work-filter-row">
-                    <span class="small-label"
+                    <span class="archive-total"
                         >The project archive
                         <span class="archive-count"
                             >({{ projects.length }})</span
