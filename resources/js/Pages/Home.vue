@@ -63,11 +63,12 @@ const services = [
                         >Meet the person behind the work
                         <ArrowUpRight :size="20"
                     /></Link>
+                    <p class="studio-caption">
+                        Human curiosity. Digital possibilities.
+                    </p>
                 </div>
                 <div class="studio-dna">
-                    <ModelScene model="dna" /><span
-                        >Human curiosity. Digital possibilities.</span
-                    >
+                    <ModelScene model="dna" />
                 </div>
             </section>
             <section class="approach-section">
