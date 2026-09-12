@@ -1,12 +1,4 @@
 {
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ],
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "devCommand": "npm run dev",
-    "installCommand": "npm install"
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "git": { "deploymentEnabled": false }
 }
