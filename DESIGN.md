@@ -199,7 +199,7 @@ A pressed selector swaps the real project image, caption and destination togethe
 
 ### Graphics and motion
 
-Keep the original birds transition, displacement-sphere shader and colors, DNA and Thinker. Model controls permit horizontal orbit only, with zoom and pan disabled. Model loading begins near the viewport (120px margin); rendering pauses offscreen and in hidden tabs, uses pixel ratio (1), samples the ASCII grid at (0.22), and caps active drawing near (30fps). Reduced motion disables automatic rotation and animation updates. The existing DNA rotation is retained.
+Keep the original birds transition, displacement-sphere shader and colors, DNA and Thinker. Model controls permit horizontal orbit only, with zoom and pan disabled. Model loading begins near the viewport (120px margin); rendering pauses offscreen and in hidden tabs, uses pixel ratio (1), samples the ASCII grid at (0.22), and caps active drawing near (30fps). Reduced motion disables automatic rotation and animation updates. The DNA is a full-section background with camera framing shifted on wide screens and fitted on narrow screens. It has no automatic rotation or animation; horizontal dragging redraws on demand. Foreground links remain clickable and vertical touch scrolling stays native.
 
 The sphere uses pixel ratio (1), a (30fps) animation cap, viewport/tab visibility gates and a static reduced-motion rendering. The birds transition has a (2500ms) exit timer and is skipped under reduced motion. Dispose WebGL resources and observers when components unmount.
 

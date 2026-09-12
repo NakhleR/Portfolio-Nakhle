@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from "vue";
-const props = defineProps<{ model: "dna" | "thinker" }>();
+const props = defineProps<{ model: "dna" | "thinker"; background?: boolean }>();
 const host = ref<HTMLDivElement | null>(null);
 const failed = ref(false);
 let alive = true;
@@ -60,11 +60,12 @@ async function initialize() {
         effect.domElement.setAttribute("aria-hidden", "true");
         host.value.appendChild(effect.domElement);
         const controls = new OrbitControls(camera, effect.domElement);
+        if (props.background) effect.domElement.style.touchAction = "pan-y";
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.minPolarAngle = Math.PI / 2;
         controls.maxPolarAngle = Math.PI / 2;
-        controls.autoRotateSpeed = 0.8;
+        controls.autoRotate = false;
         const reduced = matchMedia("(prefers-reduced-motion: reduce)");
         let mixer: InstanceType<typeof THREE.AnimationMixer> | undefined;
         let visible = false,
@@ -86,7 +87,7 @@ async function initialize() {
         function draw(now: number) {
             frame = 0;
             if (!alive || !visible || !hasSize || document.hidden) return;
-            if (now - last >= 33 || reduced.matches) {
+            if (!mixer || now - last >= 33 || reduced.matches) {
                 const delta = Math.min((now - last) / 1000, 0.05);
                 last = now;
                 if (!reduced.matches) {
@@ -95,7 +96,7 @@ async function initialize() {
                 }
                 effect.render(scene, camera);
             }
-            if (!reduced.matches && (controls.autoRotate || mixer)) schedule();
+            if (!reduced.matches && mixer) schedule();
         }
         function schedule() {
             if (!frame && alive && visible && !document.hidden)
@@ -107,6 +108,15 @@ async function initialize() {
             hasSize = width > 0 && height > 0;
             if (!hasSize) return;
             camera.aspect = width / height;
+            if (props.background) {
+                // Shift the subject, not the canvas: its full section stays drawable.
+                const subjectWidth = height * 1.5;
+                const sideRoom = Math.max(0, (width - subjectWidth) / 2);
+                const offset =
+                    width >= 1024 ? -Math.min(width * 0.22, sideRoom) : 0;
+                camera.zoom = Math.min(1, width / subjectWidth);
+                camera.setViewOffset(width, height, offset, 0, width, height);
+            }
             camera.updateProjectionMatrix();
             controls.update();
             effect.setSize(width, height);
@@ -116,10 +126,6 @@ async function initialize() {
                 Math.ceil(height * 0.22),
                 false,
             );
-            schedule();
-        }
-        function motionPreference() {
-            controls.autoRotate = props.model === "dna" && !reduced.matches;
             schedule();
         }
         const sizeObserver = new ResizeObserver(resize);
@@ -134,16 +140,15 @@ async function initialize() {
         });
         renderObserver.observe(host.value);
         document.addEventListener("visibilitychange", schedule);
-        reduced.addEventListener("change", motionPreference);
+        reduced.addEventListener("change", schedule);
         controls.addEventListener("change", schedule);
-        motionPreference();
         resize();
         dispose = () => {
             cancelAnimationFrame(frame);
             sizeObserver.disconnect();
             renderObserver.disconnect();
             document.removeEventListener("visibilitychange", schedule);
-            reduced.removeEventListener("change", motionPreference);
+            reduced.removeEventListener("change", schedule);
             controls.dispose();
             draco.dispose();
             mixer?.stopAllAction();
@@ -178,7 +183,7 @@ async function initialize() {
                     }
                 });
                 scene.add(object);
-                if (gltf.animations.length) {
+                if (props.model !== "dna" && gltf.animations.length) {
                     mixer = new THREE.AnimationMixer(object);
                     mixer.clipAction(gltf.animations[0]).play();
                 }

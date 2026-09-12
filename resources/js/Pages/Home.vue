@@ -52,23 +52,25 @@ const services = [
     <div>
         <Head title="Developer & creative problem solver" /><SiteLayout>
             <ProjectShowcase :projects="featured" />
-            <section class="studio-statement shell">
-                <div class="studio-statement-copy">
-                    <h2>A curious mind.<br />A builder's instinct.</h2>
-                    <p>
-                        Full stack developer. AI &amp; machine learning student.
-                        Always learning. Always building.
-                    </p>
-                    <Link href="/about" class="studio-link"
-                        >Meet the person behind the work
-                        <ArrowUpRight :size="20"
-                    /></Link>
-                    <p class="studio-caption">
-                        Human curiosity. Digital possibilities.
-                    </p>
+            <section class="studio-statement">
+                <div class="shell studio-statement-content">
+                    <div class="studio-statement-copy">
+                        <h2>A curious mind.<br />A builder's instinct.</h2>
+                        <p>
+                            Full stack developer. AI &amp; machine learning
+                            student. Always learning. Always building.
+                        </p>
+                        <Link href="/about" class="studio-link"
+                            >Meet the person behind the work
+                            <ArrowUpRight :size="20"
+                        /></Link>
+                        <p class="studio-caption">
+                            Human curiosity. Digital possibilities.
+                        </p>
+                    </div>
                 </div>
                 <div class="studio-dna">
-                    <ModelScene model="dna" />
+                    <ModelScene model="dna" background />
                 </div>
             </section>
             <section class="approach-section">
