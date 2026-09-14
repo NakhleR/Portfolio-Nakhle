@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import SeoHead from "../Components/SeoHead.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 const form = useForm({ email: "", password: "" });
 function submit() {
     form.post("/login", { onFinish: () => form.reset("password") });
@@ -7,7 +8,7 @@ function submit() {
 </script>
 <template>
     <div>
-        <Head title="Admin Login" />
+        <SeoHead />
         <main class="min-h-screen grid place-items-center p-6">
             <div class="panel p-8 w-full max-w-md">
                 <Link href="/" class="text-sm text-muted-foreground"

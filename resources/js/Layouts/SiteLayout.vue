@@ -9,7 +9,7 @@ const root = ref<HTMLElement | null>(null);
 const header = ref<HTMLElement | null>(null);
 const headerHidden = ref(false);
 const menu = ref(false);
-const dark = ref(document.documentElement.classList.contains("dark"));
+const dark = ref(false);
 const links = [
     { href: "/", label: "Home" },
     { href: "/work", label: "Work" },
@@ -63,6 +63,7 @@ function onScroll() {
 }
 
 onMounted(() => {
+    dark.value = document.documentElement.classList.contains("dark");
     previousScroll = window.scrollY;
     window.addEventListener("scroll", onScroll, { passive: true });
 });

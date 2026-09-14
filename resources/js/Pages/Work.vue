@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from "../Components/SeoHead.vue";
 import { ref, computed } from "vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import ProjectCard from "../Components/ProjectCard.vue";
 import type { ProjectCardData } from "../types";
@@ -21,7 +22,7 @@ const filtered = computed(() =>
 </script>
 <template>
     <div>
-        <Head title="Selected work" /><SiteLayout>
+        <SeoHead /><SiteLayout>
             <section class="inner-hero shell">
                 <div class="inner-hero-title">
                     <h1>

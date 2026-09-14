@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from "@inertiajs/vue3";
+import SeoHead from "../Components/SeoHead.vue";
+import { Link } from "@inertiajs/vue3";
 import { ArrowUpRight } from "lucide-vue-next";
 import { defineAsyncComponent } from "vue";
 import SiteLayout from "../Layouts/SiteLayout.vue";
@@ -27,7 +28,7 @@ const services = [
 </script>
 <template>
     <div>
-        <Head title="Developer & creative problem solver" /><SiteLayout>
+        <SeoHead /><SiteLayout>
             <DisciplineShowcase />
             <section class="studio-statement">
                 <div class="shell studio-statement-content">

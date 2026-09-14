@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from "../Components/SeoHead.vue";
 import { computed, ref } from "vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -33,7 +34,7 @@ function imageLoaded(event: Event, src: string) {
 </script>
 <template>
     <div>
-        <Head :title="project.title" />
+        <SeoHead />
         <SiteLayout>
             <article class="case-study shell">
                 <nav class="case-navigation" aria-label="Project navigation">

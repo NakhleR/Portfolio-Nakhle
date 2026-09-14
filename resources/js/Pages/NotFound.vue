@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Head, Link } from "@inertiajs/vue3";
+import SeoHead from "../Components/SeoHead.vue";
+import { Link } from "@inertiajs/vue3";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 </script>
 <template>
     <div>
-        <Head title="Page not found" /><SiteLayout
+        <SeoHead /><SiteLayout
             ><section class="page-heading min-h-[55vh]">
                 <p class="eyebrow">404</p>
                 <h1>Page not found</h1>

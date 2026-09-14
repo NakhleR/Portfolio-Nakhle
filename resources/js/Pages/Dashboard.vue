@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from "../Components/SeoHead.vue";
 import { ref, computed, watch, nextTick, defineAsyncComponent } from "vue";
-import { Head, Link, router, useForm, usePage } from "@inertiajs/vue3";
+import { Link, router, useForm, usePage } from "@inertiajs/vue3";
 import {
     Plus,
     Pencil,
@@ -160,7 +161,7 @@ watch(
 </script>
 <template>
     <div>
-        <Head title="Dashboard" />
+        <SeoHead />
         <main class="min-h-screen">
             <header class="border-b border-border">
                 <div

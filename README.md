@@ -15,6 +15,8 @@ composer serve
 
 Visit http://127.0.0.1:8000 and http://127.0.0.1:8000/login. The original administrator email and password still work. The local MySQL port is 3308; credentials are in the ignored `.env`. Run `npm run dev` in another terminal when editing Vue/CSS, or `npm run build` to rebuild production assets.
 
+Public pages support Inertia server-side rendering. `npm run build` builds both browser assets and the Node SSR bundle. Start the renderer in a separate terminal with `php artisan inertia:start-ssr` (or `npm run ssr`); it listens only on `127.0.0.1:13714`. Restart it after rebuilding the SSR bundle. Without the renderer, Laravel still serves complete page metadata and falls back to client rendering. Browser effects initialize after hydration. Dashboard pages intentionally use client rendering. This setup uses the standalone renderer with built assets; Vite hot development falls back to client rendering. Stop the Vite dev server, build, and start/restart SSR when verifying initial HTML and SEO.
+
 For a new checkout:
 
 ```sh
@@ -79,11 +81,15 @@ npm run build
 vendor/bin/pint --dirty
 ```
 
-All 20 automated feature tests passed against both isolated SQLite and a separate MySQL test database, with fake storage. Browser checks covered galleries, navigation, legacy-service independence, login, project/timeline CRUD, FilePond uploads, mobile layout, and 3D/theme rendering. The real imported content is separately verified against local MySQL using `portfolio:import --verify-only`.
+The original migration suite passed against isolated SQLite and a separate MySQL test database, with fake storage. The expanded suite now includes SEO metadata, sitemap, canonical-navigation, and media optimization regression coverage. Browser checks covered galleries, navigation, legacy-service independence, login, project/timeline CRUD, FilePond uploads, mobile layout, and 3D/theme rendering. The real imported content is separately verified against local MySQL using `portfolio:import --verify-only`.
 
 ## Production later
 
 Serve the `public/` directory with PHP 8.4.1+, use MySQL, configure `APP_ENV=production`, `APP_DEBUG=false`, a unique `APP_KEY`, HTTPS `APP_URL`, secure session cookies, and matching PHP upload limits. Persist `storage/app/public` and back up it together with MySQL. Run `composer install --no-dev --optimize-autoloader`, `npm ci`, `npm run build`, `php artisan migrate --force`, `php artisan storage:link`, and `php artisan optimize`.
+
+Keep `php artisan inertia:start-ssr` running under a process supervisor in production, with Node.js available and `bootstrap/ssr` deployed from the build. Bind port 13714 to loopback only. Restart the SSR service after every new build; use `php artisan inertia:check-ssr` for its health check. Keep `INERTIA_SSR_ENABLED=true` in production. The PHP test suite disables SSR so it remains independent of a running Node service.
+
+`APP_URL` is the source for canonical URLs, the dynamic `/robots.txt` sitemap reference, and all 15 current sitemap URLs (four main pages plus project details). Set it to the final HTTPS domain and rebuild Laravel's configuration cache before launch. Titles, descriptions, social metadata, and JSON-LD share one server-side source; login/dashboard/missing pages are noindex. Submit `/sitemap.xml` to Google Search Console on the final domain after deployment. No submission is performed by the app.
 
 Project uploads automatically produce a WebP `display` conversion (up to 1600px wide) and responsive sizes through Spatie; GIFs remain original. Original upload files and full-size links are preserved. After restoring an older media backup, generate missing display copies with `php artisan media-library:regenerate 'App\Models\Project' --only=display --only-missing --no-interaction` (add `--force` on the configured production host). Until conversions exist, the frontend falls back to original URLs. PHP GD needs WebP support. The About portrait has committed WebP display copies alongside its original.
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TimelineResource;
@@ -38,5 +39,6 @@ Route::get('/api/projects/{project}', fn (Project $project) => response()->json(
 Route::get('/api/timeline', fn () => response()->json(TimelineResource::collection(Timeline::orderBy('order')->orderBy('id')->get())->resolve()));
 Route::get('/api/timeline/{timeline}', fn (Timeline $timeline) => response()->json((new TimelineResource($timeline))->resolve()));
 Route::get('/health', fn () => response()->json(['status' => 'ok', 'database' => DB::select('SELECT 1') ? 'ok' : 'unavailable']));
-Route::get('/sitemap.xml', fn () => response()->view('sitemap')->header('Content-Type', 'application/xml'));
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 Route::fallback(fn () => Inertia::render('NotFound')->toResponse(request())->setStatusCode(404));

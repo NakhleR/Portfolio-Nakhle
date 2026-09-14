@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { claimBirdsIntro } from "../graphics/introState";
 const host = ref<HTMLElement | null>(null);
-const visible = ref(claimBirdsIntro());
+const visible = ref(false);
 const emit = defineEmits<{ complete: [] }>();
 let stop = () => {};
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -18,6 +18,7 @@ function finish() {
     emit("complete");
 }
 onMounted(async () => {
+    visible.value = claimBirdsIntro();
     if (!visible.value) {
         emit("complete");
         return;

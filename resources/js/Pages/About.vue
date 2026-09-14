@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import SeoHead from "../Components/SeoHead.vue";
 import { ref } from "vue";
-import { Head } from "@inertiajs/vue3";
 import { ArrowDown } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import { skills } from "../data/skills";
@@ -11,7 +11,7 @@ const timelineCategory = ref("all");
 </script>
 <template>
     <div>
-        <Head title="About me" /><SiteLayout>
+        <SeoHead /><SiteLayout>
             <section class="inner-hero shell about-heading">
                 <h1>
                     <span class="line-mask"

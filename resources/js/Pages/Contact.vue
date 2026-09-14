@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import SeoHead from "../Components/SeoHead.vue";
 import { defineAsyncComponent } from "vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, ArrowRight } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 const LocationMap = defineAsyncComponent(
@@ -20,7 +21,7 @@ function submit() {
 </script>
 <template>
     <div>
-        <Head title="Let's talk" /><SiteLayout>
+        <SeoHead /><SiteLayout>
             <div class="contact-scene">
                 <DisplacementSphere />
                 <section class="contact-hero shell">
