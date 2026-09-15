@@ -1,47 +1,40 @@
 <script setup lang="ts">
-import SeoHead from "../Components/SeoHead.vue";
+import AdminLayout from "../Layouts/AdminLayout.vue";
+import CmsOverview from "../Components/CmsOverview.vue";
+import type { TrendDay } from "../Components/TrendChart.vue";
 import { ref, computed, watch, nextTick, defineAsyncComponent } from "vue";
 import { Link, router, useForm, usePage } from "@inertiajs/vue3";
-import {
-    Plus,
-    Pencil,
-    Trash2,
-    X,
-    LogOut,
-    ArrowUpRight,
-    Search,
-} from "lucide-vue-next";
+import { Plus, Pencil, Trash2, X, Search } from "lucide-vue-next";
 import type { Project, TimelineItem } from "../types";
 const ProjectUploads = defineAsyncComponent(
     () => import("../Components/ProjectUploads.vue"),
 );
-interface Message {
-    id: number;
-    name: string;
-    email: string;
-    message: string;
-    created_at: string;
-}
 const props = defineProps<{
+    stats: {
+        views: number;
+        sessions: number;
+        newMessages: number;
+        drafts: number;
+        published: number;
+        media: number;
+    };
+    daily: TrendDay[];
+    recent: { key: string; updated_at: string }[];
     projects: Project[];
     timeline: TimelineItem[];
-    messages: {
-        data: Message[];
-        total: number;
-        links: { url: string | null; label: string; active: boolean }[];
-    };
 }>();
 const page = usePage<{
     auth: { user: { name: string; email: string } };
     flash: { success?: string };
 }>();
-const tab = ref<"projects" | "timeline" | "messages">("projects"),
+const tab = ref<"overview" | "projects" | "timeline">("overview"),
     search = ref("");
 const projectDialog = ref<HTMLDialogElement | null>(null),
     timelineDialog = ref<HTMLDialogElement | null>(null);
 const projectId = ref<string | null>(null),
     timelineId = ref<string | null>(null);
 const projectForm = useForm({
+    is_published: false,
     title: "",
     category: "",
     description: "",
@@ -78,6 +71,7 @@ function editProject(project?: Project) {
     projectId.value = project?.id || null;
     if (project)
         Object.assign(projectForm, {
+            is_published: project.is_published ?? true,
             title: project.title,
             category: project.category,
             description: project.description,
@@ -149,7 +143,14 @@ function deleteRecord(
 watch(
     () => page.url,
     async (url) => {
-        const id = new URL(url, location.origin).searchParams.get("edit");
+        const params = new URL(url, "http://localhost").searchParams;
+        const selection = params.get("tab");
+        tab.value = params.has("edit")
+            ? "projects"
+            : selection === "projects" || selection === "timeline"
+              ? selection
+              : "overview";
+        const id = params.get("edit");
         if (id) {
             await nextTick();
             const project = props.projects.find((p) => p.id === id);
@@ -160,85 +161,42 @@ watch(
 );
 </script>
 <template>
-    <div>
-        <SeoHead />
-        <main class="min-h-screen">
-            <header class="border-b border-border">
+    <AdminLayout
+        :title="
+            tab === 'overview'
+                ? 'Studio overview'
+                : tab === 'projects'
+                  ? 'Projects'
+                  : 'Experience'
+        "
+        description="Manage your work, content, and conversations."
+        ><div>
+            <div>
                 <div
-                    class="container flex flex-wrap items-center justify-between gap-4 py-5"
+                    class="cms-toolbar justify-end mb-6"
+                    v-if="tab === 'projects' || tab === 'timeline'"
                 >
-                    <Link href="/" class="font-heading text-xl font-semibold"
-                        >Nakhle Rizk<span class="text-muted-foreground">
-                            / Dashboard</span
-                        ></Link
-                    >
-                    <div class="flex gap-3 items-center">
-                        <Link href="/" class="button secondary text-sm"
-                            ><ArrowUpRight :size="16" />View site</Link
-                        ><Link
-                            href="/logout"
-                            method="post"
-                            as="button"
-                            class="icon-button"
-                            aria-label="Sign out"
-                            ><LogOut :size="18"
-                        /></Link>
-                    </div>
-                </div>
-            </header>
-            <div class="container py-10 md:py-14">
-                <div
-                    class="flex flex-wrap justify-between items-end gap-4 mb-8"
-                >
-                    <div>
-                        <p class="eyebrow mb-2">Portfolio management</p>
-                        <h1 class="text-3xl md:text-4xl">Welcome back.</h1>
-                        <p class="text-muted-foreground text-sm mt-3">
-                            {{ page.props.auth.user.email }}
-                        </p>
-                    </div>
                     <button
-                        v-if="tab !== 'messages'"
-                        class="button"
+                        class="cms-button"
                         @click="
                             tab === 'projects' ? editProject() : editTimeline()
                         "
                     >
-                        <Plus :size="18" />{{
+                        <Plus :size="16" />{{
                             tab === "projects"
-                                ? "Add Project"
-                                : "Add Timeline Entry"
+                                ? "Add project"
+                                : "Add experience"
                         }}
                     </button>
                 </div>
-                <p
-                    v-if="page.props.flash.success"
-                    role="status"
-                    class="success-message mb-6"
-                >
-                    {{ page.props.flash.success }}
-                </p>
-                <div class="grid sm:grid-cols-3 gap-4 mb-10">
-                    <div class="panel p-5">
-                        <p class="eyebrow">Projects</p>
-                        <p class="text-3xl font-heading mt-2">
-                            {{ props.projects.length }}
-                        </p>
-                    </div>
-                    <div class="panel p-5">
-                        <p class="eyebrow">Timeline entries</p>
-                        <p class="text-3xl font-heading mt-2">
-                            {{ timeline.length }}
-                        </p>
-                    </div>
-                    <div class="panel p-5">
-                        <p class="eyebrow">Messages</p>
-                        <p class="text-3xl font-heading mt-2">
-                            {{ messages.total }}
-                        </p>
-                    </div>
-                </div>
+                <CmsOverview
+                    v-if="tab === 'overview'"
+                    :stats="stats"
+                    :daily="daily"
+                    :recent="recent"
+                />
                 <div
+                    v-if="tab !== 'overview'"
                     class="flex flex-wrap items-center justify-between gap-4 mb-6"
                 >
                     <div class="tabs !justify-start !mx-0">
@@ -246,13 +204,19 @@ watch(
                             v-for="item in [
                                 'projects',
                                 'timeline',
-                                'messages',
+                                'overview',
                             ] as const"
                             :key="item"
                             class="tab capitalize"
                             :class="{ active: tab === item }"
                             :aria-pressed="tab === item"
-                            @click="tab = item"
+                            @click="
+                                router.get(
+                                    item === 'overview'
+                                        ? '/dashboard'
+                                        : '/dashboard?tab=' + item,
+                                )
+                            "
                         >
                             {{ item }}
                         </button>
@@ -284,15 +248,18 @@ watch(
                             loading="lazy"
                         />
                         <div class="flex-1 min-w-0">
-                            <p class="eyebrow mb-1">
-                                {{ project.category }} · Order
-                                {{ project.order }}
-                            </p>
                             <h2 class="text-lg font-semibold break-words">
                                 {{ project.title }}
                             </h2>
+                            <p class="cms-muted mt-1">
+                                {{ project.category }} · Order
+                                {{ project.order }}
+                            </p>
                             <p class="text-xs text-muted-foreground mt-2">
                                 {{ project.images.length }} images
+                                <span class="cms-badge">{{
+                                    project.is_published ? "Published" : "Draft"
+                                }}</span>
                             </p>
                         </div>
                         <div class="flex gap-1">
@@ -331,13 +298,13 @@ watch(
                         class="panel p-5 flex items-center gap-5"
                     >
                         <div class="flex-1">
-                            <p class="eyebrow mb-2">
-                                {{ item.year }} · {{ item.category }} · Order
-                                {{ item.order }}
-                            </p>
                             <h2 class="text-lg font-semibold">
                                 {{ item.title }}
                             </h2>
+                            <p class="cms-muted mt-1">
+                                {{ item.year }} · {{ item.category }} · Order
+                                {{ item.order }}
+                            </p>
                             <p class="text-sm text-muted-foreground mt-1">
                                 {{ item.location }}
                             </p>
@@ -365,59 +332,6 @@ watch(
                         No timeline entries yet.
                     </p>
                 </div>
-                <div v-if="tab === 'messages'" class="space-y-4">
-                    <article
-                        v-for="message in messages.data"
-                        :key="message.id"
-                        class="panel p-6"
-                    >
-                        <div class="flex flex-wrap justify-between gap-3">
-                            <div>
-                                <h2 class="text-lg font-semibold">
-                                    {{ message.name }}
-                                </h2>
-                                <a
-                                    :href="'mailto:' + message.email"
-                                    class="text-sm text-muted-foreground"
-                                    >{{ message.email }}</a
-                                >
-                            </div>
-                            <time class="text-xs text-muted-foreground">{{
-                                new Date(message.created_at).toLocaleString()
-                            }}</time>
-                        </div>
-                        <p class="mt-5 whitespace-pre-line break-words">
-                            {{ message.message }}
-                        </p>
-                    </article>
-                    <p
-                        v-if="!messages.data.length"
-                        class="panel p-12 text-center text-muted-foreground"
-                    >
-                        No messages yet.
-                    </p>
-                    <nav
-                        v-if="messages.total > 20"
-                        aria-label="Message pages"
-                        class="flex flex-wrap gap-2"
-                    >
-                        <template v-for="(link, i) in messages.links" :key="i"
-                            ><Link
-                                v-if="link.url"
-                                :href="link.url"
-                                preserve-state
-                                preserve-scroll
-                                class="button secondary text-sm"
-                                :aria-current="link.active ? 'page' : undefined"
-                                >{{
-                                    link.label
-                                        .replace(/&laquo;/g, "«")
-                                        .replace(/&raquo;/g, "»")
-                                }}</Link
-                            ></template
-                        >
-                    </nav>
-                </div>
             </div>
             <dialog
                 ref="projectDialog"
@@ -439,6 +353,16 @@ watch(
                         </button>
                     </div>
                     <form @submit.prevent="saveProject" class="space-y-5">
+                        <label class="cms-field-check"
+                            ><input
+                                type="checkbox"
+                                v-model="projectForm.is_published"
+                            />Published on the website</label
+                        >
+                        <p class="cms-muted mb-5">
+                            Unpublished projects are hidden from the archive,
+                            API, and sitemap. Uploaded media URLs remain public.
+                        </p>
                         <div class="grid sm:grid-cols-2 gap-5">
                             <div>
                                 <label for="project-title">Title</label
@@ -672,6 +596,6 @@ watch(
                     </form>
                 </div>
             </dialog>
-        </main>
-    </div>
+        </div></AdminLayout
+    >
 </template>

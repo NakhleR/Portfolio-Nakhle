@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, provide } from "vue";
+import { useCms } from "../composables/useCms";
+const cms = useCms();
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, ArrowDown, Menu, X, Sun, Moon } from "lucide-vue-next";
 import { usePortfolioMotion } from "../composables/usePortfolioMotion";
 import BirdsTransition from "../Components/BirdsTransition.vue";
+import { provideEntryLoader } from "../composables/useEntryLoader";
+import { useAnalytics } from "../composables/useAnalytics";
+import CookiePreferences from "../Components/CookiePreferences.vue";
 const page = usePage();
 const root = ref<HTMLElement | null>(null);
 const header = ref<HTMLElement | null>(null);
@@ -17,11 +22,14 @@ const links = [
     { href: "/contact", label: "Contact" },
 ];
 const { reveal } = usePortfolioMotion(root);
-const introComplete = ref(false);
-provide("portfolioIntroComplete", introComplete);
-function finishIntro() {
-    introComplete.value = true;
-    reveal();
+const { entry, ready } = provideEntryLoader(root);
+useAnalytics(root);
+function openCookiePreferences() {
+    window.dispatchEvent(new Event("open-cookie-preferences"));
+}
+function finishIntro(isEntry: boolean) {
+    entry.value = false;
+    reveal(isEntry);
 }
 let scrollFrame = 0;
 let previousScroll = 0;
@@ -94,7 +102,11 @@ function toggleTheme() {
 </script>
 <template>
     <div ref="root" class="site-shell">
-        <BirdsTransition @complete="finishIntro" />
+        <BirdsTransition
+            :ready="ready"
+            @start="entry = true"
+            @complete="finishIntro"
+        />
         <a class="skip-link" href="#main">Skip to content</a>
         <header
             ref="header"
@@ -103,12 +115,14 @@ function toggleTheme() {
             @focusin="showHeader"
         >
             <div class="shell header-inner">
-                <Link href="/" class="wordmark" aria-label="Nakhle Rizk home"
+                <Link
+                    href="/"
+                    class="wordmark"
+                    :aria-label="`${cms.site.name} home`"
                     ><span class="brand-symbol" aria-hidden="true">nr.</span
                     ><span class="brand-name"
-                        >Nakhle Rizk<span
-                            >Developer &amp; creative thinker</span
-                        ></span
+                        >{{ cms.site.name
+                        }}<span>{{ cms.site.tagline }}</span></span
                     ></Link
                 >
                 <nav class="desktop-nav" aria-label="Main navigation">
@@ -132,7 +146,7 @@ function toggleTheme() {
                 </nav>
                 <div class="header-actions">
                     <a
-                        href="/Nakhle_CV.pdf"
+                        :href="cms.assets.cv"
                         download="Nakhle_Rizk_CV.pdf"
                         class="cv-link"
                         >Download CV <ArrowDown :size="14"
@@ -185,49 +199,87 @@ function toggleTheme() {
                         "
                         >{{ link.label }}<ArrowUpRight :size="28"
                     /></Link>
-                    <a href="/Nakhle_CV.pdf" download class="mobile-cv"
+                    <a :href="cms.assets.cv" download class="mobile-cv"
                         >Download CV <ArrowDown :size="18"
                     /></a>
                 </nav>
             </Transition>
         </header>
-        <main id="main"><slot /></main>
+        <main id="main">
+            <div v-if="page.props.cmsPreview" class="cms-preview-bar">
+                Draft preview · Only administrators can see these changes.
+                <Link href="/dashboard">Return to CMS</Link>
+            </div>
+            <slot />
+        </main>
         <footer class="portfolio-footer">
             <div class="shell">
                 <Link
                     href="/contact"
                     class="footer-cta"
-                    aria-label="Let's work together"
+                    aria-label="Let's take it further."
                 >
-                    <span aria-hidden="true"
-                        ><span class="block">Let's work</span
-                        ><span class="footer-word"
-                            ><span>toge</span
-                            ><span class="footer-lift"
-                                ><span>ther.</span><ArrowUpRight /></span></span
-                    ></span>
+                    <span aria-hidden="true">
+                        <span class="block">Let's take it</span>
+                        <span class="footer-word">
+                            <span class="footer-stairs"
+                                ><span
+                                    v-for="(letter, index) in [
+                                        'f',
+                                        'u',
+                                        'r',
+                                        't',
+                                        'h',
+                                        'e',
+                                        'r.',
+                                    ]"
+                                    :key="index"
+                                    class="footer-step"
+                                    >{{ letter }}</span
+                                ></span
+                            >
+                            <ArrowUpRight class="footer-cta-arrow" />
+                        </span>
+                    </span>
                 </Link>
-                <p class="mb-8 text-sm">Open to work &amp; collaborations</p>
+                <p class="mb-8 text-sm">{{ cms.site.availability }}</p>
                 <div class="footer-bottom">
-                    <span>© {{ new Date().getFullYear() }} Nakhle Rizk</span>
-                    <a href="mailto:nakhler2k2@gmail.com" class="text-link"
+                    <span
+                        >© {{ new Date().getFullYear() }}
+                        {{ cms.site.name }}</span
+                    >
+                    <a :href="`mailto:${cms.site.email}`" class="text-link"
                         >Say hello <ArrowUpRight :size="15"
                     /></a>
                     <div class="footer-socials">
                         <a
-                            href="https://github.com/NakhleR"
+                            :href="cms.site.github"
                             target="_blank"
                             rel="noopener noreferrer"
                             >GitHub <ArrowUpRight :size="14" /></a
                         ><a
-                            href="https://www.linkedin.com/in/nakhle-rizk-528129256/"
+                            :href="cms.site.linkedin"
                             target="_blank"
                             rel="noopener noreferrer"
                             >LinkedIn <ArrowUpRight :size="14"
                         /></a>
                     </div>
                 </div>
+                <nav
+                    class="footer-legal"
+                    aria-label="Legal and privacy"
+                    data-analytics-ignore
+                >
+                    <Link href="/privacy">Privacy</Link
+                    ><Link href="/cookies">Cookies</Link
+                    ><Link href="/terms">Terms</Link
+                    ><Link href="/legal">Legal &amp; copyright</Link>
+                    <button type="button" @click="openCookiePreferences">
+                        Cookie preferences
+                    </button>
+                </nav>
             </div>
         </footer>
+        <CookiePreferences :loading="entry" />
     </div>
 </template>

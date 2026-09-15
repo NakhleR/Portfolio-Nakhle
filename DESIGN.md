@@ -18,34 +18,40 @@ colors:
   dark-muted-foreground: "hsl(80 10% 72%)"
   dark-border: "hsl(100 7% 30%)"
   dark-error: "#ffac9b"
+  cms-panel: "#fff"
+  cms-muted: "#62685e"
+  cms-line: "#d9ddd2"
+  cms-focus: "#53682e"
 typography:
   display:
-    fontFamily: "Archivo, sans-serif"
+    fontFamily: "Space Grotesk, sans-serif"
     fontSize: "clamp(52px, 6.7vw, 96px)"
-    fontWeight: 600
+    fontWeight: 500
     lineHeight: 0.98
-    letterSpacing: "-0.04em"
+    letterSpacing: "-0.045em"
   headline:
-    fontFamily: "Archivo, sans-serif"
+    fontFamily: "Space Grotesk, sans-serif"
     fontSize: "clamp(34px, 4.3vw, 62px)"
-    fontWeight: 600
+    fontWeight: 500
     lineHeight: 1.08
-    letterSpacing: "-0.04em"
+    letterSpacing: "-0.045em"
   title:
-    fontFamily: "Archivo, sans-serif"
+    fontFamily: "Space Grotesk, sans-serif"
     fontSize: "clamp(24px, 2.7vw, 38px)"
-    fontWeight: 600
+    fontWeight: 500
     letterSpacing: "-0.03em"
   body:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "Space Grotesk, sans-serif"
     fontSize: "16px"
     fontWeight: 400
     lineHeight: 1.7
   label:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontFamily: "Space Grotesk, sans-serif"
     fontSize: "13px"
     lineHeight: 1.5
 rounded:
+  cms-control: "9px"
+  cms-panel: "16px"
   field: "8px"
   media: "16px"
   chip: "24px"
@@ -60,6 +66,16 @@ spacing:
   section-desktop: "100px"
   gutter: "clamp(22px, 4vw, 68px)"
 components:
+  cms-button-primary:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.cms-control}"
+    padding: "10px 16px"
+  cms-button-secondary:
+    backgroundColor: "{colors.cms-panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.cms-control}"
+    padding: "10px 16px"
   button-send:
     backgroundColor: "{colors.foreground}"
     textColor: "{colors.background}"
@@ -104,9 +120,9 @@ components:
 
 **Creative North Star: "An open studio of working software"**
 
-Citron display fields, deep ink and cool porcelain give the portfolio a clear, confident studio character. Bold Archivo headings introduce the work; quieter Inter copy leaves room for real software screenshots and the owner's story. Rounded image apertures and compact controls sit within generous, flat layouts.
+Citron display fields, deep ink and cool porcelain give the portfolio a clear, confident studio character. Medium-weight Space Grotesk headings introduce the work; quieter Space Grotesk copy leaves room for real software screenshots and the owner's story. Rounded image apertures and compact controls sit within generous, flat layouts.
 
-This documents the implemented public Vue portfolio. The selected direction and first-surface composition remain in `.impeccable/surface.md` (seed `5995483a`); durable product commitments remain in `PRODUCT.md`. The visual authority is the direct Vue implementation, with no image comp.
+This documents the implemented public Vue portfolio and its separately reviewed private CMS extension. The selected direction and surface contracts remain in `.impeccable/surface.md` (public seed `5995483a`); durable product commitments remain in `PRODUCT.md`. The visual authority is the direct Vue implementation, with no image comp. Administration carries the studio palette into a quieter workspace with a fixed ink navigation rail and light content canvas with Inter typography, flat panels and explicit publishing states.
 
 **Key Characteristics:**
 
@@ -114,6 +130,7 @@ This documents the implemented public Vue portfolio. The selected direction and 
 - Citron display fields and theme-aware porcelain or ink reading surfaces.
 - Large image apertures with compact outlined or filled controls.
 - Original graphics, deliberate interaction and motion that respects visibility.
+- A restrained private workspace that keeps writing, previewing and publishing distinct.
 
 ## Colors
 
@@ -134,12 +151,14 @@ The palette combines lively citron with green-tinted neutrals; exact primitives 
 
 **The Fixed Display Field Rule.** Citron-and-ink display fields retain their identity in both themes; reading surfaces use semantic theme tokens.
 
+The private CMS has its own scoped light palette in `resources/css/cms.css`: porcelain canvas, white panels, ink text, quiet green-gray metadata and fine dividers. Citron fills the active navigation item with ink text on the dark rail and highlights new enquiries and the private-preview banner. Olive focus also supplies the audience-chart line. Public theme switching does not recolor administration.
+
 ## Typography
 
-**Display Font:** Archivo with sans-serif fallback.  
-**Body Font:** Inter with system sans-serif fallbacks.
+**Display Font:** Space Grotesk with sans-serif fallback.  
+**Body Font:** Space Grotesk with sans-serif fallback.
 
-The pairing is direct and compact. Headings use tight tracking and balanced wrapping; body copy keeps a slower reading rhythm.
+The public site uses locally served variable WOFF2 files for Latin and extended Latin, with swap loading. Headings use weight 500 and body copy uses weight 400. No external font service is called by visitors. Headings use tight tracking and balanced wrapping; body copy keeps a slower reading rhythm.
 
 ### Hierarchy
 
@@ -149,6 +168,8 @@ The pairing is direct and compact. Headings use tight tracking and balanced wrap
 - **Body:** general copy varies by context (15–18px); biography and case prose use a looser line height (1.85). Long prose is constrained (65–72ch).
 - **Label:** navigation, metadata and field labels are compact (12–14px); preserve sentence case. Counters use tabular numerals.
 
+The CMS uses Inter throughout: UI copy (14px/1.55), page headings (32px/1.2, weight 600), panel headings (19px, weight 600), subsection headings (15px, weight 600), and field/control labels (13px). Heading tracking is compact (-0.025em). Main headings reduce to (26px) on mobile. Chart axes and contextual values remain readable HTML text (12px); metrics use tabular numerals. Public Space Grotesk display proportions do not carry into the CMS.
+
 ## Layout
 
 The public shell caps at (1680px), with a fluid gutter from the frontmatter. Sections commonly use desktop vertical space (100px), reducing to (65px) on mobile. Asymmetric two-column groups use broad gaps, often (8vw), rather than equal cards for every content type.
@@ -157,15 +178,21 @@ At (1100px), the header and showcase become more compact. At (767px) and below, 
 
 The archive alternates a full-width image with paired projects. Case galleries fit original screenshots without cropping, pairing portrait images and allowing landscape images to span the gallery. These are current surface patterns, not mandatory layouts for every future page.
 
+The CMS desktop shell uses a fixed sidebar (244px) and a content area capped at (1800px), with main insets (36px vertical, 40px horizontal), a breadcrumb utility bar (72px) and panel gaps (24px). Editors pair a flexible form with a sticky contextual panel (310px). At (1150px), insets reduce and the contextual panel narrows (250px); at (900px), the sidebar narrows (210px), editor columns stack with context first, metric groups become two columns, and media becomes two columns. At (650px), a sticky disclosure header replaces the sidebar, content insets become (18px), and panel padding reduces from (28px) to (20px). Tables scroll within their container. The audience graph retains its height (220px) at every viewport; its separate HTML scale does not shrink with the SVG.
+
 ## Elevation & Depth
 
 The public system is flat. Background changes, fine dividers, image clipping and scale establish separation; contact inputs explicitly remove shadows. Depth comes from preserved Three.js graphics and small interaction responses, not raised card stacks.
 
 **The Flat Surface Rule.** Use tonal separation and structural rules for ordinary containers; preserve the unshadowed public interface.
 
+The CMS extends this flat treatment through white bordered panels, ruled lists and unshadowed fields. Its short control background transitions (150ms) communicate interaction without public entrance choreography; reduced motion removes these transitions.
+
 ## Shapes
 
 Fields and desktop showcase selectors have gently rounded corners; media apertures use a larger radius. Pills distinguish filters and actions, while circles carry compact icon controls. Body sections remain open rather than boxed. Display responsive WebP copies inside apertures with `object-fit: contain`, keeping full-size links pointed at the untouched originals; the owner portrait uses a cover crop.
+
+Private controls and navigation use the CMS control radius; panels use the CMS panel radius. These restrained rectangles establish administrative density without replacing the public pill and media shapes.
 
 ## Components
 
@@ -191,7 +218,7 @@ Fields have a secondary fill, transparent border and generous inset. Labels are 
 
 ### Navigation
 
-The sticky header hides after downward travel (12px) and returns after upward travel (6px), while remaining visible near the top, during menu use, when focused and after navigation. Desktop active links are filled pills. Mobile navigation expands below the header, uses larger Archivo links, exposes expanded/current state and supports Escape to close. The skip link becomes visible on focus.
+The sticky header hides after downward travel (12px) and returns after upward travel (6px), while remaining visible near the top, during menu use, when focused and after navigation. Desktop active links are filled pills. Mobile navigation expands below the header, uses larger Space Grotesk links, exposes expanded/current state and supports Escape to close. The skip link becomes visible on focus.
 
 ### Interactive showcase
 
@@ -201,7 +228,7 @@ The stage dynamically loads after the birds intro and near the viewport, using o
 
 ### Graphics and motion
 
-Keep the original birds transition, displacement-sphere shader and colors, DNA and Thinker. Model controls permit horizontal orbit only, with zoom and pan disabled. Model loading begins near the viewport (120px margin); rendering pauses offscreen and in hidden tabs, uses pixel ratio (1), samples the ASCII grid at (0.22), and caps active drawing near (30fps). Reduced motion disables automatic rotation and animation updates. The DNA is a full-section background with camera framing shifted on wide screens and fitted on narrow screens. Its original embedded animation plays while visible, with automatic camera rotation disabled and horizontal dragging retained. Foreground links remain clickable and vertical touch scrolling stays native.
+Keep the original birds transition, displacement-sphere shader and colors, DNA and Thinker. Model controls permit horizontal orbit only, with zoom and pan disabled. Model loading begins near the viewport (120px margin); rendering pauses offscreen and in hidden tabs, uses pixel ratio (1), samples the ASCII grid at (0.22) with a shared viewport-based character size and a 420-column full-width cap, and caps active drawing near (30fps). Reduced motion disables automatic rotation and animation updates. Both ASCII models use the helix’s white, fully rough metallic shading profile before the shared character conversion; avoid a separate shiny Phong surface for the Thinker. The DNA is a full-section background with camera framing shifted on wide screens and fitted on narrow screens. Its original embedded animation plays while visible, with automatic camera rotation disabled and horizontal dragging retained. Foreground links remain clickable and vertical touch scrolling stays native.
 
 The sphere uses pixel ratio (1), a (30fps) animation cap, viewport/tab visibility gates and a static reduced-motion rendering. The unchanged birds shader runs once per document load with a (1200ms) exit timer; internal Inertia visits skip it, as does reduced motion. Dispose WebGL resources and observers when components unmount.
 
@@ -209,7 +236,27 @@ GSAP handles introductory line reveals, one-time section reveals and the footer'
 
 ### Footer
 
-The citron footer leads with the large linked invitation, followed by availability and then the ruled contact/social row. Its split-word lift is scroll-linked; the accessible link name remains complete. Keep this hierarchy when editing the existing footer.
+The citron footer leads with the large linked invitation, followed by availability and then the ruled contact/social row. The invitation reads “Let’s take it further.” The final word rises in seven scroll-linked letter steps, with the period attached to the last letter; the accessible link name remains complete. A 0.4em gap reserves vertical clearance, each successive letter rises by 6% of its line box, and reduced motion keeps the word on its baseline. Keep this hierarchy when editing the existing footer.
+
+### CMS controls and navigation
+
+CMS primary buttons use ink with porcelain text; secondary buttons use white, ink and a fine border. Both use compact padding from the frontmatter and minimum height (40px). Hover shifts the fill to a darker green for primary actions or a pale green for secondary actions. Focus is an olive outline (2px) with offset (4px); disabled controls reduce opacity and expose their unavailable state. Current navigation pairs ink and citron with `aria-current`. The mobile menu exposes its expanded state, closes after selecting a destination and retains the skip link.
+
+### CMS fields, records and media
+
+White inputs use a fine green-gray border, compact padding (10px 12px), explicit labels and inline validation. Repeated content uses ruled rows with named move-up, move-down and remove controls; controls disable at list boundaries. Project and experience records place category, date and order metadata on a separate line below the title. Media previews contain the full image; FilePond retains a visible, operable Browse action after initialization, alongside its upload feedback.
+
+Media uses compact portrait and CV summaries, visibly bounded replacement drop zones and a shared immediate-publication notice. Project images are contained in proportionate previews, with the project name, file size and a direct management link. The gallery has three columns by default, four on wide screens and two on small screens. Short desktop windows tighten navigation spacing so account controls remain reachable.
+
+### CMS publishing and history
+
+**The Saved Draft Rule.** Page editing keeps Save draft, Preview saved draft and Publish as distinct actions; preview and publication use the saved draft, and unsaved edits must remain visibly distinguishable.
+
+The editor's contextual panel names unsaved, draft-ready or published state and shows the last publication time. A private preview opens in a separate tab for signed-in administrators, with a citron preview banner. Publish is disabled while local edits are unsaved or no draft exists and asks for confirmation. Published history uses compact dated rows; restoring a revision replaces the saved draft after confirmation, leaving publication as a separate decision. Unsaved navigation and version conflicts have explicit feedback.
+
+### CMS analytics and enquiries
+
+Metrics sit in a ruled strip above the audience graph. Page-view and session controls expose their selected state; keyboard-focusable chart points reveal exact values, and a disclosure table supplies daily figures. Describe these as consenting traffic and browser sessions, keeping the consent scope visible rather than implying every visitor is represented. Empty periods receive direct empty-state copy. Enquiries use expandable summaries, status badges and ruled message bodies so sender, status and content remain distinct.
 
 ## Do's and Don'ts
 
@@ -219,11 +266,14 @@ The citron footer leads with the large linked invitation, followed by availabili
 - **Do** keep full project screenshots legible, with genuine technology marks and real project metadata.
 - **Do** preserve visible focus, pressed/current state, reduced-motion behavior and WebGL performance gates.
 - **Do** preserve migrated original media byte-for-byte; retain provenance in the external migration snapshot and `public/technology-icons/sources.json`.
+- **Do** scope shared semantic color tokens to `.cms-app`; the public dark theme must never recolor CMS forms, charts or uploads.
+- **Do** preserve CMS saved-draft state, private-preview identification, visible upload actions and readable chart labels at narrow widths.
 
 ### Don't:
 
 - **Don't** replace the original birds, sphere appearance, DNA or Thinker as part of routine styling.
 - **Don't** add new continuous animation or turn model controls into unrestricted orbit.
 - **Don't** write provenance metadata into preserved media files.
-- **Don't** turn the first-surface composition into a requirement for every page or apply this public system to private administration without a separate review.
+- **Don't** turn the first-surface composition into a requirement for every page; use the separately reviewed CMS patterns for private administration.
+- **Don't** present fixture analytics or review screenshots as real audience results, or describe browser sessions as unique people.
 

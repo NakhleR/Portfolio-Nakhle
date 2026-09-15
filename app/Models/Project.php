@@ -21,7 +21,7 @@ class Project extends Model implements HasMedia
 
     protected function casts(): array
     {
-        return ['technologies' => 'array', 'legacy_document' => 'array', 'order' => 'float'];
+        return ['is_published' => 'boolean', 'technologies' => 'array', 'legacy_document' => 'array', 'order' => 'float'];
     }
 
     protected static function booted(): void

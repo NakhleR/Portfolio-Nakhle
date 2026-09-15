@@ -21,9 +21,23 @@ class PageSeo
             'contact' => ['Contact Nakhle Rizk — Projects & Opportunities', 'Contact Nakhle Rizk about a software project, a development role, or a collaboration. Get in touch to discuss your idea or opportunity.'],
             'login' => ['Admin Login — Nakhle Rizk', 'Sign in to manage the portfolio.'],
             'dashboard' => ['Dashboard — Nakhle Rizk', 'Portfolio administration.'],
+            'analytics' => ['Analytics — Nakhle Rizk', 'Private portfolio analytics.'],
+            'privacy' => ['Privacy Policy — Nakhle Rizk', 'How this portfolio handles personal information and analytics choices.'],
+            'cookies' => ['Cookie Policy — Nakhle Rizk', 'Cookies, browser storage, and how to manage your choices.'],
+            'terms' => ['Terms of Use — Nakhle Rizk', 'Terms for using this portfolio and its content.'],
+            'legal' => ['Legal Notice & Copyright — Nakhle Rizk', 'Publisher information, content ownership, and hosting details.'],
         ];
         [$title, $description] = $pages[$route] ?? ['Page not found — Nakhle Rizk', 'The requested page could not be found. Explore Nakhle Rizk’s portfolio.'];
-        $image = $base.'/nakhle-960.webp';
+        $cms = app(CmsContent::class)->all($request);
+        if (isset($cms['seo'][$route.'_title'])) {
+            $title = $cms['seo'][$route.'_title'];
+            $description = $cms['seo'][$route.'_description'];
+        }
+        if ($request->is('dashboard/*')) {
+            $title = 'CMS — '.$cms['site']['name'];
+            $description = 'Private website administration.';
+        }
+        $image = str_starts_with($cms['assets']['portrait'], '/') ? $base.$cms['assets']['portrait'] : $cms['assets']['portrait'];
         $imageAlt = 'Nakhle Rizk, full stack developer and AI student';
         $project = $request->route('project');
         if ($route === 'work.show' && $project instanceof Project) {
@@ -33,12 +47,15 @@ class PageSeo
             $image = $media?->getAvailableUrl(['display']) ?? $image;
             $imageAlt = $project->title.' project preview';
         }
-        $indexable = in_array($route, ['home', 'about', 'work', 'work.show', 'contact'], true);
+        $indexable = in_array($route, ['home', 'about', 'work', 'work.show', 'contact', 'privacy', 'cookies', 'terms', 'legal'], true);
+        if ($request->user()?->is_admin && $request->boolean('preview')) {
+            $indexable = false;
+        }
         $schema = $indexable ? [
             '@context' => 'https://schema.org',
             '@graph' => [
-                ['@type' => 'WebSite', '@id' => $base.'/#website', 'url' => $base.'/', 'name' => 'Nakhle Rizk', 'inLanguage' => 'en'],
-                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => 'Nakhle Rizk', 'url' => $base.'/', 'image' => $base.'/nakhle-960.webp', 'jobTitle' => 'Full Stack Developer', 'sameAs' => ['https://github.com/NakhleR', 'https://www.linkedin.com/in/nakhle-rizk-528129256/']],
+                ['@type' => 'WebSite', '@id' => $base.'/#website', 'url' => $base.'/', 'name' => $cms['site']['name'], 'inLanguage' => 'en'],
+                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => $cms['site']['name'], 'url' => $base.'/', 'image' => $image, 'jobTitle' => 'Full Stack Developer', 'sameAs' => [$cms['site']['github'], $cms['site']['linkedin']]],
                 ['@type' => $route === 'about' ? 'ProfilePage' : ($route === 'contact' ? 'ContactPage' : ($route === 'work' ? 'CollectionPage' : 'WebPage')), '@id' => $canonical.'#webpage', 'url' => $canonical, 'name' => $title, 'description' => $description, 'isPartOf' => ['@id' => $base.'/#website'], 'about' => ['@id' => $base.'/#person']],
             ],
         ] : null;

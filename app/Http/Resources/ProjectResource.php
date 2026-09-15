@@ -10,6 +10,7 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'is_published' => (bool) $this->is_published,
             'id' => $this->mongo_id, '_id' => $this->mongo_id,
             'title' => $this->title, 'category' => $this->category,
             'description' => $this->description, 'longDescription' => $this->longDescription,
@@ -17,10 +18,11 @@ class ProjectResource extends JsonResource
             'order' => $this->order,
             'images' => $this->getMedia('images')->map(fn ($media) => $media->getUrl())->values(),
             'imageVariants' => $this->getMedia('images')->map(fn ($media) => [
+                'alt' => $media->getCustomProperty('alt', $this->title.' screenshot'),
                 'src' => $media->getAvailableUrl(['display']),
                 'srcset' => $media->hasGeneratedConversion('display') ? $media->getSrcset('display') : '',
             ])->values(),
-            'media' => $this->getMedia('images')->map(fn ($media) => ['id' => $media->id, 'url' => $media->getUrl(), 'name' => $media->file_name])->values(),
+            'media' => $this->getMedia('images')->map(fn ($media) => ['id' => $media->id, 'url' => $media->getUrl(), 'name' => $media->file_name, 'alt' => $media->getCustomProperty('alt', $this->title.' screenshot')])->values(),
             'createdAt' => $this->created_at?->toISOString(), 'updatedAt' => $this->updated_at?->toISOString(),
         ];
     }

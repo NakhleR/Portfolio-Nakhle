@@ -230,7 +230,7 @@ class PortfolioTest extends TestCase
     {
         $this->post('/contact', ['name' => 'Visitor', 'email' => 'visitor@example.com', 'message' => 'A new project enquiry.', 'website' => ''])->assertRedirect('/contact')->assertSessionHas('success');
         $this->assertDatabaseCount('contact_messages', 1);
-        $this->actingAs($this->admin())->get('/dashboard')->assertOk()->assertInertia(fn (Assert $page) => $page->component('Dashboard')->has('messages.data', 1)->where('messages.data.0.name', 'Visitor')->missing('auth.user.password'));
+        $this->actingAs($this->admin())->get('/dashboard/inbox')->assertOk()->assertInertia(fn (Assert $page) => $page->component('Inbox')->has('messages.data', 1)->where('messages.data.0.name', 'Visitor')->missing('auth.user.password'));
     }
 
     public function test_contact_honeypot_and_validation(): void

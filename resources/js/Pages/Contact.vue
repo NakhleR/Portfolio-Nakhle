@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import { useCms } from "../composables/useCms";
+const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
 import { defineAsyncComponent } from "vue";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { Link, useForm, usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, ArrowRight } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 const LocationMap = defineAsyncComponent(
     () => import("../Components/LocationMap.vue"),
 );
-const DisplacementSphere = defineAsyncComponent(
-    () => import("../Components/DisplacementSphere.vue"),
-);
+import DisplacementSphere from "../Components/DisplacementSphere.vue";
 const form = useForm({ name: "", email: "", message: "", website: "" });
 const page = usePage<{ flash: { success?: string } }>();
 function submit() {
@@ -27,29 +27,27 @@ function submit() {
                 <section class="contact-hero shell">
                     <div class="contact-hero-copy">
                         <h1>
-                            <span class="line-mask"
-                                ><span data-intro>Good things</span></span
-                            ><span class="line-mask"
-                                ><span data-intro class="accent-text"
-                                    >start here.</span
-                                ></span
+                            <span
+                                v-for="(line, i) in cms.contact.hero.split(
+                                    '\n',
+                                )"
+                                :key="i"
+                                class="line-mask"
+                                ><span data-intro>{{ line }}</span></span
                             >
                         </h1>
-                        <p data-intro-fade>
-                            A new project, an opportunity, or an interesting
-                            problem. I'd love to hear about it.
-                        </p>
+                        <p data-intro-fade>{{ cms.contact.intro }}</p>
                         <a
-                            href="mailto:nakhler2k2@gmail.com"
+                            :href="`mailto:${cms.site.email}`"
                             class="contact-email"
                             data-intro-fade
-                            >nakhler2k2@gmail.com <ArrowUpRight
+                            >{{ cms.site.email }} <ArrowUpRight
                         /></a>
                     </div>
                 </section>
                 <section class="shell contact-layout">
                     <div class="contact-form">
-                        <h2>Let's start a conversation.</h2>
+                        <h2>{{ cms.contact.form_title }}</h2>
                         <p
                             v-if="page.props.flash.success"
                             role="status"
@@ -152,22 +150,32 @@ function submit() {
                                         : "Send message"
                                 }}<ArrowRight :size="20" />
                             </button>
+                            <p class="mt-4 text-xs text-muted-foreground">
+                                Your name, email, and message are used to
+                                respond to your enquiry.
+                                <Link href="/privacy" class="underline"
+                                    >Read the privacy policy.</Link
+                                >
+                            </p>
                         </form>
                     </div>
                     <aside class="contact-details">
-                        <h2>Find me here.</h2>
+                        <h2>{{ cms.contact.details_title }}</h2>
                         <dl>
                             <div>
                                 <dt>Based in</dt>
                                 <dd>
-                                    Rue De Fontenelle<br />Rouen 76000, France
+                                    <span class="whitespace-pre-line">{{
+                                        cms.site.address
+                                    }}</span>
                                 </dd>
                             </div>
                             <div>
                                 <dt>Call me</dt>
                                 <dd>
-                                    <a href="tel:+33774812104"
-                                        >+33 7 74 81 21 04</a
+                                    <a
+                                        :href="`tel:${cms.site.phone.replace(/[^+0-9]/g, '')}`"
+                                        >{{ cms.site.phone }}</a
                                     >
                                 </dd>
                             </div>
@@ -175,12 +183,12 @@ function submit() {
                                 <dt>Elsewhere</dt>
                                 <dd class="contact-social">
                                     <a
-                                        href="https://github.com/NakhleR"
+                                        :href="cms.site.github"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         >GitHub <ArrowUpRight :size="16" /></a
                                     ><a
-                                        href="https://www.linkedin.com/in/nakhle-rizk-528129256/"
+                                        :href="cms.site.linkedin"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         >LinkedIn <ArrowUpRight :size="16"

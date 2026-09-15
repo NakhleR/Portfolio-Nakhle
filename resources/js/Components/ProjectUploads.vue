@@ -21,11 +21,40 @@ async function remove(id: number) {
         await axios.delete(
             "/dashboard/projects/" + props.project.id + "/media/" + id,
         );
-        router.reload({ only: ["projects"] });
+        router.reload({ only: ["projects", "selectedProject", "media"] });
     } catch {
         error.value = "The image could not be removed. Please try again.";
     } finally {
         removing.value = null;
+    }
+}
+async function cover(id: number) {
+    error.value = "";
+    try {
+        await axios.post(
+            `/dashboard/projects/${props.project.id}/media/${id}/cover`,
+        );
+        router.reload({ only: ["projects", "selectedProject", "media"] });
+    } catch {
+        error.value = "Could not set the cover. Please try again.";
+    }
+}
+async function label(id: number, current: string) {
+    const alt = prompt(
+        "Describe this image for visitors using screen readers:",
+        current,
+    );
+    if (alt === null) return;
+    error.value = "";
+    try {
+        await axios.patch(
+            `/dashboard/projects/${props.project.id}/media/${id}`,
+            { alt },
+        );
+        router.reload({ only: ["projects", "selectedProject", "media"] });
+    } catch {
+        error.value =
+            "Please enter an image description of up to 500 characters.";
     }
 }
 const server = computed(() => ({
@@ -50,7 +79,9 @@ const server = computed(() => ({
             })
             .then((response) => {
                 load(String(response.data.id));
-                router.reload({ only: ["projects"] });
+                router.reload({
+                    only: ["projects", "selectedProject", "media"],
+                });
             })
             .catch((e) => {
                 if (!axios.isCancel(e)) {
@@ -73,7 +104,9 @@ const server = computed(() => ({
             .delete("/dashboard/projects/" + props.project.id + "/media/" + id)
             .then(() => {
                 load();
-                router.reload({ only: ["projects"] });
+                router.reload({
+                    only: ["projects", "selectedProject", "media"],
+                });
             })
             .catch(() => fail("Unable to remove the upload."));
     },
@@ -94,9 +127,29 @@ const server = computed(() => ({
             >
                 <img
                     :src="image.url"
-                    :alt="image.name"
+                    :alt="image.alt || image.name"
                     class="aspect-video object-contain bg-secondary w-full"
-                /><button
+                />
+                <div class="flex justify-between gap-2 p-2">
+                    <button
+                        type="button"
+                        class="text-xs"
+                        @click="cover(image.id)"
+                    >
+                        {{
+                            project.media[0]?.id === image.id
+                                ? "Cover image"
+                                : "Use as cover"
+                        }}</button
+                    ><button
+                        type="button"
+                        class="text-xs"
+                        @click="label(image.id, image.alt || '')"
+                    >
+                        Edit alt text
+                    </button>
+                </div>
+                <button
                     type="button"
                     class="text-xs w-full p-2 hover:bg-secondary"
                     :disabled="removing === image.id"

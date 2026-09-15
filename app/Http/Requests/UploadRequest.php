@@ -13,6 +13,11 @@ class UploadRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['file' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,gif,avif', 'max:20480']];
+        return ['file' => ['bail', 'required', 'file', 'max:20480', 'mimes:jpg,jpeg,png,webp,gif,avif', 'extensions:jpg,jpeg,png,webp,gif,avif', 'dimensions:max_width=6000,max_height=6000', function (string $attribute, mixed $value, \Closure $fail): void {
+            $size = @getimagesize($value->getPathname());
+            if (! $size || $size[0] * $size[1] > 20000000) {
+                $fail('Images must contain at most 20 million pixels.');
+            }
+        }]];
     }
 }

@@ -1,30 +1,12 @@
 <script setup lang="ts">
+import { useCms } from "../composables/useCms";
+const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
 import { Link } from "@inertiajs/vue3";
 import { ArrowUpRight } from "lucide-vue-next";
-import { defineAsyncComponent } from "vue";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import DisciplineShowcase from "../Components/DisciplineShowcase.vue";
-const ModelScene = defineAsyncComponent(
-    () => import("../Components/ModelScene.vue"),
-);
-const services = [
-    {
-        title: "Web development",
-        text: "Responsive, intuitive applications. Thoughtful interfaces, reliable backends, and the detail that connects them.",
-        tools: "Frontend · Backend · APIs",
-    },
-    {
-        title: "AI & machine learning",
-        text: "Exploring how systems learn and adapt through deep learning, data science, and intelligent automation.",
-        tools: "Deep learning · Data science",
-    },
-    {
-        title: "Full stack solutions",
-        text: "Connecting all the pieces, from a first prototype to a complete application built with room to grow.",
-        tools: "Architecture · Databases · Deployment",
-    },
-];
+import ModelScene from "../Components/ModelScene.vue";
 </script>
 <template>
     <div>
@@ -33,17 +15,18 @@ const services = [
             <section class="studio-statement">
                 <div class="shell studio-statement-content">
                     <div class="studio-statement-copy">
-                        <h2>A curious mind.<br />A builder's instinct.</h2>
+                        <h2 class="whitespace-pre-line">
+                            {{ cms.home.statement }}
+                        </h2>
                         <p>
-                            Full stack developer. AI &amp; machine learning
-                            student. Always learning. Always building.
+                            {{ cms.home.statement_body }}
                         </p>
                         <Link href="/about" class="studio-link"
                             >Meet the person behind the work
                             <ArrowUpRight :size="20"
                         /></Link>
                         <p class="studio-caption">
-                            Human curiosity. Digital possibilities.
+                            {{ cms.home.caption }}
                         </p>
                     </div>
                 </div>
@@ -62,25 +45,17 @@ const services = [
                         /></Link>
                     </div>
                     <div class="approach-copy">
-                        <h2 data-reveal>
-                            Good software starts with<br /><span
-                                class="accent-text"
-                                >better questions.</span
-                            >
-                        </h2>
+                        <h2 data-reveal><template v-for="(line,i) in cms.home.approach.split('\n')" :key="i"><br v-if="i"/><span :class="{'accent-text':i>0}">{{line}}</span></template></h2>
                         <p class="approach-lead">
-                            The most interesting part of a problem is often the
-                            assumption hiding underneath it.
+                            {{ cms.home.approach_body }}
                         </p>
                         <blockquote>
-                            “The greatest obstacle to discovery is not ignorance
-                            — it is the illusion of knowledge.”<cite
-                                >— Daniel J. Boorstin</cite
-                            >
+                            {{ cms.home.quote
+                            }}<cite>{{ cms.home.quote_author }}</cite>
                         </blockquote>
                         <div class="expertise-list">
                             <article
-                                v-for="service in services"
+                                v-for="service in cms.home.services"
                                 :key="service.title"
                             >
                                 <h3>

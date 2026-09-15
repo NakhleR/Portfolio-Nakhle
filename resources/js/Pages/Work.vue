@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useCms } from "../composables/useCms";
+const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
 import { ref, computed } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -26,17 +28,14 @@ const filtered = computed(() =>
             <section class="inner-hero shell">
                 <div class="inner-hero-title">
                     <h1>
-                        <span class="line-mask"
-                            ><span data-intro>Work in</span></span
-                        ><span class="line-mask"
-                            ><span data-intro>many forms.</span></span
+                        <span
+                            v-for="(line, i) in cms.work.hero.split('\n')"
+                            :key="i"
+                            class="line-mask"
+                            ><span data-intro>{{ line }}</span></span
                         >
                     </h1>
-                    <p data-intro-fade>
-                        A collection of things I've built, problems I've worked
-                        through, and ideas I've followed. From web applications
-                        to games and beyond.
-                    </p>
+                    <p data-intro-fade>{{ cms.work.intro }}</p>
                 </div>
                 <div class="work-filter-row">
                     <span class="archive-total"

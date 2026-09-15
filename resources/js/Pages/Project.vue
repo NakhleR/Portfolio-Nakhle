@@ -11,10 +11,12 @@ import {
 } from "lucide-vue-next";
 import SiteLayout from "../Layouts/SiteLayout.vue";
 import ProjectImage from "../Components/ProjectImage.vue";
+import ImageGallery from "../Components/ImageGallery.vue";
 import { projectCategoryLabel } from "../data/projectCategories";
 import { technologyIcon } from "../data/technologyIcons";
 import type { Project } from "../types";
 const props = defineProps<{ project: Project }>();
+const gallery = ref<InstanceType<typeof ImageGallery> | null>(null);
 const technologies = computed(() =>
     props.project.technologies.map((label) => ({
         label,
@@ -94,15 +96,18 @@ function imageLoaded(event: Event, src: string) {
                     >
                         <a
                             :href="project.images[0]"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            :aria-label="`Open ${project.title} cover image at full size`"
+                            @click.prevent="gallery?.open(0)"
+                            aria-haspopup="dialog"
+                            :aria-label="`Open ${project.title} cover image in gallery`"
                             class="case-image-link"
                         >
                             <ProjectImage
                                 :project="project"
                                 sizes="(min-width: 1680px) 1544px, 92vw"
-                                :alt="`${project.title} — overview`"
+                                :alt="
+                                    project.imageVariants?.[0]?.alt ||
+                                    `${project.title} — overview`
+                                "
                                 width="1200"
                                 height="1000"
                                 fetchpriority="high"
@@ -222,16 +227,23 @@ function imageLoaded(event: Event, src: string) {
                                 >
                                     <a
                                         :href="image"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        :aria-label="`Open ${project.title} image ${index + 2} at full size`"
+                                        @click.prevent="
+                                            gallery?.open(index + 1)
+                                        "
+                                        aria-haspopup="dialog"
+                                        :aria-label="`Open ${project.title} image ${index + 2} in gallery`"
                                         class="case-image-link"
                                     >
                                         <ProjectImage
                                             :project="project"
                                             :index="index + 1"
                                             sizes="(max-width: 767px) 92vw, (min-width: 1680px) 1200px, 75vw"
-                                            :alt="`${project.title} — image ${index + 2}`"
+                                            :alt="
+                                                project.imageVariants?.[
+                                                    index + 1
+                                                ]?.alt ||
+                                                `${project.title} — image ${index + 2}`
+                                            "
                                             loading="lazy"
                                             decoding="async"
                                             width="1200"
@@ -271,6 +283,14 @@ function imageLoaded(event: Event, src: string) {
                     ><span>Back to the project archive</span>
                 </div>
             </article>
+            <ImageGallery
+                ref="gallery"
+                :images="project.images"
+                :thumbnails="
+                    project.imageVariants?.map((variant) => variant.src)
+                "
+                :title="project.title"
+            />
         </SiteLayout>
     </div>
 </template>
@@ -564,7 +584,7 @@ function imageLoaded(event: Event, src: string) {
     align-items: center;
     gap: 25px;
     font:
-        600 clamp(36px, 4vw, 60px)/1.1 "Archivo",
+        500 clamp(36px, 4vw, 60px)/1.1 "Space Grotesk",
         sans-serif;
     letter-spacing: -0.04em;
 }

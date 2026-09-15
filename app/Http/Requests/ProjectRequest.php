@@ -14,6 +14,7 @@ class ProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'is_published' => ['sometimes', 'boolean'],
             'title' => ['required', 'string', 'max:1000'], 'category' => ['required', 'string', 'max:1000'],
             'description' => ['required', 'string', 'max:100000'], 'longDescription' => ['nullable', 'string', 'max:500000'],
             'technologies' => ['present', 'array', 'max:100'], 'technologies.*' => ['required', 'string', 'max:255'],

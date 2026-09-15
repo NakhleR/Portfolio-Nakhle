@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeUnmount, ref, watch } from "vue";
+import { useEntryAsset } from "../composables/useEntryLoader";
+const { entry: entryLoad, complete } = useEntryAsset();
 const props = defineProps<{ model: "dna" | "thinker"; background?: boolean }>();
 const host = ref<HTMLDivElement | null>(null);
 const failed = ref(false);
@@ -9,6 +11,10 @@ let visibility: IntersectionObserver | undefined;
 
 onMounted(() => {
     if (!host.value) return;
+    if (entryLoad.value) {
+        void initialize();
+        return;
+    }
     let started = false;
     visibility = new IntersectionObserver(
         ([entry]) => {
@@ -28,13 +34,13 @@ async function initialize() {
             { GLTFLoader },
             { DRACOLoader },
             { OrbitControls },
-            { AsciiEffect },
+            { createAsciiScene },
         ] = await Promise.all([
             import("three"),
             import("three/addons/loaders/GLTFLoader.js"),
             import("three/addons/loaders/DRACOLoader.js"),
             import("three/addons/controls/OrbitControls.js"),
-            import("three/addons/effects/AsciiEffect.js"),
+            import("../graphics/asciiScene"),
         ]);
         if (!alive || !host.value) return;
         const renderer = new THREE.WebGLRenderer({
@@ -51,14 +57,8 @@ async function initialize() {
         const fill = new THREE.DirectionalLight(0xffffff, 1);
         fill.position.set(-4, 5, -3);
         scene.add(key, fill);
-        const effect = new AsciiEffect(renderer, " .:-+*=%@#", {
-            invert: false,
-            resolution: 0.22,
-        });
-        effect.domElement.style.color = "inherit";
-        effect.domElement.style.backgroundColor = "transparent";
-        effect.domElement.setAttribute("aria-hidden", "true");
-        host.value.appendChild(effect.domElement);
+        const effect = createAsciiScene(renderer, host.value);
+        effect.updateColor();
         const controls = new OrbitControls(camera, effect.domElement);
         if (props.background) effect.domElement.style.touchAction = "pan-y";
         controls.enableZoom = false;
@@ -86,7 +86,14 @@ async function initialize() {
         }
         function draw(now: number) {
             frame = 0;
-            if (!alive || !visible || !hasSize || document.hidden) return;
+            if (
+                !alive ||
+                !visible ||
+                !hasSize ||
+                document.hidden ||
+                entryLoad.value
+            )
+                return;
             if (!mixer || now - last >= 33 || reduced.matches) {
                 const delta = Math.min((now - last) / 1000, 0.05);
                 last = now;
@@ -99,7 +106,13 @@ async function initialize() {
             if (!reduced.matches && mixer) schedule();
         }
         function schedule() {
-            if (!frame && alive && visible && !document.hidden)
+            if (
+                !frame &&
+                alive &&
+                visible &&
+                !document.hidden &&
+                !entryLoad.value
+            )
                 frame = requestAnimationFrame(draw);
         }
         function resize() {
@@ -120,12 +133,6 @@ async function initialize() {
             camera.updateProjectionMatrix();
             controls.update();
             effect.setSize(width, height);
-            // ASCII samples this grid anyway; avoid rendering discarded pixels.
-            renderer.setSize(
-                Math.ceil(width * 0.22),
-                Math.ceil(height * 0.22),
-                false,
-            );
             schedule();
         }
         const sizeObserver = new ResizeObserver(resize);
@@ -142,11 +149,22 @@ async function initialize() {
         document.addEventListener("visibilitychange", schedule);
         reduced.addEventListener("change", schedule);
         controls.addEventListener("change", schedule);
+        const stopEntryWatch = watch(entryLoad, schedule);
+        const themeObserver = new MutationObserver(() => {
+            effect.updateColor();
+            schedule();
+        });
+        themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
         resize();
         dispose = () => {
             cancelAnimationFrame(frame);
             sizeObserver.disconnect();
             renderObserver.disconnect();
+            stopEntryWatch();
+            themeObserver.disconnect();
             document.removeEventListener("visibilitychange", schedule);
             reduced.removeEventListener("change", schedule);
             controls.dispose();
@@ -154,7 +172,7 @@ async function initialize() {
             mixer?.stopAllAction();
             disposeObject(scene);
             renderer.dispose();
-            effect.domElement.remove();
+            effect.dispose();
         };
         loader.load(
             props.model === "dna" ? "/DNA.glb" : "/thinker.glb",
@@ -176,9 +194,12 @@ async function initialize() {
                             ? child.material
                             : [child.material])
                             material.dispose();
-                        child.material = new THREE.MeshPhongMaterial({
+                        // Match the helix's glTF default surface so both models
+                        // feed the same tonal range into the ASCII character ramp.
+                        child.material = new THREE.MeshStandardMaterial({
                             color: 0xffffff,
-                            shininess: 60,
+                            metalness: 1,
+                            roughness: 1,
                         });
                     }
                 });
@@ -188,14 +209,18 @@ async function initialize() {
                     mixer.clipAction(gltf.animations[0]).play();
                 }
                 resize();
+                effect.render(scene, camera);
+                complete();
             },
             undefined,
             () => {
                 if (alive) failed.value = true;
+                complete();
             },
         );
     } catch {
         if (alive) failed.value = true;
+        complete();
     }
 }
 onBeforeUnmount(() => {

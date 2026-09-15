@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SeoHead from "../Components/SeoHead.vue";
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link, useForm, usePage } from "@inertiajs/vue3";
+const page=usePage<{flash:{success?:string}}>();
 const form = useForm({ email: "", password: "" });
 function submit() {
     form.post("/login", { onFinish: () => form.reset("password") });
@@ -18,7 +19,7 @@ function submit() {
                 <p class="text-muted-foreground text-sm mb-8">
                     Sign in to manage your portfolio.
                 </p>
-                <form @submit.prevent="submit" class="space-y-5">
+                <p v-if="page.props.flash.success" role="status" class="success-message mb-5">{{page.props.flash.success}}</p><form @submit.prevent="submit" class="space-y-5">
                     <div>
                         <label for="email">Email</label
                         ><input

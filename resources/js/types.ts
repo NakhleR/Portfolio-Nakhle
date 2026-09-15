@@ -1,9 +1,11 @@
 export interface Media {
+    alt?: string;
     id: number;
     url: string;
     name: string;
 }
 export interface Project {
+    is_published?: boolean;
     id: string;
     title: string;
     category: string;
@@ -11,7 +13,7 @@ export interface Project {
     longDescription: string | null;
     technologies: string[];
     images: string[];
-    imageVariants?: { src: string; srcset: string }[];
+    imageVariants?: { src: string; srcset: string; alt?: string }[];
     media: Media[];
     liveUrl: string | null;
     githubUrl: string | null;

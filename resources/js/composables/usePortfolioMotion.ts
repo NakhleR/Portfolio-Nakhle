@@ -10,7 +10,9 @@ export function usePortfolioMotion(root: Ref<HTMLElement | null>) {
     let cleanup = () => {};
     let introTimeline: gsap.core.Timeline | undefined;
     let revealed = false;
-    function reveal() {
+    let entry = true;
+    function reveal(isEntry: boolean) {
+        entry = isEntry;
         revealed = true;
         introTimeline?.play();
     }
@@ -51,24 +53,37 @@ export function usePortfolioMotion(root: Ref<HTMLElement | null>) {
                 }
                 const intro = element.querySelectorAll("[data-intro]");
                 introTimeline = gsap.timeline({ paused: !revealed });
-                introTimeline.from(intro, {
-                    yPercent: 105,
-                    duration: 1.05,
-                    stagger: 0.09,
-                    ease: "expo.out",
-                    clearProps: "transform",
-                });
-                introTimeline.from(
-                    element.querySelectorAll("[data-intro-fade]"),
-                    {
-                        y: 16,
-                        opacity: 0,
-                        duration: 0.7,
-                        ease: "power3.out",
-                        clearProps: "transform,opacity",
-                    },
-                    0.18,
-                );
+                if (entry) {
+                    introTimeline.from(intro, {
+                        yPercent: 105,
+                        duration: 1.05,
+                        stagger: 0.09,
+                        ease: "expo.out",
+                        clearProps: "transform",
+                    });
+                    introTimeline.from(
+                        element.querySelectorAll("[data-intro-fade]"),
+                        {
+                            y: 16,
+                            opacity: 0,
+                            duration: 0.7,
+                            ease: "power3.out",
+                            clearProps: "transform,opacity",
+                        },
+                        0.18,
+                    );
+                } else {
+                    introTimeline.fromTo(
+                        element.querySelector("main"),
+                        { opacity: 0.85 },
+                        {
+                            opacity: 1,
+                            duration: 0.18,
+                            ease: "power1.out",
+                            clearProps: "opacity",
+                        },
+                    );
+                }
                 element
                     .querySelectorAll<HTMLElement>("[data-reveal]")
                     .forEach((target) => {
@@ -104,17 +119,18 @@ export function usePortfolioMotion(root: Ref<HTMLElement | null>) {
                             );
                         });
                 const footer = element.querySelector("footer");
-                const lift = element.querySelector(".footer-lift");
-                if (footer && lift)
+                const steps =
+                    element.querySelectorAll<HTMLElement>(".footer-step");
+                if (footer && steps.length)
                     gsap.fromTo(
-                        lift,
-                        { y: 0 },
+                        steps,
+                        { yPercent: 0 },
                         {
-                            y: desktop ? -48 : -16,
+                            yPercent: (index: number) => -index * 6,
                             ease: "none",
                             scrollTrigger: {
                                 trigger: footer,
-                                start: "top 65%",
+                                start: "top 80%",
                                 end: "bottom bottom",
                                 scrub: 0.2,
                                 invalidateOnRefresh: true,

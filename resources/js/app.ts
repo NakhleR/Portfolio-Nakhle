@@ -2,8 +2,6 @@ import "../css/app.css";
 import "../css/portfolio.css";
 import "@fontsource/inter/latin-400.css";
 import "@fontsource/inter/latin-500.css";
-import "@fontsource/archivo/latin-500.css";
-import "@fontsource/archivo/latin-600.css";
 import { createApp, createSSRApp, h, type DefineComponent } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 const pages = import.meta.glob<{ default: DefineComponent }>(

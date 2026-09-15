@@ -11,7 +11,7 @@ export function startStudioScene(
 ) {
     const renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
+        antialias: !matchMedia("(max-width: 767px)").matches,
         powerPreference: "low-power",
     });
     renderer.setPixelRatio(
@@ -92,6 +92,13 @@ export function startStudioScene(
         const { width, height } = host.getBoundingClientRect();
         if (!width || !height) return;
         const aspect = width / height;
+        renderer.setPixelRatio(
+            Math.min(
+                window.devicePixelRatio,
+                matchMedia("(max-width: 767px)").matches ? 1 : 1.5,
+                Math.sqrt(1_200_000 / (width * height)),
+            ),
+        );
         const halfHeight = Math.max(2.65, 2.8 / aspect);
         camera.left = -halfHeight * aspect;
         camera.right = halfHeight * aspect;
@@ -131,6 +138,7 @@ export function startStudioScene(
     reduced.addEventListener("change", updatePlayback);
     renderer.domElement.addEventListener("webglcontextlost", contextLost);
     resize();
+    renderer.render(scene, camera);
 
     function dispose() {
         if (!alive) return;

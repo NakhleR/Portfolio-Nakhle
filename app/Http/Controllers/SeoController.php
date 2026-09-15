@@ -11,7 +11,7 @@ class SeoController extends Controller
     {
         return response()->view('sitemap', [
             'base' => rtrim(config('app.url'), '/'),
-            'projects' => Project::select(['mongo_id', 'updated_at'])->orderBy('id')->get(),
+            'projects' => Project::where('is_published', true)->select(['mongo_id', 'updated_at'])->orderBy('id')->get(),
         ])->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 

@@ -17,8 +17,7 @@ export function startBirds(container: HTMLElement) {
         const points: THREE.Vector3[] = [];
 
         switch (type) {
-            case "circle": // Create circular path
-            {
+            case "circle": { // Create circular path
                 const radius = 400;
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
@@ -62,8 +61,7 @@ export function startBirds(container: HTMLElement) {
                 }
                 break;
 
-            case "zigzag": // Create zigzag path
-            {
+            case "zigzag": { // Create zigzag path
                 const width = 600;
                 const height = 300;
                 const depth = 200;
@@ -118,7 +116,13 @@ export function startBirds(container: HTMLElement) {
     camera.position.z = 250;
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(window.devicePixelRatio);
+    const pixelRatio = () =>
+        Math.min(
+            window.devicePixelRatio,
+            1.5,
+            Math.sqrt(1_500_000 / (innerWidth * innerHeight)),
+        );
+    renderer.setPixelRatio(pixelRatio());
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
@@ -427,9 +431,11 @@ void main() {
     let pathAnimationTime = 0;
 
     const animate = () => {
+        if (document.hidden) return;
         animationId = requestAnimationFrame(animate);
 
         const now = performance.now();
+        if (now - last < 1000 / 30) return;
         let delta = (now - last) / 1000;
         if (delta > 1) delta = 1;
         last = now;
@@ -470,13 +476,23 @@ void main() {
     const onWindowResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        renderer.setPixelRatio(pixelRatio());
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
     window.addEventListener("resize", onWindowResize);
+    const onVisibilityChange = () => {
+        cancelAnimationFrame(animationId);
+        if (!document.hidden) {
+            last = performance.now();
+            animate();
+        }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
         window.removeEventListener("resize", onWindowResize);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
         if (animationId) cancelAnimationFrame(animationId);
         gpuCompute.dispose();
         birdMesh.geometry.dispose();

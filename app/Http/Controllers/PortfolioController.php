@@ -30,11 +30,13 @@ class PortfolioController extends Controller
             return to_route('work.show', ['project' => $request->string('project')->toString()]);
         }
 
-        return Inertia::render('Work', ['projects' => ProjectCardResource::collection(Project::with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
+        return Inertia::render('Work', ['projects' => ProjectCardResource::collection(Project::where('is_published', true)->with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
     }
 
     public function project(Project $project): Response
     {
+        abort_unless($project->is_published || request()->user()?->is_admin && request()->boolean('preview'), 404);
+
         return Inertia::render('Project', ['project' => (new ProjectResource($project->load('media')))->resolve()]);
     }
 

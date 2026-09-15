@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useEntryAsset } from "../composables/useEntryLoader";
 import { Box, Pause, Play } from "lucide-vue-next";
 import type { StudioObjectKind } from "../graphics/studioObjects";
 import type { startStudioScene } from "../graphics/studioScene";
@@ -9,7 +10,7 @@ const host = ref<HTMLDivElement | null>(null);
 const ready = ref(false);
 const failed = ref(false);
 const paused = ref(false);
-const introComplete = inject("portfolioIntroComplete", ref(true));
+const { entry, complete } = useEntryAsset();
 let alive = true;
 let started = false;
 let near = false;
@@ -17,7 +18,7 @@ let observer: IntersectionObserver | undefined;
 let scene: ReturnType<typeof startStudioScene> | undefined;
 
 async function initialize() {
-    if (started || !near || !introComplete.value || !host.value) return;
+    if (started || (!near && !entry.value) || !host.value) return;
     started = true;
     try {
         const { startStudioScene } = await import("../graphics/studioScene");
@@ -25,14 +26,17 @@ async function initialize() {
         scene = startStudioScene(host.value, props.kind, () => {
             failed.value = true;
         });
-        scene.setPaused(paused.value);
+        scene.setPaused(paused.value || entry.value);
         ready.value = true;
     } catch {
         scene?.dispose();
         failed.value = true;
+    } finally {
+        complete();
     }
 }
 onMounted(() => {
+    if (entry.value) void initialize();
     observer = new IntersectionObserver(
         ([entry]) => {
             near = entry.isIntersecting;
@@ -42,12 +46,13 @@ onMounted(() => {
     );
     if (host.value) observer.observe(host.value);
 });
-watch(introComplete, () => void initialize());
 watch(
     () => props.kind,
     (kind) => scene?.select(kind),
 );
-watch(paused, (value) => scene?.setPaused(value));
+watch([paused, entry], ([paused, loading]) =>
+    scene?.setPaused(paused || loading),
+);
 onBeforeUnmount(() => {
     alive = false;
     observer?.disconnect();

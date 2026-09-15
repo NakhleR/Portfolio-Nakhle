@@ -41,6 +41,8 @@ html.menu-open {
 }
 .site-shell {
     --gutter: clamp(22px, 4vw, 68px);
+    font-family: "Space Grotesk", sans-serif;
+    font-feature-settings: normal;
     overflow: clip;
 }
 .site-shell ::selection {
@@ -52,9 +54,9 @@ html.menu-open {
     outline-offset: 5px;
 }
 .site-shell :is(h1, h2, h3) {
-    font-family: "Archivo", sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.04em;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.045em;
     text-wrap: balance;
 }
 .site-shell h1 {
@@ -87,6 +89,9 @@ html.menu-open {
 .accent-text {
     color: var(--spot);
 }
+.footer-legal { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 22px; font-size: 12px; }
+.footer-legal :is(a, button) { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 4px; }
+.footer-legal :is(a, button):hover { text-decoration: underline; }
 .small-label {
     font-size: 13px;
     line-height: 1.5;
@@ -142,7 +147,7 @@ html.menu-open {
 }
 .brand-symbol {
     font:
-        600 42px/1 "Archivo",
+        600 42px/1 "Space Grotesk",
         sans-serif;
     letter-spacing: -0.04em;
 }
@@ -248,6 +253,14 @@ html.menu-open {
 }
 .studio-showcase :focus-visible {
     outline-color: var(--ink);
+}
+@media (min-width: 1680px) {
+    .studio-showcase.shell {
+        width: calc(100% - 64px);
+    }
+    .studio-showcase .object-showcase {
+        height: clamp(560px, 28vw, 720px);
+    }
 }
 .showcase-intro {
     display: flex;
@@ -666,6 +679,7 @@ html.menu-open {
     top: 114px;
 }
 .portrait-frame {
+    display: block;
     overflow: hidden;
     aspect-ratio: 0.9;
     background: var(--citron);
@@ -721,13 +735,13 @@ html.menu-open {
 }
 .journey-date {
     font:
-        500 24px "Archivo",
+        500 24px "Space Grotesk",
         sans-serif;
 }
 .journey-date span {
     display: block;
     font:
-        400 12px "Inter",
+        400 12px "Space Grotesk",
         sans-serif;
     margin-top: 12px;
     text-transform: capitalize;
@@ -775,6 +789,19 @@ html.menu-open {
 .skills-filters {
     margin-bottom: 30px;
 }
+.skills-panels {
+    display: grid;
+}
+.skills-panels > .skills-list {
+    grid-area: 1 / 1;
+    align-self: start;
+    visibility: hidden;
+    pointer-events: none;
+}
+.skills-panels > .skills-list.is-active {
+    visibility: visible;
+    pointer-events: auto;
+}
 .skills-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -819,7 +846,7 @@ html.menu-open {
     align-items: center;
     gap: 20px;
     font:
-        500 clamp(21px, 2.7vw, 38px) "Archivo",
+        500 clamp(21px, 2.7vw, 38px) "Space Grotesk",
         sans-serif;
     letter-spacing: -0.03em;
     margin-top: 32px;
@@ -946,17 +973,24 @@ html.menu-open {
     display: block;
     width: fit-content;
     font:
-        600 clamp(54px, 7.5vw, 96px)/1.03 "Archivo",
+        500 clamp(54px, 7.5vw, 96px)/1.05 "Space Grotesk",
         sans-serif;
     letter-spacing: -0.04em;
     margin-block: 70px 80px;
 }
-.footer-word,
-.footer-lift {
+.footer-word {
     display: flex;
     align-items: baseline;
+    margin-top: 0.4em;
+    white-space: nowrap;
 }
-.footer-lift > svg {
+.footer-stairs {
+    display: inline-flex;
+}
+.footer-step {
+    display: inline-block;
+}
+.footer-cta-arrow {
     align-self: center;
     width: clamp(38px, 6vw, 82px);
     height: auto;
@@ -1010,7 +1044,7 @@ html.menu-open {
         transform: scale(1.025);
     }
     .footer-cta:hover svg {
-        transform: rotate(45deg);
+        transform: translate(3px, -3px);
     }
 }
 @media (max-width: 1100px) {
@@ -1093,7 +1127,7 @@ html.menu-open {
         justify-content: space-between;
         padding-block: 14px;
         font:
-            500 34px "Archivo",
+            500 34px "Space Grotesk",
             sans-serif;
         letter-spacing: -0.03em;
     }
@@ -1102,7 +1136,7 @@ html.menu-open {
     }
     .mobile-nav .mobile-cv {
         font:
-            400 14px "Inter",
+            400 14px "Space Grotesk",
             sans-serif;
         margin-top: 10px;
     }
@@ -1346,7 +1380,7 @@ html.menu-open {
     }
 
     .footer-cta {
-        font-size: clamp(50px, 11vw, 76px);
+        font-size: clamp(42px, 10.6vw, 76px);
         margin-block: 55px 60px;
     }
     .footer-bottom {
@@ -1364,10 +1398,13 @@ html.menu-open {
         animation: none !important;
         transition: none !important;
     }
-    .footer-lift {
+    .footer-step {
         transform: none !important;
     }
     .bird-transition {
         display: none;
     }
 }
+
+.cms-preview-bar { position:relative;z-index:50;background:#e4ed87;color:#20251e;padding:12px 24px;font:13px Inter,sans-serif;text-align:center; }
+.cms-preview-bar a { text-decoration:underline; margin-left:12px; }
