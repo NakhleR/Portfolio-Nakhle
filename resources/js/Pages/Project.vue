@@ -208,15 +208,18 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
                                 </h2>
                                 <span
                                     >{{
-                                        project.images.length - 1
+                                        project.images.length
                                     }} {{ t("images") }} </span
                                 >
                             </div>
-                            <div class="case-image-grid">
+                            <div
+                                class="case-image-grid"
+                                :class="{ 'has-portraits': imageLayouts.slice(1, 4).some((image) => image.portrait) }"
+                            >
                                 <figure
                                     v-for="(
                                         image, index
-                                    ) in project.images.slice(1)"
+                                    ) in project.images.slice(1, 4)"
                                     :key="image"
                                     :class="{
                                         portrait: imageLayouts[index + 1].portrait,
@@ -230,12 +233,11 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
                                         aria-haspopup="dialog"
                                         :aria-label="`Open ${project.title} image ${index + 2} in gallery`"
                                         class="case-image-link"
-                                        :style="{ aspectRatio: imageLayouts[index + 1].portrait ? undefined : imageLayouts[index + 1].ratio }"
                                     >
                                         <ProjectImage
                                             :project="project"
                                             :index="index + 1"
-                                            sizes="(max-width: 767px) 92vw, (min-width: 1680px) 1200px, 75vw"
+                                            sizes="(max-width: 767px) 44vw, (min-width: 1680px) 380px, 24vw"
                                             :alt="
                                                 project.imageVariants?.[
                                                     index + 1
@@ -268,6 +270,16 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
                                     </figcaption>
                                 </figure>
                             </div>
+                            <button
+                                type="button"
+                                class="case-gallery-more"
+                                aria-haspopup="dialog"
+                                @click="gallery?.open(0)"
+                            >
+                                <span>{{ t("Show more") }}</span>
+                                <span>{{ project.images.length }} {{ t("images") }}</span>
+                                <ArrowUpRight :size="20" aria-hidden="true" />
+                            </button>
                         </section>
                     </div>
                 </div>
@@ -548,16 +560,18 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
 }
 .case-image-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 34px 22px;
-}
-.case-image-grid > figure:not(.portrait) {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
 }
 .case-image-grid .case-image-link {
     display: flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 16 / 10;
+    max-height: 340px;
+}
+.case-image-grid.has-portraits .case-image-link {
+    aspect-ratio: 4 / 5;
 }
 .case-image-grid img {
     width: 100%;
@@ -565,14 +579,43 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
     object-fit: contain;
 }
 .case-image-grid .portrait .case-image-link {
-    height: 520px;
-    padding: 20px;
+    padding: 14px;
 }
 .case-image-grid .portrait img {
     width: auto;
     height: 100%;
     max-width: 100%;
 }
+.case-image-grid figcaption {
+    font-size: 10px;
+    padding-top: 10px;
+}
+.case-image-grid .image-expand {
+    width: 32px;
+    height: 32px;
+    right: 10px;
+    bottom: 10px;
+}
+.case-gallery-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 54px;
+    margin-top: 24px;
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
+    font-size: 13px;
+    transition: background-color 160ms ease;
+}
+.case-gallery-more > span:nth-child(2) {
+    color: hsl(var(--muted-foreground));
+    font-size: 11px;
+}
+.case-gallery-more:hover { background: hsl(var(--secondary)); }
+.case-gallery-more:focus-visible { outline: 2px solid var(--citron); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .case-gallery-more { transition: none; } }
 .case-return {
     padding: 45px 0 70px;
     border-top: 1px solid hsl(var(--border));
@@ -718,13 +761,14 @@ const imageLayouts = computed(() => props.project.images.map((_, index) => {
         margin-top: 14px;
     }
     .case-image-grid {
-        display: block;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
     }
-    .case-image-grid > figure + figure {
-        margin-top: 30px;
+    .case-image-grid > figure:nth-child(n + 3) {
+        display: none;
     }
     .case-image-grid .portrait .case-image-link {
-        height: 460px;
+        padding: 10px;
     }
     .case-return {
         padding-block: 32px 50px;
