@@ -640,9 +640,9 @@ Use Cookie preferences in the footer to change your choice. Withdrawing consent 
                     ],
                     [
                         'heading' => 'Recipients and external services',
-                        'body' => 'Analytics and contact messages are stored in the site’s own database and are accessible to the site administrator and hosting providers as needed to operate the site. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.
+                        'body' => 'Analytics and contact messages are stored in the database on Nakhle Rizk’s own server and are accessible to him to operate this personal portfolio and respond to enquiries. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.
 
-The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. Hosting identity and deployment-specific details are listed in the Legal notice.',
+The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. The site is self-hosted using Microsoft IIS; publisher and hosting contact details are listed in the Legal notice.',
                     ],
                     [
                         'heading' => 'Your rights',

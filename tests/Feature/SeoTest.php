@@ -3,9 +3,12 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Models\CmsDocument;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -18,7 +21,7 @@ class SeoTest extends TestCase
     {
         parent::setUp();
         $this->withoutVite();
-        config(['app.url' => 'https://portfolio.example', 'inertia.ssr.enabled' => false]);
+        config(['app.url' => 'https://portfolio.example', 'app.canonical_url' => 'https://portfolio.example', 'inertia.ssr.enabled' => false]);
         Storage::fake('public');
     }
 
@@ -87,5 +90,41 @@ class SeoTest extends TestCase
     {
         $this->get('/login')->assertOk()->assertSee('name="robots" content="noindex, nofollow"', false);
         $this->get('/missing')->assertNotFound()->assertSee('name="robots" content="noindex, nofollow"', false);
+    }
+
+    public function test_public_domain_is_used_for_canonical_sitemap_and_social_images_on_local_requests(): void
+    {
+        config(['app.canonical_url' => 'https://portfolio-nakhle.code.sarl/']);
+        $project = $this->project();
+        $media = $project->addMedia(UploadedFile::fake()->image('project.png', 60, 60))->toMediaCollection('images');
+        $response = $this->get('/work/'.$project->mongo_id.'?tracking=ignored')->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('seo.canonical', 'https://portfolio-nakhle.code.sarl/work/'.$project->mongo_id)
+            ->where('seo.image', fn ($url) => str_starts_with($url, 'https://portfolio-nakhle.code.sarl/storage/')));
+        preg_match('/<script data-inertia="structured-data" type="application\/ld\+json">(.*?)<\/script>/s', $response->getContent(), $match);
+        $schema = json_decode($match[1], true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame('https://portfolio-nakhle.code.sarl/nakhle-960.webp', $schema['@graph'][1]['image']);
+        $this->assertNotSame($schema['@graph'][1]['image'], $schema['@graph'][3]['image']);
+        $this->get('/sitemap.xml')->assertOk()->assertSee('https://portfolio-nakhle.code.sarl/work/'.$project->mongo_id, false);
+        $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: https://portfolio-nakhle.code.sarl/sitemap.xml', false);
+    }
+
+    public function test_about_preview_has_no_structured_data(): void
+    {
+        $this->actingAs(User::factory()->create(['is_admin' => true]))
+            ->get('/about?preview=1')->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('seo.schema', null)->where('seo.robots', 'noindex, nofollow'))
+            ->assertDontSee('type="application/ld+json"', false);
+    }
+
+    public function test_legal_page_shows_the_latest_policy_or_publication_date_and_public_domain(): void
+    {
+        config(['privacy.updated' => '17 September 2026']);
+        $document = CmsDocument::create(['key' => 'legal', 'published_at' => '2026-09-14 12:00:00']);
+        $this->get('/legal')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->where('legal.updated', '17 September 2026')
+            ->where('legal.website', 'https://portfolio.example'));
+        $document->update(['published_at' => '2026-09-20 12:00:00']);
+        $this->get('/legal')->assertOk()->assertInertia(fn (Assert $page) => $page->where('legal.updated', '20 September 2026'));
     }
 }

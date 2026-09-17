@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'canonical_url' => env('SITE_URL', 'https://portfolio-nakhle.code.sarl'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

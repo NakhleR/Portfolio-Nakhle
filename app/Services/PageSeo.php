@@ -10,7 +10,7 @@ class PageSeo
 {
     public function forRequest(Request $request): array
     {
-        $base = rtrim(config('app.url'), '/');
+        $base = rtrim(config('app.canonical_url'), '/');
         $path = rtrim($request->getPathInfo(), '/');
         $canonical = $base.$path;
         $route = $request->route()?->getName();
@@ -37,14 +37,15 @@ class PageSeo
             $title = 'CMS — '.$cms['site']['name'];
             $description = 'Private website administration.';
         }
-        $image = str_starts_with($cms['assets']['portrait'], '/') ? $base.$cms['assets']['portrait'] : $cms['assets']['portrait'];
+        $portrait = $this->publicImageUrl($cms['assets']['portrait'], $base);
+        $image = $portrait;
         $imageAlt = 'Nakhle Rizk, full stack developer and AI student';
         $project = $request->route('project');
         if ($route === 'work.show' && $project instanceof Project) {
             $title = $project->title.' — Project by Nakhle Rizk';
             $description = Str::limit(Str::squish(strip_tags($project->description)), 160);
             $media = $project->getFirstMedia('images');
-            $image = $media?->getAvailableUrl(['display']) ?? $image;
+            $image = $this->publicImageUrl($media?->getAvailableUrl(['display']) ?? $image, $base);
             $imageAlt = $project->title.' project preview';
         }
         $indexable = in_array($route, ['home', 'about', 'work', 'work.show', 'contact', 'privacy', 'cookies', 'terms', 'legal'], true);
@@ -55,11 +56,11 @@ class PageSeo
             '@context' => 'https://schema.org',
             '@graph' => [
                 ['@type' => 'WebSite', '@id' => $base.'/#website', 'url' => $base.'/', 'name' => $cms['site']['name'], 'inLanguage' => 'en'],
-                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => $cms['site']['name'], 'url' => $base.'/', 'image' => $image, 'jobTitle' => 'Full Stack Developer', 'sameAs' => [$cms['site']['github'], $cms['site']['linkedin']]],
+                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => $cms['site']['name'], 'url' => $base.'/', 'image' => $portrait, 'jobTitle' => 'Full Stack Developer', 'sameAs' => [$cms['site']['github'], $cms['site']['linkedin']]],
                 ['@type' => $route === 'about' ? 'ProfilePage' : ($route === 'contact' ? 'ContactPage' : ($route === 'work' ? 'CollectionPage' : 'WebPage')), '@id' => $canonical.'#webpage', 'url' => $canonical, 'name' => $title, 'description' => $description, 'isPartOf' => ['@id' => $base.'/#website'], 'about' => ['@id' => $base.'/#person']],
             ],
         ] : null;
-        if ($route === 'about') {
+        if ($indexable && $route === 'about') {
             $schema['@graph'][2]['mainEntity'] = ['@id' => $base.'/#person'];
         }
         if ($indexable && $route === 'work.show' && $project instanceof Project) {
@@ -73,5 +74,19 @@ class PageSeo
             'robots' => $indexable ? 'index, follow, max-image-preview:large' : 'noindex, nofollow',
             'schema' => $schema ? json_encode($schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) : null,
         ];
+    }
+
+    private function publicImageUrl(string $url, string $base): string
+    {
+        if (str_starts_with($url, '/') && ! str_starts_with($url, '//')) {
+            return $base.$url;
+        }
+
+        $localBase = rtrim(config('app.url'), '/');
+        if (str_starts_with($url, $localBase.'/')) {
+            return $base.substr($url, strlen($localBase));
+        }
+
+        return $url;
     }
 }

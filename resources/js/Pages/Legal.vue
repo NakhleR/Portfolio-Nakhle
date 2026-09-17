@@ -10,9 +10,11 @@ const props = defineProps<{
     legal: {
         owner: string;
         email: string;
+        website: string;
         business: string | null;
         address: string | null;
         host_name: string | null;
+        hosting_details: string;
         host_address: string | null;
         host_phone: string | null;
         updated: string;
@@ -62,8 +64,8 @@ const documents: Record<
             {
                 heading: "Recipients and external services",
                 text: [
-                    "Analytics and contact messages are stored in the site’s own database and are accessible to the site administrator and hosting providers as needed to operate the site. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.",
-                    "The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. Hosting identity and deployment-specific details are listed in the Legal notice.",
+                    "Analytics and contact messages are stored in the database on Nakhle Rizk’s own server and are accessible to him to operate this personal portfolio and respond to enquiries. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.",
+                    "The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. The site is self-hosted using Microsoft IIS; publisher and hosting contact details are listed in the Legal notice.",
                 ],
             },
             {
@@ -164,6 +166,7 @@ const documents: Record<
                 heading: "Publisher",
                 text: [
                     props.legal.owner,
+                    `Website: ${props.legal.website}`,
                     `Publication contact: ${props.legal.email}`,
                     ...(props.legal.business ? [props.legal.business] : []),
                     ...(props.legal.address ? [props.legal.address] : []),
@@ -171,18 +174,13 @@ const documents: Record<
             },
             {
                 heading: "Hosting",
-                text:
-                    props.legal.host_name &&
-                    props.legal.host_address &&
-                    props.legal.host_phone
-                        ? [
-                              props.legal.host_name,
-                              props.legal.host_address,
-                              props.legal.host_phone,
-                          ]
-                        : [
-                              "This version is a local preview. The production host’s legal name, address, and telephone number must be completed before public launch.",
-                          ],
+                text: [
+                    props.legal.hosting_details,
+                    ...(props.legal.host_name ? [props.legal.host_name] : []),
+                    ...(props.legal.host_address ? [props.legal.host_address] : []),
+                    ...(props.legal.host_phone ? [`Telephone: ${props.legal.host_phone}`] : []),
+                    `Hosting contact: ${props.legal.email}`,
+                ],
             },
             {
                 heading: "Copyright and credits",
@@ -213,7 +211,8 @@ const content = computed(() => {
     const resolve = (value: string) =>
         value
             .replaceAll("{{publisher}}", props.legal.owner)
-            .replaceAll("{{email}}", props.legal.email);
+            .replaceAll("{{email}}", props.legal.email)
+            .replaceAll("{{website}}", props.legal.website);
     return {
         title: document.title,
         introduction: resolve(document.introduction),
@@ -234,6 +233,10 @@ function preferences() {
                 <p class="eyebrow">Updated {{ legal.updated }}</p>
                 <h1>{{ content.title }}</h1>
                 <p class="legal-intro">{{ content.introduction }}</p>
+                <p>
+                    Applies to <a :href="legal.website">{{ legal.website }}</a>,
+                    the personal portfolio of {{ legal.owner }}.
+                </p>
                 <nav aria-label="Legal documents">
                     <Link href="/privacy">Privacy</Link
                     ><Link href="/cookies">Cookies</Link
