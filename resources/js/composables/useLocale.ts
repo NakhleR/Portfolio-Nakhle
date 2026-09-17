@@ -9,7 +9,8 @@ export function useLocale() {
     const localPath = (path: string) => locale.value === "fr" ? `/fr${path === "/" ? "" : path}` : path;
     const switchPath = computed(() => {
         const path = page.url.split(/[?#]/)[0];
-        return locale.value === "fr" ? path.replace(/^\/fr(?=\/|$)/, "") || "/" : `/fr${path === "/" ? "" : path}`;
+        const destination = locale.value === "fr" ? path.replace(/^\/fr(?=\/|$)/, "") || "/" : `/fr${path === "/" ? "" : path}`;
+        return `${destination}?lang=${locale.value === "fr" ? "en" : "fr"}`;
     });
     return { locale, t, localPath, switchPath };
 }

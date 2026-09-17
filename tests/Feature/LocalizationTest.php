@@ -41,6 +41,82 @@ class LocalizationTest extends TestCase
             ->where('seo.title', 'Nakhle Rizk — Développeur full stack à Rouen, France'));
     }
 
+    public function test_homepage_uses_the_highest_priority_supported_browser_language(): void
+    {
+        foreach (['fr-FR,fr;q=0.9,en;q=0.8', 'de-DE,fr-CA;q=0.8,en;q=0.5', 'en;q=0.3,fr-BE;q=0.9'] as $languages) {
+            $this->get('/?utm_source=profile', ['Accept-Language' => $languages])
+                ->assertStatus(302)
+                ->assertRedirect('/fr?utm_source=profile')
+                ->assertHeader('Cache-Control', 'no-store, private');
+        }
+
+        foreach (['en-GB,fr;q=0.8', 'de-DE', '', 'fr;q=0,en;q=0.5', '*'] as $languages) {
+            $this->get('/', ['Accept-Language' => $languages])->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+        }
+    }
+
+    public function test_manual_language_choices_override_detection_for_the_session(): void
+    {
+        $this->get('/?lang=en&utm_source=profile', ['Accept-Language' => 'fr-FR'])
+            ->assertRedirect(url('/').'/?utm_source=profile')->assertSessionHas('preferred_locale', 'en');
+        $this->get('/', ['Accept-Language' => 'fr-FR'])->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+
+        $this->get('/fr/contact?lang=fr')->assertRedirect('/fr/contact')
+            ->assertSessionHas('preferred_locale', 'fr');
+        $this->get('/', ['Accept-Language' => 'en-US'])->assertRedirect('/fr');
+    }
+
+    public function test_direct_language_urls_remain_accessible_regardless_of_preferences(): void
+    {
+        $this->withSession(['preferred_locale' => 'en'])->get('/fr', ['Accept-Language' => 'en-US'])
+            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'fr'));
+        $this->withSession(['preferred_locale' => 'fr'])->get('/contact', ['Accept-Language' => 'fr-FR'])
+            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+        $this->get('/sitemap.xml', ['Accept-Language' => 'fr-FR'])->assertOk()->assertSee('/fr/contact');
+        $this->get('/login?lang=en')->assertOk()->assertSessionHas('preferred_locale', 'fr');
+    }
+
+    public function test_invalid_language_choices_do_not_override_browser_detection(): void
+    {
+        $this->get('/?lang[]=en', ['Accept-Language' => 'fr-FR'])
+            ->assertRedirect('/fr')->assertSessionMissing('preferred_locale');
+        $this->get('/?lang=de', ['Accept-Language' => 'fr-FR'])
+            ->assertRedirect('/fr')->assertSessionMissing('preferred_locale');
+    }
+
+    public function test_cloudflare_visitors_in_france_get_french_unless_they_choose_english(): void
+    {
+        foreach (['173.245.48.10', '2606:4700::1234'] as $proxyAddress) {
+            $this->withServerVariables(['REMOTE_ADDR' => $proxyAddress])
+                ->get('/', ['CF-IPCountry' => 'FR', 'Accept-Language' => 'en-US'])
+                ->assertRedirect('/fr');
+        }
+
+        $this->get('/?lang=en', ['CF-IPCountry' => 'FR'])->assertRedirect('/');
+        $this->get('/', ['CF-IPCountry' => 'FR', 'Accept-Language' => 'fr-FR'])
+            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+    }
+
+    public function test_other_or_unknown_countries_fall_back_to_browser_language(): void
+    {
+        $this->withServerVariables(['REMOTE_ADDR' => '173.245.48.10']);
+        foreach (['US', 'XX', 'T1', ''] as $country) {
+            $this->get('/', ['CF-IPCountry' => $country, 'Accept-Language' => 'fr-CA'])
+                ->assertRedirect('/fr');
+            $this->get('/', ['CF-IPCountry' => $country, 'Accept-Language' => 'en-US'])
+                ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+        }
+    }
+
+    public function test_country_headers_from_direct_connections_are_ignored(): void
+    {
+        $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.10'])
+            ->get('/', ['CF-IPCountry' => 'FR', 'X-Forwarded-For' => '173.245.48.10', 'Accept-Language' => 'en-US'])
+            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+    }
+
     public function test_french_cms_drafts_remain_private_and_shared_contact_details_are_preserved(): void
     {
         CmsDocument::create(['key' => 'site', 'published' => ['email' => 'contact@example.com', 'latitude' => 49.45]]);
