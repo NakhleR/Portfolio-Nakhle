@@ -42,6 +42,6 @@ class PortfolioController extends Controller
 
     public function contact(): Response
     {
-        return Inertia::render('Contact');
+        return Inertia::render('Contact', ['mapsKey' => config('services.google_maps.key')]);
     }
 }

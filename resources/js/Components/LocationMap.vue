@@ -1,30 +1,37 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, LocateFixed, MapPin, Minus, Plus } from "lucide-vue-next";
-import type { LatLngTuple, Map as LeafletMap } from "leaflet";
+import { loadGoogleMaps, createMapPin, mapStyles, type GoogleMap } from "../composables/googleMaps";
 import { useLocale } from "../composables/useLocale";
 import { useCms } from "../composables/useCms";
-import "leaflet/dist/leaflet.css";
 
 const { locale } = useLocale();
 const cms = useCms();
+const page = usePage<{ mapsKey?: string }>();
 const text = (en: string, fr: string) => locale.value === "fr" ? fr : en;
 const element = ref<HTMLElement | null>(null);
 const failed = ref(false);
 const loading = ref(false);
 const ready = ref(false);
 const streetZoom = 16;
-const centre = (): LatLngTuple => [Number(cms.value.site.latitude), Number(cms.value.site.longitude)];
-const mapLink = computed(() => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(centre().join(","))}`);
-let map: LeafletMap | undefined;
+const centre = () => ({ lat: Number(cms.value.site.latitude), lng: Number(cms.value.site.longitude) });
+const mapLink = computed(() => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${centre().lat},${centre().lng}`)}`);
+let map: GoogleMap | undefined;
 let disposed = false;
 let cleanup = () => {};
 
 function resetView() {
-    map?.setView(centre(), streetZoom, { animate: false });
+    map?.setCenter(centre());
+    map?.setZoom(streetZoom);
 }
 function zoom(amount: number) {
-    map?.setZoom(map.getZoom() + amount, { animate: false });
+    if (map) map.setZoom(Math.max(3, Math.min(20, (map.getZoom() ?? streetZoom) + amount)));
+}
+function mapError() {
+    loading.value = false;
+    ready.value = false;
+    failed.value = true;
 }
 async function loadMap() {
     if (loading.value) return;
@@ -35,76 +42,65 @@ async function loadMap() {
     await nextTick();
 
     try {
-        const L = await import("leaflet");
-        if (disposed || !element.value) return;
-        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const currentMap = L.map(element.value, {
-            zoomControl: false,
-            scrollWheelZoom: false,
-            zoomAnimation: !reducedMotion,
-            fadeAnimation: !reducedMotion,
-            markerZoomAnimation: !reducedMotion,
-        }).setView(centre(), streetZoom);
-        map = currentMap;
-        const observer = new ResizeObserver(() => {
-            const currentCentre = currentMap.getCenter();
-            currentMap.invalidateSize({ pan: false });
-            currentMap.setView(currentCentre, currentMap.getZoom(), { animate: false });
+        const library = await loadGoogleMaps(page.props.mapsKey || "", locale.value);
+        if (disposed || !element.value || failed.value) return;
+        const isDark = () => document.documentElement.classList.contains("dark");
+        const currentMap = new library.Map(element.value, {
+            center: centre(),
+            zoom: streetZoom,
+            minZoom: 3,
+            maxZoom: 20,
+            mapTypeId: "roadmap",
+            renderingType: "RASTER",
+            tilt: 0,
+            disableDefaultUI: true,
+            clickableIcons: false,
+            gestureHandling: "cooperative",
+            keyboardShortcuts: true,
+            styles: mapStyles(isDark()),
         });
-        const timeout = window.setTimeout(() => {
-            if (!ready.value) {
+        map = currentMap;
+        const pin = createMapPin(library, currentMap, centre(), cms.value.site.map_label);
+        const timeout = window.setTimeout(mapError, 20000);
+        const tilesListener = currentMap.addListener("tilesloaded", () => {
+            clearTimeout(timeout);
+            if (!failed.value) {
                 loading.value = false;
-                failed.value = true;
+                ready.value = true;
             }
-        }, 15000);
+        });
+        const themeObserver = new MutationObserver(() => currentMap.setOptions({ styles: mapStyles(isDark()) }));
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+        const resizeObserver = new ResizeObserver(() => {
+            const position = currentMap.getCenter()?.toJSON();
+            if (position) currentMap.setCenter(position);
+        });
+        resizeObserver.observe(element.value);
         cleanup = () => {
             clearTimeout(timeout);
-            observer.disconnect();
-            currentMap.remove();
+            tilesListener.remove();
+            themeObserver.disconnect();
+            resizeObserver.disconnect();
+            pin.setMap(null);
+            element.value?.replaceChildren();
             map = undefined;
         };
-        observer.observe(element.value);
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).once("tileload", () => {
-            clearTimeout(timeout);
-            loading.value = false;
-            failed.value = false;
-            ready.value = true;
-        }).addTo(currentMap);
-
-        L.marker(centre(), {
-            icon: L.divIcon({
-                className: "location-pin",
-                html: '<span class="location-pin-dot"></span>',
-                iconSize: [28, 28],
-                iconAnchor: [14, 14],
-            }),
-            title: cms.value.site.map_label,
-            alt: cms.value.site.map_label,
-        }).addTo(currentMap).bindPopup(() => {
-            const label = document.createElement("span");
-            label.textContent = cms.value.site.map_label;
-            return label;
-        }, { autoPan: false, closeButton: false, offset: [0, -8] });
-        currentMap.invalidateSize({ pan: false });
-        resetView();
     } catch (error) {
         cleanup();
         if (import.meta.env.DEV) console.warn("Map could not load", error);
-        loading.value = false;
-        failed.value = true;
+        mapError();
     }
 }
-onMounted(loadMap);
+onMounted(() => {
+    window.addEventListener("portfolio-map-error", mapError);
+    void loadMap();
+});
 onBeforeUnmount(() => {
     disposed = true;
+    window.removeEventListener("portfolio-map-error", mapError);
     cleanup();
 });
 </script>
-
 <template>
     <section class="location-map" data-analytics-ignore data-lenis-prevent>
         <div class="map-stage">
@@ -157,14 +153,8 @@ onBeforeUnmount(() => {
 .map-address svg { flex-shrink: 0; }
 .map-caption a { min-height: 28px; color: hsl(var(--muted-foreground)); text-underline-offset: 4px; }
 .map-caption a:hover { color: hsl(var(--foreground)); text-decoration: underline; }
-.map-canvas :deep(.leaflet-tile-pane) { filter: grayscale(1) contrast(0.9) brightness(1.06); }
-:global(.dark .location-map .leaflet-tile-pane) { filter: grayscale(1) invert(1) brightness(0.8); }
-.map-canvas :deep(.location-pin) { display: grid; place-items: center; border-radius: 50%; background: hsl(var(--foreground) / 0.15); }
+.map-canvas :deep(.location-pin) { position: absolute; width: 28px; height: 28px; transform: translate(-50%, -50%); display: grid; place-items: center; border-radius: 50%; background: hsl(var(--foreground) / 0.15); }
 .map-canvas :deep(.location-pin-dot) { width: 14px; height: 14px; border: 3px solid hsl(var(--background)); border-radius: 50%; background: hsl(var(--foreground)); box-shadow: 0 0 0 1px hsl(var(--foreground) / 0.35); }
-.map-canvas :deep(.leaflet-popup-content-wrapper), .map-canvas :deep(.leaflet-popup-tip) { border-radius: 4px; background: hsl(var(--background)); color: hsl(var(--foreground)); box-shadow: 0 2px 10px hsl(var(--foreground) / 0.1); }
-.map-canvas :deep(.leaflet-popup-content) { margin: 12px 16px; font-size: 12px; }
-.map-canvas :deep(.leaflet-control-attribution) { font-family: inherit; font-size: 10px; background: hsl(var(--background) / 0.9); color: hsl(var(--muted-foreground)); }
-.map-canvas :deep(.leaflet-control-attribution a) { color: inherit; text-decoration: underline; }
 @media (max-width: 600px) {
     .map-stage { height: 340px; }
     .map-caption { padding: 14px 16px; gap: 4px; flex-direction: column; align-items: flex-start; }
