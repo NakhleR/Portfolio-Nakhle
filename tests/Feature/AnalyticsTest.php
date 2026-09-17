@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AnalyticsConsent;
 use App\Models\AnalyticsEvent;
+use App\Models\CmsDocument;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -68,6 +69,40 @@ class AnalyticsTest extends TestCase
         $row = AnalyticsEvent::first()->toArray();
         foreach (['ip', 'user_agent', 'email', 'referrer'] as $field) {
             $this->assertArrayNotHasKey($field, $row);
+        }
+    }
+
+    public function test_countries_are_only_collected_from_trusted_cloudflare_peers_on_page_visits(): void
+    {
+        $consent = $this->consent();
+        $this->withCookie(AnalyticsConsent::COOKIE, $consent->id);
+        foreach ([
+            ['173.245.48.5', 'FR', 'page_view', 'FR'],
+            ['2606:4700::1234', 'LB', 'page_view', 'LB'],
+            ['203.0.113.9', 'FR', 'page_view', null],
+            ['173.245.48.5', 'XX', 'page_view', null],
+            ['173.245.48.5', 'T1', 'page_view', null],
+            ['173.245.48.5', '', 'page_view', null],
+            ['173.245.48.5', 'FR, US', 'page_view', null],
+            ['173.245.48.5', 'FR', 'click', null],
+        ] as [$peer, $header, $type, $expected]) {
+            $event = $this->event(['type' => $type]);
+            $this->withServerVariables(['REMOTE_ADDR' => $peer])->withHeaders(['CF-IPCountry' => $header, 'X-Forwarded-For' => '173.245.48.5'])
+                ->postJson('/analytics/events', ['events' => [$event]])->assertNoContent();
+            $this->assertDatabaseHas('analytics_events', ['id' => $event['id'], 'country' => $expected]);
+        }
+        $this->postJson('/analytics/events', ['events' => [$this->event(['country' => 'FR'])]])->assertUnprocessable();
+        $this->assertDatabaseCount('analytics_events', 8);
+    }
+
+    public function test_country_privacy_notice_is_visible_in_both_languages_over_published_content(): void
+    {
+        foreach (['privacy', 'cookies'] as $key) {
+            CmsDocument::create(['key' => $key, 'published' => ['sections' => [['heading' => 'Custom text', 'body' => 'Existing policy']]]]);
+            foreach (['/' => 'Country-level audience measurement', '/fr/' => 'Mesure d’audience par pays'] as $prefix => $heading) {
+                $this->get($prefix.$key)->assertOk()->assertInertia(fn (Assert $page) => $page
+                    ->where('cms.'.$key.'.sections', fn ($sections) => collect($sections)->contains('heading', $heading)));
+            }
         }
     }
 

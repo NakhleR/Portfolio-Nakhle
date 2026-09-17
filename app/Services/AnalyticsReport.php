@@ -52,6 +52,7 @@ class AnalyticsReport
                 return ['day' => $day, ...($daily[$day] ?? ['views' => 0, 'sessions' => 0, 'reading' => 0, 'clicks' => 0]), 'previous' => $previous ? ($previousDaily[$priorDay] ?? ['views' => 0, 'sessions' => 0, 'reading' => 0, 'clicks' => 0]) : null];
             }),
             'devices' => (clone $views)->selectRaw('device, COUNT(DISTINCT view_id) as views')->groupBy('device')->get(),
+            'countries' => $this->countries($views),
             'activity' => (clone $views)->selectRaw("$weekday as weekday, $hour as hour, COUNT(DISTINCT view_id) as views")->groupByRaw("$weekday, $hour")->get(),
             'intents' => collect($intentTargets)->map(fn ($target) => ['target' => $target, 'clicks' => (int) ($intent[$target]->clicks ?? 0), 'sessions' => (int) ($intent[$target]->sessions ?? 0)]),
             'pages' => (clone $views)->selectRaw('path, COUNT(DISTINCT view_id) as views, COUNT(DISTINCT session_id) as sessions')->groupBy('path')->orderByDesc('views')->limit(50)->get()->map(fn ($row) => ['path' => $row->path, 'views' => (int) $row->views, 'sessions' => (int) $row->sessions, 'seconds' => (int) ($pageReading[$row->path] ?? 0), 'clicks' => (int) ($pageClicks[$row->path] ?? 0), 'deepViews' => (int) ($pageDepth[$row->path] ?? 0)]),
@@ -60,6 +61,15 @@ class AnalyticsReport
             'depth' => (clone $base)->where('type', 'scroll')->whereIn('view_id', (clone $views)->select('view_id'))->selectRaw('value as depth, COUNT(DISTINCT view_id) as views')->groupBy('value')->orderBy('value')->get(),
             'heatmap' => ! empty($filters['path']) && ! empty($filters['device']) ? (clone $clicks)->whereNotNull('x')->whereNotNull('y')->selectRaw('x, y, COUNT(*) as clicks')->groupBy('x', 'y')->orderByDesc('clicks')->limit(1000)->get() : [],
         ];
+    }
+
+    private function countries(Builder $views): Collection
+    {
+        $sessions = (clone $views)->selectRaw('session_id, country, ROW_NUMBER() OVER (PARTITION BY session_id ORDER BY CASE WHEN country IS NULL THEN 1 ELSE 0 END, created_at, id) as country_rank');
+
+        return DB::query()->fromSub($sessions, 'session_countries')->where('country_rank', 1)
+            ->selectRaw('country, COUNT(*) as sessions')->groupBy('country')->orderByDesc('sessions')->orderBy('country')
+            ->get()->map(fn ($row) => ['country' => $row->country, 'sessions' => (int) $row->sessions]);
     }
 
     private function filter(Builder $query, array $filters): Builder

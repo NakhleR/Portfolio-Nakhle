@@ -9,5 +9,5 @@ return [
     'hosting_details' => 'This website is hosted by Nakhle Rizk on his own server using Microsoft Internet Information Services (IIS). Microsoft supplies the server software and is not the hosting provider.',
     'host_address' => env('LEGAL_HOST_ADDRESS'),
     'host_phone' => env('LEGAL_HOST_PHONE'),
-    'updated' => '17 September 2026',
+    'updated' => '18 September 2026',
 ];

@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
         >
             <div>
                 <h2 id="cookie-title"> {{ t("Your privacy, your choice.") }} </h2>
-                <p> {{ t("Essential storage keeps the site working. With your permission, private analytics help me understand clicks, scrolling, and which sections hold your attention. No recordings or form contents.") }} </p>
+                <p> {{ t("Essential storage keeps the site working. With your permission, private analytics measure visits, approximate countries, clicks, scrolling, and reading time. No recordings or form contents.") }} </p>
                 <p>
                     <Link :href="localPath('/cookies')"> {{ t("Cookie policy") }} </Link> ·
                     <Link :href="localPath('/privacy')"> {{ t("Privacy policy") }} </Link>
@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
                             type="checkbox"
                             :disabled="privacySignal || busy"
                     /></span>
-                    <p> {{ t("Page visits, click maps, scroll milestones, and estimated reading time. These records are pseudonymous and kept for 90 days.") }} </p></label
+                    <p> {{ t("Page visits, approximate countries supplied by Cloudflare, click maps, scroll milestones, and estimated reading time. No IP addresses are stored in analytics. These records are pseudonymous and kept for 90 days.") }} </p></label
                 >
                 <p v-if="privacySignal"> {{ t("A browser privacy signal keeps analytics disabled.") }} </p>
                 <p v-if="error" role="alert">{{ error }}</p>

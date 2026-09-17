@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class AnalyticsConsent extends Model
 {
-    public const VERSION = '2026-09-14';
+    public const VERSION = '2026-09-18';
 
     public const COOKIE = 'portfolio_consent';
 

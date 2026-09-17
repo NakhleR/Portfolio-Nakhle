@@ -50,6 +50,30 @@ class AnalyticsReportTest extends TestCase
         $this->get('/dashboard/analytics?days=7&path=/work&device=mobile')->assertOk()->assertInertia(fn (Assert $page) => $page->where('summary.views', 1)->where('summary.clicks', 0)->where('previous.views', 0)->where('engagement.rate', 0)->where('engagement.new', 1)->where('activity.0.weekday', 0)->where('activity.0.hour', 12)->where('pages.0.deepViews', 0));
     }
 
+    public function test_country_totals_count_sessions_once_and_follow_report_filters(): void
+    {
+        $this->withoutVite();
+        $this->travelTo(Carbon::parse('2026-09-18 14:00:00'));
+        $consent = $this->consent();
+        $first = $this->event($consent, ['country' => null, 'created_at' => now()->subMinutes(3)]);
+        $this->event($consent, ['session_id' => $first->session_id, 'country' => 'FR', 'created_at' => now()->subMinutes(2)]);
+        $this->event($consent, ['session_id' => $first->session_id, 'country' => 'US', 'created_at' => now()->subMinute()]);
+        $this->event($consent, ['country' => 'FR', 'path' => '/contact', 'device' => 'mobile']);
+        $this->event($consent);
+        $this->event($consent, ['country' => 'DE', 'created_at' => now()->subDays(8)]);
+        $this->event($consent, ['country' => 'GB', 'created_at' => now()->addDay()]);
+        $this->event($consent, ['country' => 'LB', 'type' => 'click']);
+
+        $this->actingAs(User::factory()->create(['is_admin' => true]))->get('/dashboard/analytics?days=7')->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('summary.sessions', 3)->where('countries', [
+                ['country' => 'FR', 'sessions' => 2], ['country' => null, 'sessions' => 1],
+            ]));
+        $this->get('/dashboard/analytics?days=7&path=/contact&device=mobile')->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('countries', [['country' => 'FR', 'sessions' => 1]]));
+        $this->get('/dashboard/analytics?days=7&device=tablet')->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->has('countries', 0));
+    }
+
     public function test_retention_limited_comparisons_and_empty_reports_are_explicit(): void
     {
         $this->withoutVite();

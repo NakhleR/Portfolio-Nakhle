@@ -19,6 +19,7 @@ import AnalyticsTraffic, {
     type TrafficValues,
 } from "../Components/AnalyticsTraffic.vue";
 import AnalyticsCalendar from "../Components/AnalyticsCalendar.vue";
+import AnalyticsGeography, { type CountrySessions } from "../Components/AnalyticsGeography.vue";
 import "../../css/analytics.css";
 type Summary = TrafficValues & { visitors: number };
 const props = defineProps<{
@@ -43,6 +44,7 @@ const props = defineProps<{
         pagesPerSession: number;
     };
     devices: { device: string; views: number }[];
+    countries: CountrySessions[];
     activity: { weekday: number; hour: number; views: number }[];
     intents: { target: string; clicks: number; sessions: number }[];
     pages: {
@@ -451,6 +453,7 @@ function exportCsv() {
                             </p>
                         </section>
                     </div>
+                    <AnalyticsGeography :countries="countries" />
                     <AnalyticsCalendar
                         :days="daily"
                         :timezone="period.timezone"

@@ -46,6 +46,13 @@ class CmsContent
                 $result[$key] = array_replace($result[$key], $this->defaults('fr_'.$key), $translated ?? []);
             }
             if (in_array($key, ['privacy', 'cookies'], true)) {
+                $result[$key]['sections'][] = app()->getLocale() === 'fr' ? [
+                    'heading' => 'Mesure d’audience par pays',
+                    'body' => 'Avec votre consentement aux statistiques, les visites peuvent inclure un pays approximatif transmis par Cloudflare, déduit de l’adresse IP de connexion. Le site ne demande pas votre position GPS et ne conserve pas votre adresse IP dans les tables de statistiques. Seul le code du pays est ajouté aux visites, pour une durée maximale de 90 jours. Les VPN et les réseaux partagés peuvent fausser cette estimation. Si le pays est indisponible, il reste inconnu. Vous pouvez refuser les statistiques, retirer votre consentement ou supprimer les données de ce navigateur dans les préférences de cookies.',
+                ] : [
+                    'heading' => 'Country-level audience measurement',
+                    'body' => 'With your analytics consent, page visits may include an approximate country supplied by Cloudflare, inferred from the connection IP address. The site does not request GPS location or store your IP address in the analytics tables. Only the country code is added to visits, retained for up to 90 days. VPNs and shared networks can affect accuracy. Unavailable countries remain unknown. You can reject analytics, withdraw consent or delete this browser’s data in Cookie preferences.',
+                ];
                 array_walk_recursive($result[$key], function (&$value): void {
                     if (is_string($value)) {
                         $value = str_replace(['Google Maps', '{{map_provider}}'], 'OpenStreetMap', $value);
