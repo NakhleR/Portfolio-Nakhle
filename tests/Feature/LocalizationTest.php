@@ -83,14 +83,12 @@ class LocalizationTest extends TestCase
 
     public function test_map_configuration_and_policy_name_match_the_active_provider(): void
     {
-        config(['services.google_maps.key' => '']);
-        $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->where('mapsKey', ''));
-        $this->get('/privacy')->assertSee('OpenStreetMap');
         config(['services.google_maps.key' => 'browser-test-key']);
-        $response = $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->where('mapsKey', 'browser-test-key'));
-        $this->assertStringContainsString('https://*.googleapis.com', $response->headers->get('Content-Security-Policy'));
-        $this->get('/privacy')->assertSee('Google Maps')->assertDontSee('OpenStreetMap');
-        $this->get('/fr/privacy')->assertSee('Google Maps');
+        $response = $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->missing('mapsKey'));
+        $this->assertStringNotContainsString('googleapis.com', $response->headers->get('Content-Security-Policy'));
+        $this->assertStringContainsString('https://*.tile.openstreetmap.org', $response->headers->get('Content-Security-Policy'));
+        $this->get('/privacy')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
+        $this->get('/fr/privacy')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
     }
 
     public function test_manifest_link_points_to_a_deployable_json_file(): void

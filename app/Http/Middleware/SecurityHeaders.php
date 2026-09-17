@@ -24,14 +24,6 @@ class SecurityHeaders
         $images = "'self' data: blob: https://*.tile.openstreetmap.org";
         $fonts = "'self' data:";
         $frames = "'none'";
-        if (config('services.google_maps.key')) {
-            $script .= ' https://*.googleapis.com https://*.gstatic.com blob:';
-            $connect .= ' https://*.googleapis.com https://*.gstatic.com https://*.google.com data:';
-            $images .= ' https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com https://*.ggpht.com';
-            $fonts .= ' https://fonts.gstatic.com';
-            $style .= ' https://fonts.googleapis.com';
-            $frames = 'https://*.google.com';
-        }
         if (app()->environment('local') && Vite::isRunningHot()) {
             $origin = rtrim(trim(file_get_contents(Vite::hotFile())), '/');
             if (preg_match('#^https?://[a-zA-Z0-9.\-\[\]:]+$#', $origin)) {

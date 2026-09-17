@@ -46,10 +46,9 @@ class CmsContent
                 $result[$key] = array_replace($result[$key], $this->defaults('fr_'.$key), $translated ?? []);
             }
             if (in_array($key, ['privacy', 'cookies'], true)) {
-                $provider = config('services.google_maps.key') ? 'Google Maps' : 'OpenStreetMap';
-                array_walk_recursive($result[$key], function (&$value) use ($provider): void {
+                array_walk_recursive($result[$key], function (&$value): void {
                     if (is_string($value)) {
-                        $value = str_replace(['OpenStreetMap', '{{map_provider}}'], $provider, $value);
+                        $value = str_replace(['Google Maps', '{{map_provider}}'], 'OpenStreetMap', $value);
                     }
                 });
             }
