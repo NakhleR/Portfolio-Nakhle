@@ -22,7 +22,7 @@ export function startAnalytics(
         return () => {};
     const path = location.pathname;
     if (
-        !/^\/(?:about|work(?:\/[a-zA-Z0-9-]{1,80})?|contact|privacy|cookies|terms|legal)?$/.test(
+        !/^\/(?:fr(?:\/|$))?(?:about|work(?:\/[a-zA-Z0-9-]{1,80})?|contact|privacy|cookies|terms|legal)?$/.test(
             path,
         )
     )

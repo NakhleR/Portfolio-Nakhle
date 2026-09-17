@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
@@ -39,19 +41,18 @@ const filtered = computed(() =>
                 </div>
                 <div class="work-filter-row">
                     <span class="archive-total"
-                        >The project archive
-                        <span class="archive-count"
+                        > {{ t("The project archive") }} <span class="archive-count"
                             >({{ projects.length }})</span
                         ></span
                     >
-                    <div class="filter-list" aria-label="Project categories">
+                    <div class="filter-list" :aria-label="t('Project categories')">
                         <button
                             v-for="item in categories"
                             :key="item"
                             :aria-pressed="category === item"
                             @click="category = item"
                         >
-                            {{ item }}
+                            {{ t(item) }}
                         </button>
                     </div>
                 </div>
@@ -62,15 +63,13 @@ const filtered = computed(() =>
                         v-for="(project, index) in filtered"
                         :key="project.id"
                         class="project-link"
-                        :aria-label="'View ' + project.title"
-                        :href="`/work/${project.id}`"
+                        :aria-label="(locale === 'fr' ? 'Voir ' : 'View ') + project.title"
+                        :href="localPath(`/work/${project.id}`)"
                     >
                         <ProjectCard :project="project" :index="index" />
                     </Link>
                 </div>
-                <p v-if="!filtered.length" class="empty-state" role="status">
-                    No projects in this category yet.
-                </p>
+                <p v-if="!filtered.length" class="empty-state" role="status"> {{ t("No projects in this category yet.") }} </p>
             </section>
         </SiteLayout>
     </div>

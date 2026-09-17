@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { computed, nextTick, onBeforeUnmount, ref, useId } from "vue";
 import { ArrowLeft, ArrowRight, X } from "lucide-vue-next";
 
@@ -117,7 +119,7 @@ defineExpose({ open });
                 <button
                     type="button"
                     class="gallery-control gallery-close"
-                    aria-label="Close gallery"
+                    :aria-label="t('Close gallery')"
                     autofocus
                     @click="close"
                 >
@@ -132,11 +134,9 @@ defineExpose({ open });
                 @touchcancel="touchStart = null"
             >
                 <span v-if="loading" class="gallery-status" role="status"
-                    >Loading image…</span
+                    > {{ t("Loading image…") }} </span
                 >
-                <p v-if="failed" class="gallery-status" role="status">
-                    This image couldn’t load. Try another image.
-                </p>
+                <p v-if="failed" class="gallery-status" role="status"> {{ t("This image couldn’t load. Try another image.") }} </p>
                 <img
                     v-else
                     :key="source"
@@ -154,7 +154,7 @@ defineExpose({ open });
                     <button
                         type="button"
                         class="gallery-control gallery-previous"
-                        aria-label="Previous image"
+                        :aria-label="t('Previous image')"
                         @click="select(active - 1)"
                     >
                         <ArrowLeft :size="22" />
@@ -162,7 +162,7 @@ defineExpose({ open });
                     <button
                         type="button"
                         class="gallery-control gallery-forward"
-                        aria-label="Next image"
+                        :aria-label="t('Next image')"
                         @click="select(active + 1)"
                     >
                         <ArrowRight :size="22" />
@@ -178,7 +178,7 @@ defineExpose({ open });
                     v-if="images.length > 1"
                     class="gallery-thumbnails"
                     role="group"
-                    aria-label="Choose an image"
+                    :aria-label="t('Choose an image')"
                 >
                     <button
                         v-for="(image, index) in images"

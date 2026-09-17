@@ -27,6 +27,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return [...parent::share($request),
+            'locale' => app()->getLocale(),
             'cms' => fn () => app(CmsContent::class)->all($request),
             'cmsPreview' => (bool) ($request->user()?->is_admin && $request->boolean('preview')),
             'seo' => fn () => app(PageSeo::class)->forRequest($request),

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { computed } from "vue";
 import { useCms } from "../composables/useCms";
 const cms = useCms();
@@ -20,14 +22,14 @@ const props = defineProps<{
         updated: string;
     };
 }>();
-const documents: Record<
+const documents = computed<Record<
     string,
     {
         title: string;
         introduction: string;
         sections: { heading: string; text: string[] }[];
     }
-> = {
+>>(() => ({
     privacy: {
         title: "Privacy policy",
         introduction:
@@ -166,8 +168,8 @@ const documents: Record<
                 heading: "Publisher",
                 text: [
                     props.legal.owner,
-                    `Website: ${props.legal.website}`,
-                    `Publication contact: ${props.legal.email}`,
+                    `${t("Website")}: ${props.legal.website}`,
+                    `${t("Publication contact")}: ${props.legal.email}`,
                     ...(props.legal.business ? [props.legal.business] : []),
                     ...(props.legal.address ? [props.legal.address] : []),
                 ],
@@ -178,14 +180,14 @@ const documents: Record<
                     props.legal.hosting_details,
                     ...(props.legal.host_name ? [props.legal.host_name] : []),
                     ...(props.legal.host_address ? [props.legal.host_address] : []),
-                    ...(props.legal.host_phone ? [`Telephone: ${props.legal.host_phone}`] : []),
-                    `Hosting contact: ${props.legal.email}`,
+                    ...(props.legal.host_phone ? [`${t("Telephone")}: ${props.legal.host_phone}`] : []),
+                    `${t("Hosting contact")}: ${props.legal.email}`,
                 ],
             },
             {
                 heading: "Copyright and credits",
                 text: [
-                    `© ${new Date().getFullYear()} ${props.legal.owner} for original contributions. Third-party content remains the property of its respective owners.`,
+                    `© ${new Date().getFullYear()} ${props.legal.owner}. ${locale.value === "fr" ? "Pour les contributions originales. Les contenus tiers restent la propriété de leurs titulaires." : "For original contributions. Third-party content remains the property of its respective owners."}`,
                     "Technology icons and names identify the tools used and do not imply sponsorship. Libraries, fonts, models, project materials, and linked source code remain subject to their own licences. Permissions to reuse original content can be requested through the publication contact.",
                 ],
             },
@@ -197,7 +199,7 @@ const documents: Record<
             },
         ],
     },
-};
+}));
 const content = computed(() => {
     const document = cms.value[props.document] as
         | {
@@ -207,7 +209,7 @@ const content = computed(() => {
           }
         | undefined;
     if (!document || !Array.isArray(document.sections))
-        return documents[props.document] || documents.privacy;
+        return documents.value[props.document] || documents.value.privacy;
     const resolve = (value: string) =>
         value
             .replaceAll("{{publisher}}", props.legal.owner)
@@ -230,31 +232,25 @@ function preferences() {
     <div>
         <SeoHead /><SiteLayout>
             <article class="legal-document shell">
-                <p class="eyebrow">Updated {{ legal.updated }}</p>
-                <h1>{{ content.title }}</h1>
-                <p class="legal-intro">{{ content.introduction }}</p>
-                <p>
-                    Applies to <a :href="legal.website">{{ legal.website }}</a>,
-                    the personal portfolio of {{ legal.owner }}.
+                <p class="eyebrow"> {{ t("Updated") }} {{ legal.updated }}</p>
+                <h1>{{ t(content.title) }}</h1>
+                <p class="legal-intro">{{ t(content.introduction) }}</p>
+                <p> {{ t("Applies to") }} <a :href="legal.website">{{ legal.website }}</a> {{ t(", the personal portfolio of") }} {{ legal.owner }}.
                 </p>
-                <nav aria-label="Legal documents">
-                    <Link href="/privacy">Privacy</Link
-                    ><Link href="/cookies">Cookies</Link
-                    ><Link href="/terms">Terms</Link
-                    ><Link href="/legal">Legal notice</Link
-                    ><button type="button" @click="preferences">
-                        Cookie preferences
-                    </button>
+                <nav :aria-label="t('Legal documents')">
+                    <Link :href="localPath('/privacy')"> {{ t("Privacy") }} </Link
+                    ><Link :href="localPath('/cookies')"> {{ t("Cookies") }} </Link
+                    ><Link :href="localPath('/terms')"> {{ t("Terms") }} </Link
+                    ><Link :href="localPath('/legal')"> {{ t("Legal notice") }} </Link
+                    ><button type="button" @click="preferences"> {{ t("Cookie preferences") }} </button>
                 </nav>
                 <section v-for="item in content.sections" :key="item.heading">
-                    <h2>{{ item.heading }}</h2>
+                    <h2>{{ t(item.heading) }}</h2>
                     <p v-for="(paragraph, index) in item.text" :key="index">
-                        {{ paragraph }}
+                        {{ t(paragraph) }}
                     </p>
                 </section>
-                <p class="legal-contact">
-                    Contact:
-                    <a :href="`mailto:${legal.email}`">{{ legal.email }}</a>
+                <p class="legal-contact"> {{ t("Contact:") }} <a :href="`mailto:${legal.email}`">{{ legal.email }}</a>
                 </p>
             </article>
         </SiteLayout>

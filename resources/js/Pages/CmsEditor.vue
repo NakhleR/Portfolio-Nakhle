@@ -41,6 +41,7 @@ const sections = [
     ["cookies", "Cookie policy"],
     ["terms", "Terms of use"],
 ];
+sections.push(...sections.filter(([key]) => key !== "legal").map(([key, label]) => [`fr_${key}`, `Français · ${label}`]), ["fr_projects", "Français · Project translations"]);
 function save() {
     form.transform(({content,version})=>({data:content,version})).put(`/dashboard/pages/${props.section}`, { preserveScroll: true });
 }

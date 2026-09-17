@@ -12,6 +12,6 @@ class ContactController extends Controller
     {
         ContactMessage::create($request->safe()->only(['name', 'email', 'message']));
 
-        return to_route('contact')->with('success', 'Thank you! Your message has been received.');
+        return to_route((app()->getLocale() === 'fr' ? 'fr.' : '').'contact')->with('success', app()->getLocale() === 'fr' ? 'Merci ! Votre message a bien été reçu.' : 'Thank you! Your message has been received.');
     }
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t } = useLocale();
 import { ArrowUpRight } from "lucide-vue-next";
 import type { ProjectCardData } from "../types";
 import { projectCategoryLabel } from "../data/projectCategories";
@@ -32,7 +34,7 @@ withDefaults(defineProps<{ project: ProjectCardData; index?: number }>(), {
         </div>
         <div class="folio-meta">
             <h3>{{ project.title }}</h3>
-            <span>{{ projectCategoryLabel(project.category) }}</span>
+            <span>{{ t(projectCategoryLabel(project.category)) }}</span>
         </div>
         <p class="folio-summary">{{ project.description }}</p>
         <div class="folio-tools">

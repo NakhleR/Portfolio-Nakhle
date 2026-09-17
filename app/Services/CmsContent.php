@@ -31,12 +31,28 @@ class CmsContent
         $documents = CmsDocument::query()->select($preview ? ['key', 'published', 'draft'] : ['key', 'published'])->get()->keyBy('key');
         $result = [];
         foreach (array_keys(config('cms')) as $key) {
-            if (in_array($key, ['privacy', 'cookies', 'terms'], true) && $request->path() !== $key) {
+            if (str_starts_with($key, 'fr_')) {
+                continue;
+            }
+            if (in_array($key, ['privacy', 'cookies', 'terms'], true) && $request->segment(app()->getLocale() === 'fr' ? 2 : 1) !== $key) {
                 continue;
             }
             $record = $documents->get($key);
             $data = $preview ? ($record?->draft ?? $record?->published) : $record?->published;
             $result[$key] = array_replace($this->defaults($key), $data ?? []);
+            if (app()->getLocale() === 'fr' && config('cms.fr_'.$key)) {
+                $localized = $documents->get('fr_'.$key);
+                $translated = $preview ? ($localized?->draft ?? $localized?->published) : $localized?->published;
+                $result[$key] = array_replace($result[$key], $this->defaults('fr_'.$key), $translated ?? []);
+            }
+            if (in_array($key, ['privacy', 'cookies'], true)) {
+                $provider = config('services.google_maps.key') ? 'Google Maps' : 'OpenStreetMap';
+                array_walk_recursive($result[$key], function (&$value) use ($provider): void {
+                    if (is_string($value)) {
+                        $value = str_replace(['OpenStreetMap', '{{map_provider}}'], $provider, $value);
+                    }
+                });
+            }
         }
         $assets = SiteAsset::with('media')->get()->keyBy('slot');
         $portrait = $assets->get('portrait')?->getFirstMedia('portrait');

@@ -71,11 +71,21 @@ class AnalyticsTest extends TestCase
         }
     }
 
+    public function test_french_public_paths_are_accepted_with_consent(): void
+    {
+        $consent = $this->consent();
+        $this->withCookie(AnalyticsConsent::COOKIE, $consent->id);
+        foreach (['/fr', '/fr/about', '/fr/work/project-123', '/fr/contact', '/fr/privacy'] as $path) {
+            $this->postJson('/analytics/events', ['events' => [$this->event(['path' => $path])]])->assertNoContent();
+            $this->assertDatabaseHas('analytics_events', ['path' => $path]);
+        }
+    }
+
     public function test_sensitive_or_invalid_payloads_are_rejected(): void
     {
         $consent = $this->consent();
         $this->withCookie(AnalyticsConsent::COOKIE, $consent->id);
-        foreach ([['path' => '/dashboard'], ['path' => '/contact?email=private@example.com'], ['target' => 'private text'], ['email' => 'private@example.com'], ['x' => 101]] as $invalid) {
+        foreach ([['path' => '/dashboard'], ['path' => '/fr/dashboard'], ['path' => '/fr/contact?email=private@example.com'], ['path' => '/contact?email=private@example.com'], ['target' => 'private text'], ['email' => 'private@example.com'], ['x' => 101]] as $invalid) {
             $this->postJson('/analytics/events', ['events' => [$this->event($invalid)]])->assertUnprocessable();
         }
         $this->postJson('/analytics/events', ['events' => array_fill(0, 21, $this->event())])->assertUnprocessable();

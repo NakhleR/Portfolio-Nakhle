@@ -17,13 +17,14 @@ class PrivacyController extends Controller
 {
     public function page(Request $request): Response
     {
-        $publishedAt = CmsDocument::whereIn('key', [$request->route()->getName(), 'legal'])->max('published_at');
+        $document = str_replace('fr.', '', $request->route()->getName());
+        $publishedAt = CmsDocument::whereIn('key', [$document, 'fr_'.$document, 'legal'])->max('published_at');
         $updated = Carbon::parse(config('privacy.updated'));
         if ($publishedAt && Carbon::parse($publishedAt)->greaterThan($updated)) {
             $updated = Carbon::parse($publishedAt);
         }
 
-        return Inertia::render('Legal', ['document' => $request->route()->getName(), 'legal' => [...config('privacy'), ...app(CmsContent::class)->all($request)['legal'], 'website' => rtrim(config('app.canonical_url'), '/'), 'updated' => $updated->format('j F Y')]]);
+        return Inertia::render('Legal', ['document' => $document, 'legal' => [...config('privacy'), ...app(CmsContent::class)->all($request)['legal'], 'website' => rtrim(config('app.canonical_url'), '/'), 'updated' => $updated->locale(app()->getLocale())->translatedFormat('j F Y')]]);
     }
 
     public function consent(Request $request): JsonResponse

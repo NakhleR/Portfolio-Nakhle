@@ -1,6 +1,6 @@
 <?php
 
-return [
+$sections = [
     'site' => [
         'label' => 'Identity & contact',
         'path' => '/',
@@ -28,7 +28,8 @@ return [
             'address' => [
                 'label' => 'Public location',
                 'type' => 'textarea',
-                'default' => 'Rue De Fontenelle
+                'default' => 'Rue De Fontenelle
+
 Rouen 76000, France',
             ],
             'github' => [
@@ -44,7 +45,7 @@ Rouen 76000, France',
             'availability' => [
                 'label' => 'Availability message',
                 'type' => 'text',
-                'default' => 'Open to work & collaborations',
+                'default' => 'Based in Rouen · Open to opportunities in France & Europe',
             ],
             'map_label' => [
                 'label' => 'Map label',
@@ -74,13 +75,14 @@ Rouen 76000, France',
             'hero' => [
                 'label' => 'Banner heading (one line per row)',
                 'type' => 'textarea',
-                'default' => 'Built to be
+                'default' => 'Built to be
+
 explored.',
             ],
             'intro' => [
                 'label' => 'Introduction',
                 'type' => 'textarea',
-                'default' => 'I\'m Nakhle. I build digital experiences at the intersection of software engineering and artificial intelligence.',
+                'default' => 'I\'m Nakhle, a full stack developer based in Rouen, France. I build web and mobile applications and explore artificial intelligence. Open to projects and opportunities across France and Europe.',
             ],
             'disciplines' => [
                 'label' => 'Showcase disciplines',
@@ -144,7 +146,8 @@ explored.',
             'statement' => [
                 'label' => 'Helix section heading',
                 'type' => 'textarea',
-                'default' => 'A curious mind.
+                'default' => 'A curious mind.
+
 A builder\'s instinct.',
             ],
             'statement_body' => [
@@ -160,7 +163,8 @@ A builder\'s instinct.',
             'approach' => [
                 'label' => 'Approach heading',
                 'type' => 'textarea',
-                'default' => 'Good software starts with
+                'default' => 'Good software starts with
+
 better questions.',
             ],
             'approach_body' => [
@@ -226,22 +230,28 @@ better questions.',
             'hero' => [
                 'label' => 'Page heading',
                 'type' => 'textarea',
-                'default' => 'Curiosity is
+                'default' => 'Curiosity is
+
 the constant.',
             ],
             'title' => [
                 'label' => 'Biography heading',
                 'type' => 'textarea',
-                'default' => 'Engineering meets
+                'default' => 'Engineering meets
+
 a sense of possibility.',
             ],
             'biography' => [
                 'label' => 'Biography (blank line between paragraphs)',
                 'type' => 'textarea',
-                'default' => 'I\'m Nakhle Rizk, born on November 20, 2002. I\'m a full stack developer and AI & machine learning student with a passion for building intelligent, user-focused applications. My journey began with web development, mastering various frontend and backend technologies.
-
-My curiosity for how systems learn and adapt led me to artificial intelligence and machine learning, where I\'m exploring areas like deep learning, data science, and intelligent automation. I enjoy bridging the gap between robust software engineering and cutting-edge AI research.
-
+                'default' => 'I\'m Nakhle Rizk, born on November 20, 2002. I\'m a full stack developer and AI & machine learning student with a passion for building intelligent, user-focused applications. My journey began with web development, mastering various frontend and backend technologies.
+
+
+
+My curiosity for how systems learn and adapt led me to artificial intelligence and machine learning, where I\'m exploring areas like deep learning, data science, and intelligent automation. I enjoy bridging the gap between robust software engineering and cutting-edge AI research.
+
+
+
 I approach every project with attention to detail and a focus on user experience, whether I\'m building a responsive web application or training a machine learning model. I\'m constantly learning and expanding my skills to stay current with the latest technologies and best practices.',
                 'max' => 15000,
             ],
@@ -258,7 +268,8 @@ I approach every project with attention to detail and a focus on user experience
             'skills_title' => [
                 'label' => 'Skills heading',
                 'type' => 'textarea',
-                'default' => 'A growing
+                'default' => 'A growing
+
 toolbox.',
             ],
             'skills' => [
@@ -457,7 +468,8 @@ toolbox.',
             'hero' => [
                 'label' => 'Page heading',
                 'type' => 'textarea',
-                'default' => 'Work in
+                'default' => 'Work in
+
 many forms.',
             ],
             'intro' => [
@@ -474,7 +486,8 @@ many forms.',
             'hero' => [
                 'label' => 'Page heading',
                 'type' => 'textarea',
-                'default' => 'Good things
+                'default' => 'Good things
+
 start here.',
             ],
             'intro' => [
@@ -501,13 +514,13 @@ start here.',
             'home_title' => [
                 'label' => 'Home page title',
                 'type' => 'text',
-                'default' => 'Nakhle Rizk — Full Stack Developer & AI Student',
+                'default' => 'Nakhle Rizk — Full Stack Developer in Rouen, France',
                 'max' => 160,
             ],
             'home_description' => [
                 'label' => 'Home description',
                 'type' => 'textarea',
-                'default' => 'Explore Nakhle Rizk’s portfolio of web applications, mobile apps, games, and AI projects. Available for employment and client collaborations.',
+                'default' => 'Full stack developer in Rouen, France. Explore my web, mobile and AI projects. Open to roles and collaborations across France and Europe.',
                 'max' => 500,
             ],
             'about_title' => [
@@ -620,34 +633,45 @@ start here.',
                     ],
                     [
                         'heading' => 'Contact enquiries',
-                        'body' => 'The contact form stores the name, email address, and message you choose to send. This information is used to reply to your enquiry and discuss potential work. Please do not include sensitive personal information.
-
+                        'body' => 'The contact form stores the name, email address, and message you choose to send. This information is used to reply to your enquiry and discuss potential work. Please do not include sensitive personal information.
+
+
+
 Handling an enquiry relies on taking steps at your request before a possible contract, or on the legitimate interest of answering correspondence. Messages should be reviewed when an enquiry is resolved and deleted when no longer needed; relevant correspondence may be retained for ongoing work, legal obligations, or disputes. You can ask about retention or request deletion using the contact address above.',
                     ],
                     [
                         'heading' => 'Optional audience analytics',
-                        'body' => 'Only after you accept analytics, this site records page paths, visits, coarse device categories, clicks on interface controls and page surfaces, approximate click positions, scroll milestones, and estimated active reading time by section. A random consent reference and a random browser-session reference associate these events. They are pseudonymous identifiers, not a verified identity.
-
-Analytics do not capture form inputs, message contents, keystroke contents, screenshots, screen recordings, URL query strings, full referrer addresses, advertising profiles, or device fingerprints. IP addresses and user-agent strings are not stored in the analytics tables. The web server still processes network information needed to deliver and secure the site.
-
+                        'body' => 'Only after you accept analytics, this site records page paths, visits, coarse device categories, clicks on interface controls and page surfaces, approximate click positions, scroll milestones, and estimated active reading time by section. A random consent reference and a random browser-session reference associate these events. They are pseudonymous identifiers, not a verified identity.
+
+
+
+Analytics do not capture form inputs, message contents, keystroke contents, screenshots, screen recordings, URL query strings, full referrer addresses, advertising profiles, or device fingerprints. IP addresses and user-agent strings are not stored in the analytics tables. The web server still processes network information needed to deliver and secure the site.
+
+
+
 Consent is the basis for this optional processing. Rejecting analytics does not limit access to the portfolio. Reading time is an estimate of active, visible content, not eye tracking or proof that a person read a particular sentence. The reports cover consenting traffic only.',
                     ],
                     [
                         'heading' => 'Retention and your choices',
-                        'body' => 'Analytics events are retained for up to 90 days, with expired records removed by a daily maintenance task. Your choice and its policy version are remembered for 180 days. The optional session reference is kept in session storage and renewed after 30 minutes without activity. Browser storage restrictions can affect these durations.
-
+                        'body' => 'Analytics events are retained for up to 90 days, with expired records removed by a daily maintenance task. Your choice and its policy version are remembered for 180 days. The optional session reference is kept in session storage and renewed after 30 minutes without activity. Browser storage restrictions can affect these durations.
+
+
+
 Use Cookie preferences in the footer to change your choice. Withdrawing consent stops future analytics collection; it does not make earlier processing unlawful. You can also delete analytics linked to this browser’s consent reference and turn tracking off. Clearing cookies or using another browser may remove the reference needed to find those records.',
                     ],
                     [
                         'heading' => 'Recipients and external services',
                         'body' => 'Analytics and contact messages are stored in the database on Nakhle Rizk’s own server and are accessible to him to operate this personal portfolio and respond to enquiries. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.
-
+
+
 The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. The site is self-hosted using Microsoft IIS; publisher and hosting contact details are listed in the Legal notice.',
                     ],
                     [
                         'heading' => 'Your rights',
-                        'body' => 'Where applicable, you may request access, correction, deletion, restriction, portability, or object to processing based on legitimate interests. You may withdraw analytics consent at any time. Contact the address above; only information reasonably necessary to verify and handle a request should be requested.
-
+                        'body' => 'Where applicable, you may request access, correction, deletion, restriction, portability, or object to processing based on legitimate interests. You may withdraw analytics consent at any time. Contact the address above; only information reasonably necessary to verify and handle a request should be requested.
+
+
+
 You may also raise a concern with your local data-protection authority. In France this is the CNIL (cnil.fr). Applicable statutory rights are not limited by this policy.',
                     ],
                 ],
@@ -688,22 +712,30 @@ You may also raise a concern with your local data-protection authority. In Franc
                 'default' => [
                     [
                         'heading' => 'Essential cookies and storage',
-                        'body' => 'The Laravel session cookie and XSRF-TOKEN support sessions, form security, and authentication. Their lifetime follows the server’s session configuration. Administrators may also use an authentication remembrance cookie when that feature is selected.
-
-The portfolio_consent cookie remembers an explicit analytics choice and its version for 180 days. It is encrypted, HttpOnly, and uses SameSite=Lax; Secure is used on HTTPS requests. The server stores the matching choice and expiry so it can enforce consent.
-
+                        'body' => 'The Laravel session cookie and XSRF-TOKEN support sessions, form security, and authentication. Their lifetime follows the server’s session configuration. Administrators may also use an authentication remembrance cookie when that feature is selected.
+
+
+
+The portfolio_consent cookie remembers an explicit analytics choice and its version for 180 days. It is encrypted, HttpOnly, and uses SameSite=Lax; Secure is used on HTTPS requests. The server stores the matching choice and expiry so it can enforce consent.
+
+
+
 portfolio-theme in local storage remembers a theme you choose until you remove it. portfolio-entry-seen in session storage prevents the entry animation from repeating in the same tab session. These settings support the requested interface rather than audience tracking.',
                     ],
                     [
                         'heading' => 'Optional analytics storage',
-                        'body' => 'portfolio-analytics-session is created in session storage only when analytics are allowed. It contains a random session reference and activity time. A new reference is generated after 30 minutes without recorded activity. Session storage normally ends when its tab session ends.
-
+                        'body' => 'portfolio-analytics-session is created in session storage only when analytics are allowed. It contains a random session reference and activity time. A new reference is generated after 30 minutes without recorded activity. Session storage normally ends when its tab session ends.
+
+
+
 Analytics requests stay on this site. Consent is checked on the server for every event batch. Global Privacy Control and Do Not Track signals keep analytics off. No optional advertising or session-replay cookies are used.',
                     ],
                     [
                         'heading' => 'Choose, change, or delete',
-                        'body' => 'Accept and Reject are both available in the cookie banner. Manage preferences lets you review the purpose before choosing. No analytics option is preselected for a new visitor.
-
+                        'body' => 'Accept and Reject are both available in the cookie banner. Manage preferences lets you review the purpose before choosing. No analytics option is preselected for a new visitor.
+
+
+
 Cookie preferences remains available in the footer. Turning analytics off drops unsent events and removes the optional session reference from this tab. Deleting this browser’s analytics also removes the linked stored events. You can additionally clear site cookies and storage in your browser, which may reset your preferences.',
                     ],
                     [
@@ -756,8 +788,10 @@ Cookie preferences remains available in the footer. Turning analytics off drops 
                     ],
                     [
                         'heading' => 'Content and intellectual property',
-                        'body' => 'Original text, design, custom visual work, and original code are protected to the extent applicable law provides. Rights remain with their respective owners. Project screenshots, software names, trademarks, client materials, libraries, fonts, and third-party models may have separate owners and licences.
-
+                        'body' => 'Original text, design, custom visual work, and original code are protected to the extent applicable law provides. Rights remain with their respective owners. Project screenshots, software names, trademarks, client materials, libraries, fonts, and third-party models may have separate owners and licences.
+
+
+
 Public source repositories are governed by the licence supplied with each repository; displaying a project here does not grant additional rights. Statutory exceptions, quotation rights, and rights granted by applicable open-source licences remain unaffected. Ask the publisher before reusing original portfolio material beyond those rights.',
                     ],
                     [
@@ -766,8 +800,10 @@ Public source repositories are governed by the licence supplied with each reposi
                     ],
                     [
                         'heading' => 'Responsibility and disputes',
-                        'body' => 'Each party remains responsible as required by applicable law. These terms do not exclude liability that cannot lawfully be excluded, or restrict mandatory consumer, privacy, or other statutory protections.
-
+                        'body' => 'Each party remains responsible as required by applicable law. These terms do not exclude liability that cannot lawfully be excluded, or restrict mandatory consumer, privacy, or other statutory protections.
+
+
+
 Please contact {{email}} first about a concern so it can be investigated. Applicable law and jurisdiction follow the rules that legally apply to the situation; no exclusive foreign forum is imposed here.',
                     ],
                     [
@@ -793,3 +829,35 @@ Please contact {{email}} first about a concern so it can be investigated. Applic
         ],
     ],
 ];
+
+foreach (require __DIR__.'/french.php' as $section => $values) {
+    $definition = $sections[$section];
+    $definition['label'] = 'Français · '.$definition['label'];
+    $definition['path'] = '/fr'.rtrim($definition['path'], '/');
+    if ($section === 'site') {
+        $definition['fields'] = array_intersect_key($definition['fields'], $values);
+    }
+    foreach ($values as $key => $value) {
+        $definition['fields'][$key]['default'] = $value;
+    }
+    $sections['fr_'.$section] = $definition;
+}
+$projects = [];
+foreach (require __DIR__.'/french_projects.php' as $id => $project) {
+    $projects[] = ['id' => $id, ...$project];
+}
+$sections['fr_projects'] = [
+    'label' => 'Français · Project translations', 'path' => '/fr/work',
+    'fields' => ['projects' => [
+        'label' => 'French projects (use the project ID from its public URL)', 'type' => 'repeater', 'max' => 200,
+        'default' => $projects,
+        'fields' => [
+            'id' => ['label' => 'Project ID', 'type' => 'text', 'default' => ''],
+            'title' => ['label' => 'French title', 'type' => 'text', 'default' => ''],
+            'description' => ['label' => 'French summary', 'type' => 'textarea', 'default' => ''],
+            'longDescription' => ['label' => 'French case study', 'type' => 'textarea', 'default' => '', 'max' => 30000],
+        ],
+    ]],
+];
+
+return $sections;

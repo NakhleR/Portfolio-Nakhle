@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
@@ -21,9 +23,8 @@ import ModelScene from "../Components/ModelScene.vue";
                         <p>
                             {{ cms.home.statement_body }}
                         </p>
-                        <Link href="/about" class="studio-link"
-                            >Meet the person behind the work
-                            <ArrowUpRight :size="20"
+                        <Link :href="localPath('/about')" class="studio-link"
+                            > {{ t("Meet the person behind the work") }} <ArrowUpRight :size="20"
                         /></Link>
                         <p class="studio-caption">
                             {{ cms.home.caption }}
@@ -40,8 +41,8 @@ import ModelScene from "../Components/ModelScene.vue";
                         <div class="thinker-stage">
                             <ModelScene model="thinker" />
                         </div>
-                        <Link href="/about" class="text-link"
-                            >A little more about me <ArrowUpRight :size="18"
+                        <Link :href="localPath('/about')" class="text-link"
+                            > {{ t("A little more about me") }} <ArrowUpRight :size="18"
                         /></Link>
                     </div>
                     <div class="approach-copy">

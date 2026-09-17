@@ -27,6 +27,17 @@ Route::get('/about', [PortfolioController::class, 'about'])->name('about');
 Route::get('/work', [PortfolioController::class, 'work'])->name('work');
 Route::get('/work/{project}', [PortfolioController::class, 'project'])->name('work.show');
 Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
+Route::prefix('fr')->name('fr.')->group(function (): void {
+    Route::get('/', [PortfolioController::class, 'home'])->name('home');
+    Route::get('/about', [PortfolioController::class, 'about'])->name('about');
+    Route::get('/work', [PortfolioController::class, 'work'])->name('work');
+    Route::get('/work/{project}', [PortfolioController::class, 'project'])->name('work.show');
+    Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
+    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
+    foreach (['privacy', 'cookies', 'terms', 'legal'] as $document) {
+        Route::get('/'.$document, [PrivacyController::class, 'page'])->name($document);
+    }
+});
 foreach (['privacy', 'cookies', 'terms', 'legal'] as $document) {
     Route::get('/'.$document, [PrivacyController::class, 'page'])->name($document);
 }

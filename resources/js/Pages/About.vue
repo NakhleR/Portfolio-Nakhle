@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
@@ -32,7 +34,7 @@ const timelineCategory = ref("all");
                     <a
                         :href="cms.assets.portrait_original"
                         class="portrait-frame"
-                        aria-label="Open portrait in gallery"
+                        :aria-label="t('Open portrait in gallery')"
                         aria-haspopup="dialog"
                         @click.prevent="gallery?.open()"
                     >
@@ -66,14 +68,14 @@ const timelineCategory = ref("all");
                         download="Nakhle_Rizk_CV.pdf"
                         class="round-link"
                         ><span class="round-icon"><ArrowDown :size="22" /></span
-                        ><span>The full story, in my CV</span></a
+                        ><span> {{ t("The full story, in my CV") }} </span></a
                     >
                 </div>
             </section>
             <section class="journey-section shell">
                 <div class="section-bar">
                     <h2>{{ cms.about.journey_title }}</h2>
-                    <span class="small-label">Experience &amp; education</span>
+                    <span class="small-label"> {{ t("Experience & education") }} </span>
                 </div>
                 <div class="filter-list timeline-filters">
                     <button
@@ -83,7 +85,7 @@ const timelineCategory = ref("all");
                         class="capitalize"
                         @click="timelineCategory = item"
                     >
-                        {{ item }}
+                        {{ t(item) }}
                     </button>
                 </div>
                 <div class="journey-list">
@@ -97,25 +99,25 @@ const timelineCategory = ref("all");
                         class="journey-item"
                     >
                         <div class="journey-date">
-                            {{ item.year }}<span>{{ item.category }}</span>
+                            {{ t(item.year) }}<span>{{ t(item.category) }}</span>
                         </div>
                         <div>
-                            <h3>{{ item.title }}</h3>
+                            <h3>{{ t(item.title) }}</h3>
                             <p v-if="item.location" class="journey-location">
-                                {{ item.location }}
+                                {{ t(item.location) }}
                             </p>
                             <p
                                 v-if="item.description"
                                 class="whitespace-pre-line"
                             >
-                                {{ item.description }}
+                                {{ t(item.description) }}
                             </p>
                             <ul v-if="item.bullets?.length">
                                 <li
                                     v-for="(bullet, i) in item.bullets"
                                     :key="i"
                                 >
-                                    {{ bullet }}
+                                    {{ t(bullet) }}
                                 </li>
                             </ul>
                         </div>
@@ -126,10 +128,7 @@ const timelineCategory = ref("all");
                 <div class="shell skills-layout">
                     <div>
                         <h2><template v-for="(line,i) in cms.about.skills_title.split('\n')" :key="i"><br v-if="i"/><span :class="{'accent-text':i>0}">{{line}}</span></template></h2>
-                        <p>
-                            Technologies and tools I work with.<br />Always room
-                            for something new.
-                        </p>
+                        <p> {{ t("Technologies and tools I work with.") }} <br /> {{ t("Always room for something new.") }} </p>
                     </div>
                     <div>
                         <div class="filter-list skills-filters">
@@ -139,7 +138,7 @@ const timelineCategory = ref("all");
                                 :aria-pressed="category === i"
                                 @click="category = i"
                             >
-                                {{ group.name }}
+                                {{ t(group.name) }}
                             </button>
                         </div>
                         <div class="skills-panels">

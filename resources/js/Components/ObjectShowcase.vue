@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale } = useLocale();
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useEntryAsset } from "../composables/useEntryLoader";
 import { Box, Pause, Play } from "lucide-vue-next";
@@ -67,22 +69,22 @@ onBeforeUnmount(() => {
             ref="host"
             class="object-canvas"
             role="img"
-            :aria-label="`Custom 3D ${kind === 'processor' ? 'layered processor' : kind === 'mobile' ? 'mobile device' : kind === 'web' ? 'modular browser workstation' : 'game controller'} for ${label}. Drag left or right to turn.`"
+            :aria-label="locale === 'fr' ? `Objet 3D pour ${label}. Glissez à gauche ou à droite pour tourner.` : `Custom 3D ${kind === 'processor' ? 'layered processor' : kind === 'mobile' ? 'mobile device' : kind === 'web' ? 'modular browser workstation' : 'game controller'} for ${label}. Drag left or right to turn.`"
         />
         <div v-if="!ready || failed" class="object-placeholder" role="status">
             <Box :size="48" :stroke-width="1" />
             <span>{{
                 failed
-                    ? "Explore the discipline using the buttons."
-                    : "Assembling the scene…"
+                    ? t("Explore the discipline using the buttons.")
+                    : t("Assembling the scene…")
             }}</span>
         </div>
-        <span v-if="ready && !failed" class="object-hint">Drag to turn</span>
+        <span v-if="ready && !failed" class="object-hint">{{ t("Drag to turn") }}</span>
         <button
             v-if="ready && !failed"
             class="object-playback"
             :aria-label="
-                paused ? 'Play object animation' : 'Pause object animation'
+                paused ? t('Play object animation') : t('Pause object animation')
             "
             :aria-pressed="paused"
             @click="paused = !paused"

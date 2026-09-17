@@ -21,6 +21,17 @@ class SecurityHeaders
         $script = "'self' 'nonce-".Vite::cspNonce()."' 'wasm-unsafe-eval'";
         $connect = "'self' blob:";
         $style = "'self' 'unsafe-inline'";
+        $images = "'self' data: blob: https://*.tile.openstreetmap.org";
+        $fonts = "'self' data:";
+        $frames = "'none'";
+        if (config('services.google_maps.key')) {
+            $script .= ' https://*.googleapis.com https://*.gstatic.com blob:';
+            $connect .= ' https://*.googleapis.com https://*.gstatic.com https://*.google.com data:';
+            $images .= ' https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com https://*.ggpht.com';
+            $fonts .= ' https://fonts.gstatic.com';
+            $style .= ' https://fonts.googleapis.com';
+            $frames = 'https://*.google.com';
+        }
         if (app()->environment('local') && Vite::isRunningHot()) {
             $origin = rtrim(trim(file_get_contents(Vite::hotFile())), '/');
             if (preg_match('#^https?://[a-zA-Z0-9.\-\[\]:]+$#', $origin)) {
@@ -34,10 +45,10 @@ class SecurityHeaders
         // permitted for Draco, without enabling JavaScript eval or inline scripts.
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'", "base-uri 'none'", "object-src 'none'",
-            "frame-ancestors 'none'", "frame-src 'none'", "form-action 'self'",
+            "frame-ancestors 'none'", 'frame-src '.$frames, "form-action 'self'",
             'script-src '.$script, 'style-src '.$style,
-            "img-src 'self' data: blob: https://*.tile.openstreetmap.org",
-            "font-src 'self' data:", 'connect-src '.$connect,
+            'img-src '.$images,
+            'font-src '.$fonts, 'connect-src '.$connect,
             "worker-src 'self' blob:", "manifest-src 'self'",
         ]));
         $response->headers->set('X-Content-Type-Options', 'nosniff');

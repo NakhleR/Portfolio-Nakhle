@@ -13,7 +13,9 @@ class PageSeo
         $base = rtrim(config('app.canonical_url'), '/');
         $path = rtrim($request->getPathInfo(), '/');
         $canonical = $base.$path;
-        $route = $request->route()?->getName();
+        $route = str_replace('fr.', '', $request->route()?->getName() ?? '');
+        $locale = app()->getLocale();
+        $englishPath = $locale === 'fr' ? substr($path, 3) : $path;
         $pages = [
             'home' => ['Nakhle Rizk — Full Stack Developer & AI Student', 'Explore Nakhle Rizk’s portfolio of web applications, mobile apps, games, and AI projects. Available for employment and client collaborations.'],
             'about' => ['About Nakhle Rizk — Developer & AI Student', 'Meet Nakhle Rizk, a full stack developer and AI and machine learning student. Explore his skills, experience, and approach to building software.'],
@@ -39,25 +41,38 @@ class PageSeo
         }
         $portrait = $this->publicImageUrl($cms['assets']['portrait'], $base);
         $image = $portrait;
-        $imageAlt = 'Nakhle Rizk, full stack developer and AI student';
+        $imageAlt = $locale === 'fr' ? 'Nakhle Rizk, développeur full stack et étudiant en IA' : 'Nakhle Rizk, full stack developer and AI student';
         $project = $request->route('project');
         if ($route === 'work.show' && $project instanceof Project) {
-            $title = $project->title.' — Project by Nakhle Rizk';
-            $description = Str::limit(Str::squish(strip_tags($project->description)), 160);
+            $translatedProject = app(Localization::class)->project($project->mongo_id);
+            $projectTitle = $translatedProject['title'] ?? $project->title;
+            $title = $projectTitle.($locale === 'fr' ? ' — Projet de Nakhle Rizk' : ' — Project by Nakhle Rizk');
+            $description = Str::limit(Str::squish(strip_tags($translatedProject['description'] ?? $project->description)), 160);
             $media = $project->getFirstMedia('images');
             $image = $this->publicImageUrl($media?->getAvailableUrl(['display']) ?? $image, $base);
-            $imageAlt = $project->title.' project preview';
+            $imageAlt = $projectTitle.($locale === 'fr' ? ' — aperçu du projet' : ' project preview');
         }
         $indexable = in_array($route, ['home', 'about', 'work', 'work.show', 'contact', 'privacy', 'cookies', 'terms', 'legal'], true);
+        if ($locale === 'fr' && $route === 'work.show' && empty($translatedProject)) {
+            $indexable = false;
+        }
+        if ($locale === 'fr' && isset($cms[$route]['title'], $cms[$route]['introduction'])) {
+            $title = $cms[$route]['title'].' — Nakhle Rizk';
+            $description = $cms[$route]['introduction'];
+        }
+        if ($locale === 'fr' && $route === 'legal') {
+            $title = 'Mentions légales — Nakhle Rizk';
+            $description = 'Éditeur, hébergement et droits sur le contenu du portfolio de Nakhle Rizk.';
+        }
         if ($request->user()?->is_admin && $request->boolean('preview')) {
             $indexable = false;
         }
         $schema = $indexable ? [
             '@context' => 'https://schema.org',
             '@graph' => [
-                ['@type' => 'WebSite', '@id' => $base.'/#website', 'url' => $base.'/', 'name' => $cms['site']['name'], 'inLanguage' => 'en'],
-                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => $cms['site']['name'], 'url' => $base.'/', 'image' => $portrait, 'jobTitle' => 'Full Stack Developer', 'sameAs' => [$cms['site']['github'], $cms['site']['linkedin']]],
-                ['@type' => $route === 'about' ? 'ProfilePage' : ($route === 'contact' ? 'ContactPage' : ($route === 'work' ? 'CollectionPage' : 'WebPage')), '@id' => $canonical.'#webpage', 'url' => $canonical, 'name' => $title, 'description' => $description, 'isPartOf' => ['@id' => $base.'/#website'], 'about' => ['@id' => $base.'/#person']],
+                ['@type' => 'WebSite', '@id' => $base.'/#website', 'url' => $base.'/', 'name' => $cms['site']['name'], 'inLanguage' => ['en', 'fr']],
+                ['@type' => 'Person', '@id' => $base.'/#person', 'name' => $cms['site']['name'], 'url' => $base.'/', 'image' => $portrait, 'jobTitle' => $locale === 'fr' ? 'Développeur full stack' : 'Full Stack Developer', 'homeLocation' => ['@type' => 'Place', 'name' => 'Rouen, France', 'address' => ['@type' => 'PostalAddress', 'addressLocality' => 'Rouen', 'addressRegion' => 'Normandie', 'addressCountry' => 'FR']], 'sameAs' => [$cms['site']['github'], $cms['site']['linkedin']]],
+                ['@type' => $route === 'about' ? 'ProfilePage' : ($route === 'contact' ? 'ContactPage' : ($route === 'work' ? 'CollectionPage' : 'WebPage')), '@id' => $canonical.'#webpage', 'url' => $canonical, 'name' => $title, 'description' => $description, 'inLanguage' => $locale, 'isPartOf' => ['@id' => $base.'/#website'], 'about' => ['@id' => $base.'/#person']],
             ],
         ] : null;
         if ($indexable && $route === 'about') {
@@ -65,10 +80,14 @@ class PageSeo
         }
         if ($indexable && $route === 'work.show' && $project instanceof Project) {
             $schema['@graph'][2]['mainEntity'] = ['@id' => $canonical.'#project'];
-            $schema['@graph'][] = ['@type' => 'CreativeWork', '@id' => $canonical.'#project', 'name' => $project->title, 'description' => $description, 'url' => $canonical, 'image' => $image, 'creator' => ['@id' => $base.'/#person'], 'dateModified' => $project->updated_at?->toIso8601String()];
+            $schema['@graph'][] = ['@type' => 'CreativeWork', '@id' => $canonical.'#project', 'name' => $projectTitle, 'description' => $description, 'url' => $canonical, 'image' => $image, 'creator' => ['@id' => $base.'/#person'], 'dateModified' => $project->updated_at?->toIso8601String()];
         }
 
+        $hasFrench = $route !== 'work.show' || ($project instanceof Project && app(Localization::class)->project($project->mongo_id, 'fr') !== []);
+        $alternates = $indexable ? ['en' => $base.$englishPath, ...($hasFrench ? ['fr' => $base.'/fr'.$englishPath] : []), 'x-default' => $base.$englishPath] : [];
+
         return [
+            'locale' => $locale === 'fr' ? 'fr_FR' : 'en_GB', 'alternates' => $alternates,
             'title' => $title, 'description' => $description, 'canonical' => $canonical,
             'image' => $image, 'imageAlt' => $imageAlt,
             'robots' => $indexable ? 'index, follow, max-image-preview:large' : 'noindex, nofollow',

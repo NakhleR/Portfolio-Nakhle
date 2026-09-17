@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 const props = defineProps<{ loading: boolean }>();
@@ -57,11 +59,11 @@ async function save(value: boolean, erase = false) {
         announce(result.analytics);
         dialog.value?.close();
         status.value = erase
-            ? "Your browser’s analytics were deleted and tracking is off."
-            : "Your cookie preferences have been saved.";
+            ? t("Your browser’s analytics were deleted and tracking is off.")
+            : t("Your cookie preferences have been saved.");
     } catch {
         error.value =
-            "Your choice could not be saved. Tracking is paused on this page; please try again.";
+            t("Your choice could not be saved. Tracking is paused on this page; please try again.");
         announce(false);
     } finally {
         busy.value = false;
@@ -87,37 +89,23 @@ onBeforeUnmount(() => {
             aria-labelledby="cookie-title"
         >
             <div>
-                <h2 id="cookie-title">Your privacy, your choice.</h2>
+                <h2 id="cookie-title"> {{ t("Your privacy, your choice.") }} </h2>
+                <p> {{ t("Essential storage keeps the site working. With your permission, private analytics help me understand clicks, scrolling, and which sections hold your attention. No recordings or form contents.") }} </p>
                 <p>
-                    Essential storage keeps the site working. With your
-                    permission, private analytics help me understand clicks,
-                    scrolling, and which sections hold your attention. No
-                    recordings or form contents.
+                    <Link :href="localPath('/cookies')"> {{ t("Cookie policy") }} </Link> ·
+                    <Link :href="localPath('/privacy')"> {{ t("Privacy policy") }} </Link>
                 </p>
-                <p>
-                    <Link href="/cookies">Cookie policy</Link> ·
-                    <Link href="/privacy">Privacy policy</Link>
-                </p>
-                <p v-if="privacySignal">
-                    Your browser’s privacy signal is respected. Analytics stay
-                    off.
-                </p>
+                <p v-if="privacySignal"> {{ t("Your browser’s privacy signal is respected. Analytics stay off.") }} </p>
                 <p v-if="error" role="alert">{{ error }}</p>
             </div>
             <div class="cookie-actions">
-                <button type="button" :disabled="busy" @click="save(false)">
-                    Reject analytics
-                </button>
+                <button type="button" :disabled="busy" @click="save(false)"> {{ t("Reject analytics") }} </button>
                 <button
                     type="button"
                     :disabled="busy || privacySignal"
                     @click="save(true)"
-                >
-                    Accept analytics
-                </button>
-                <button type="button" class="cookie-manage" @click="open">
-                    Manage preferences
-                </button>
+                > {{ t("Accept analytics") }} </button>
+                <button type="button" class="cookie-manage" @click="open"> {{ t("Manage preferences") }} </button>
             </div>
         </section>
         <dialog
@@ -132,66 +120,47 @@ onBeforeUnmount(() => {
             "
         >
             <div class="cookie-dialog-content">
-                <h2 id="preferences-title">Cookie preferences</h2>
-                <p>
-                    You can use the entire portfolio without analytics. Change
-                    your choice here at any time.
-                </p>
+                <h2 id="preferences-title"> {{ t("Cookie preferences") }} </h2>
+                <p> {{ t("You can use the entire portfolio without analytics. Change your choice here at any time.") }} </p>
                 <div class="cookie-option">
-                    <strong>Essential storage</strong><span>Always active</span>
-                    <p>
-                        Security, your cookie choice, theme preference, and the
-                        entry-animation setting.
-                    </p>
+                    <strong> {{ t("Essential storage") }} </strong><span> {{ t("Always active") }} </span>
+                    <p> {{ t("Security, your cookie choice, theme preference, and the entry-animation setting.") }} </p>
                 </div>
                 <label class="cookie-option"
                     ><span
-                        ><strong>Analytics</strong
+                        ><strong> {{ t("Analytics") }} </strong
                         ><input
                             v-model="analytics"
                             type="checkbox"
                             :disabled="privacySignal || busy"
                     /></span>
-                    <p>
-                        Page visits, click maps, scroll milestones, and
-                        estimated reading time. These records are pseudonymous
-                        and kept for 90 days.
-                    </p></label
+                    <p> {{ t("Page visits, click maps, scroll milestones, and estimated reading time. These records are pseudonymous and kept for 90 days.") }} </p></label
                 >
-                <p v-if="privacySignal">
-                    A browser privacy signal keeps analytics disabled.
-                </p>
+                <p v-if="privacySignal"> {{ t("A browser privacy signal keeps analytics disabled.") }} </p>
                 <p v-if="error" role="alert">{{ error }}</p>
                 <div class="cookie-actions">
-                    <button :disabled="busy" @click="save(false)">
-                        Reject analytics</button
-                    ><button :disabled="busy" @click="save(analytics)">
-                        Save preferences
-                    </button>
+                    <button :disabled="busy" @click="save(false)"> {{ t("Reject analytics") }} </button
+                    ><button :disabled="busy" @click="save(analytics)"> {{ t("Save preferences") }} </button>
                 </div>
                 <button
                     class="cookie-delete"
                     :disabled="busy"
                     @click="save(false, true)"
-                >
-                    Delete this browser’s analytics and turn tracking off
-                </button>
+                > {{ t("Delete this browser’s analytics and turn tracking off") }} </button>
                 <p>
-                    <Link href="/privacy" @click="dialog?.close()"
-                        >Privacy policy</Link
+                    <Link :href="localPath('/privacy')" @click="dialog?.close()"
+                        > {{ t("Privacy policy") }} </Link
                     >
                     ·
-                    <Link href="/cookies" @click="dialog?.close()"
-                        >Cookie policy</Link
+                    <Link :href="localPath('/cookies')" @click="dialog?.close()"
+                        > {{ t("Cookie policy") }} </Link
                     >
                 </p>
                 <button
                     type="button"
                     class="cookie-manage"
                     @click="dialog?.close()"
-                >
-                    Close
-                </button>
+                > {{ t("Close") }} </button>
             </div>
         </dialog>
         <span class="sr-only" role="status">{{ status }}</span>

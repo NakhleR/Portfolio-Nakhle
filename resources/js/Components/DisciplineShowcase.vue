@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
 import { computed, ref } from "vue";
@@ -12,7 +14,7 @@ const active = computed(() => disciplines.value[selected.value]);
 </script>
 
 <template>
-    <section class="studio-showcase shell" aria-label="Explore my disciplines">
+    <section class="studio-showcase shell" :aria-label="t('Explore my disciplines')">
         <div class="showcase-intro">
             <h1>
                 <span
@@ -23,7 +25,7 @@ const active = computed(() => disciplines.value[selected.value]);
                 >
             </h1>
             <p class="showcase-description">{{ cms.home.intro }}</p>
-            <div class="showcase-selector" aria-label="Choose a discipline">
+            <div class="showcase-selector" :aria-label="t('Choose a discipline')">
                 <button
                     v-for="(item, index) in disciplines"
                     :key="item.object"
@@ -35,8 +37,8 @@ const active = computed(() => disciplines.value[selected.value]);
                     ><ArrowRight :size="20" aria-hidden="true" />
                 </button>
             </div>
-            <Link href="/work" class="studio-link"
-                >Explore all work <ArrowUpRight :size="19"
+            <Link :href="localPath('/work')" class="studio-link"
+                > {{ t("Explore all work") }} <ArrowUpRight :size="19"
             /></Link>
         </div>
         <div id="discipline-preview" class="showcase-stage">

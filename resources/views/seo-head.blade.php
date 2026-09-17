@@ -11,3 +11,8 @@
 @if ($seo['schema'])
 <script data-inertia="structured-data" type="application/ld+json">{!! $seo['schema'] !!}</script>
 @endif
+
+@foreach ($seo['alternates'] as $language => $href)
+<link data-inertia="alternate-{{ $language }}" rel="alternate" hreflang="{{ $language }}" href="{{ $href }}">
+@endforeach
+<meta data-inertia="og:locale" property="og:locale" content="{{ $seo['locale'] }}">

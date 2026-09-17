@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t } = useLocale();
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useEntryAsset } from "../composables/useEntryLoader";
 const { entry: entryLoad, complete } = useEntryAsset();
@@ -235,8 +237,8 @@ onBeforeUnmount(() => {
         class="model-scene"
         :aria-label="
             model === 'dna'
-                ? 'Interactive DNA helix — drag left or right'
-                : 'The Thinker sculpture — drag left or right'
+                ? t('Interactive DNA helix — drag left or right')
+                : t('The Thinker sculpture — drag left or right')
         "
         role="img"
     >

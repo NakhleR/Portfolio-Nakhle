@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath, switchPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, ArrowDown, Menu, X, Sun, Moon } from "lucide-vue-next";
 import { usePortfolioMotion } from "../composables/usePortfolioMotion";
@@ -15,12 +17,12 @@ const header = ref<HTMLElement | null>(null);
 const headerHidden = ref(false);
 const menu = ref(false);
 const dark = ref(false);
-const links = [
+const links = computed(() => [
     { href: "/", label: "Home" },
     { href: "/work", label: "Work" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
-];
+].map(link => ({ href: localPath(link.href), label: t(link.label) })));
 const { reveal } = usePortfolioMotion(root);
 const { entry, ready } = provideEntryLoader(root);
 useAnalytics(root);
@@ -107,7 +109,7 @@ function toggleTheme() {
             @start="entry = true"
             @complete="finishIntro"
         />
-        <a class="skip-link" href="#main">Skip to content</a>
+        <a class="skip-link" href="#main"> {{ t("Skip to content") }} </a>
         <header
             ref="header"
             class="portfolio-header"
@@ -116,24 +118,24 @@ function toggleTheme() {
         >
             <div class="shell header-inner">
                 <Link
-                    href="/"
+                    :href="localPath('/')"
                     class="wordmark"
-                    :aria-label="`${cms.site.name} home`"
+                    :aria-label="`${cms.site.name} — ${t('Home')}`"
                     ><span class="brand-symbol" aria-hidden="true">nr.</span
                     ><span class="brand-name"
                         >{{ cms.site.name
                         }}<span>{{ cms.site.tagline }}</span></span
                     ></Link
                 >
-                <nav class="desktop-nav" aria-label="Main navigation">
+                <nav class="desktop-nav" :aria-label="t('Main navigation')">
                     <Link
                         v-for="link in links"
                         :key="link.href"
                         :href="link.href"
                         :aria-current="
                             (
-                                link.href === '/'
-                                    ? page.url.split('?')[0] === '/'
+                                link.href === localPath('/')
+                                    ? page.url.split('?')[0] === localPath('/')
                                     : page.url
                                           .split('?')[0]
                                           .startsWith(link.href)
@@ -145,19 +147,20 @@ function toggleTheme() {
                     >
                 </nav>
                 <div class="header-actions">
+                    <Link :href="switchPath" class="text-sm px-2 py-3" :hreflang="locale === 'fr' ? 'en' : 'fr'" :lang="locale === 'fr' ? 'en' : 'fr'" :aria-label="locale === 'fr' ? 'Switch to English' : 'Passer en français'">{{ locale === 'fr' ? 'EN' : 'FR' }}</Link>
                     <a
                         :href="cms.assets.cv"
                         download="Nakhle_Rizk_CV.pdf"
                         class="cv-link"
-                        >Download CV <ArrowDown :size="14"
+                        > {{ t("Download CV") }} <ArrowDown :size="14"
                     /></a>
                     <button
                         class="icon-button theme-toggle"
                         @click="toggleTheme"
                         :aria-label="
                             dark
-                                ? 'Switch to light theme'
-                                : 'Switch to dark theme'
+                                ? t('Switch to light theme')
+                                : t('Switch to dark theme')
                         "
                     >
                         <Sun v-if="dark" :size="18" /><Moon v-else :size="18" />
@@ -167,7 +170,7 @@ function toggleTheme() {
                         @click="menu = !menu"
                         :aria-expanded="menu"
                         aria-controls="mobile-menu"
-                        aria-label="Toggle navigation"
+                        :aria-label="t('Toggle navigation')"
                     >
                         <X v-if="menu" :size="22" /><Menu v-else :size="22" />
                     </button>
@@ -178,7 +181,7 @@ function toggleTheme() {
                     v-if="menu"
                     id="mobile-menu"
                     class="mobile-nav shell"
-                    aria-label="Mobile navigation"
+                    :aria-label="t('Mobile navigation')"
                     data-lenis-prevent
                     @keydown.esc="menu = false"
                 >
@@ -188,8 +191,8 @@ function toggleTheme() {
                         :href="link.href"
                         :aria-current="
                             (
-                                link.href === '/'
-                                    ? page.url.split('?')[0] === '/'
+                                link.href === localPath('/')
+                                    ? page.url.split('?')[0] === localPath('/')
                                     : page.url
                                           .split('?')[0]
                                           .startsWith(link.href)
@@ -200,39 +203,29 @@ function toggleTheme() {
                         >{{ link.label }}<ArrowUpRight :size="28"
                     /></Link>
                     <a :href="cms.assets.cv" download class="mobile-cv"
-                        >Download CV <ArrowDown :size="18"
+                        > {{ t("Download CV") }} <ArrowDown :size="18"
                     /></a>
                 </nav>
             </Transition>
         </header>
         <main id="main">
-            <div v-if="page.props.cmsPreview" class="cms-preview-bar">
-                Draft preview · Only administrators can see these changes.
-                <Link href="/dashboard">Return to CMS</Link>
+            <div v-if="page.props.cmsPreview" class="cms-preview-bar"> {{ t("Draft preview · Only administrators can see these changes.") }} <Link href="/dashboard"> {{ t("Return to CMS") }} </Link>
             </div>
             <slot />
         </main>
         <footer class="portfolio-footer">
             <div class="shell">
                 <Link
-                    href="/contact"
+                    :href="localPath('/contact')"
                     class="footer-cta"
-                    aria-label="Let's take it further."
+                    :aria-label="t('Let\'s take it further.')"
                 >
                     <span aria-hidden="true">
-                        <span class="block">Let's take it</span>
+                        <span class="block"> {{ t("Let's take it") }} </span>
                         <span class="footer-word">
                             <span class="footer-stairs"
                                 ><span
-                                    v-for="(letter, index) in [
-                                        'f',
-                                        'u',
-                                        'r',
-                                        't',
-                                        'h',
-                                        'e',
-                                        'r.',
-                                    ]"
+                                    v-for="(letter, index) in t('further.').split('')"
                                     :key="index"
                                     class="footer-step"
                                     >{{ letter }}</span
@@ -249,7 +242,7 @@ function toggleTheme() {
                         {{ cms.site.name }}</span
                     >
                     <a :href="`mailto:${cms.site.email}`" class="text-link"
-                        >Say hello <ArrowUpRight :size="15"
+                        > {{ t("Say hello") }} <ArrowUpRight :size="15"
                     /></a>
                     <div class="footer-socials">
                         <a
@@ -267,16 +260,14 @@ function toggleTheme() {
                 </div>
                 <nav
                     class="footer-legal"
-                    aria-label="Legal and privacy"
+                    :aria-label="t('Legal and privacy')"
                     data-analytics-ignore
                 >
-                    <Link href="/privacy">Privacy</Link
-                    ><Link href="/cookies">Cookies</Link
-                    ><Link href="/terms">Terms</Link
-                    ><Link href="/legal">Legal &amp; copyright</Link>
-                    <button type="button" @click="openCookiePreferences">
-                        Cookie preferences
-                    </button>
+                    <Link :href="localPath('/privacy')"> {{ t("Privacy") }} </Link
+                    ><Link :href="localPath('/cookies')"> {{ t("Cookies") }} </Link
+                    ><Link :href="localPath('/terms')"> {{ t("Terms") }} </Link
+                    ><Link :href="localPath('/legal')"> {{ t("Legal & copyright") }} </Link>
+                    <button type="button" @click="openCookiePreferences"> {{ t("Cookie preferences") }} </button>
                 </nav>
             </div>
         </footer>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 
 interface Seo {
+    locale: string;
+    alternates: Record<string, string>;
     title: string;
     description: string;
     canonical: string;
@@ -13,6 +15,9 @@ interface Seo {
 }
 const page = usePage<{ seo: Seo }>();
 const seo = computed(() => page.props.seo);
+watchEffect(() => {
+    if (typeof document !== "undefined") document.documentElement.lang = seo.value.locale.startsWith("fr") ? "fr" : "en";
+});
 </script>
 
 <template>
@@ -24,6 +29,8 @@ const seo = computed(() => page.props.seo);
         />
         <meta head-key="robots" name="robots" :content="seo.robots" />
         <link head-key="canonical" rel="canonical" :href="seo.canonical" />
+        <link v-for="(href, language) in seo.alternates" :key="language" :head-key="`alternate-${language}`" rel="alternate" :hreflang="language" :href="href" />
+        <meta head-key="og:locale" property="og:locale" :content="seo.locale" />
         <meta head-key="og:type" property="og:type" content="website" />
         <meta
             head-key="og:site_name"

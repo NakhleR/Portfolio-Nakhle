@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import { useCms } from "../composables/useCms";
 const cms = useCms();
 import SeoHead from "../Components/SeoHead.vue";
@@ -13,7 +15,7 @@ import DisplacementSphere from "../Components/DisplacementSphere.vue";
 const form = useForm({ name: "", email: "", message: "", website: "" });
 const page = usePage<{ flash: { success?: string } }>();
 function submit() {
-    form.post("/contact", {
+    form.post(localPath("/contact"), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
     });
@@ -57,11 +59,11 @@ function submit() {
                         </p>
                         <form @submit.prevent="submit">
                             <div class="contact-field">
-                                <label for="contact-name">Your name</label
+                                <label for="contact-name"> {{ t("Your name") }} </label
                                 ><input
                                     id="contact-name"
                                     v-model="form.name"
-                                    placeholder="How should I call you?"
+                                    :placeholder="t('How should I call you?')"
                                     autocomplete="name"
                                     required
                                     maxlength="255"
@@ -81,12 +83,12 @@ function submit() {
                                 </p>
                             </div>
                             <div class="contact-field">
-                                <label for="contact-email">Email address</label
+                                <label for="contact-email"> {{ t("Email address") }} </label
                                 ><input
                                     id="contact-email"
                                     v-model="form.email"
                                     type="email"
-                                    placeholder="you@example.com"
+                                    :placeholder="t('you@example.com')"
                                     autocomplete="email"
                                     required
                                     maxlength="255"
@@ -107,11 +109,11 @@ function submit() {
                             </div>
                             <div class="contact-field">
                                 <label for="contact-message"
-                                    >What do you have in mind?</label
+                                    > {{ t("What do you have in mind?") }} </label
                                 ><textarea
                                     id="contact-message"
                                     v-model="form.message"
-                                    placeholder="Tell me a little about your idea…"
+                                    :placeholder="t('Tell me a little about your idea…')"
                                     rows="4"
                                     minlength="10"
                                     maxlength="10000"
@@ -132,7 +134,7 @@ function submit() {
                                 </p>
                             </div>
                             <div class="hidden" aria-hidden="true">
-                                <label for="website">Website</label
+                                <label for="website"> {{ t("Website") }} </label
                                 ><input
                                     id="website"
                                     v-model="form.website"
@@ -146,15 +148,12 @@ function submit() {
                             >
                                 {{
                                     form.processing
-                                        ? "Sending…"
-                                        : "Send message"
+                                        ? t("Sending…")
+                                        : t("Send message")
                                 }}<ArrowRight :size="20" />
                             </button>
-                            <p class="mt-4 text-xs text-muted-foreground">
-                                Your name, email, and message are used to
-                                respond to your enquiry.
-                                <Link href="/privacy" class="underline"
-                                    >Read the privacy policy.</Link
+                            <p class="mt-4 text-xs text-muted-foreground"> {{ t("Your name, email, and message are used to respond to your enquiry.") }} <Link :href="localPath('/privacy')" class="underline"
+                                    > {{ t("Read the privacy policy.") }} </Link
                                 >
                             </p>
                         </form>
@@ -163,7 +162,7 @@ function submit() {
                         <h2>{{ cms.contact.details_title }}</h2>
                         <dl>
                             <div>
-                                <dt>Based in</dt>
+                                <dt> {{ t("Based in") }} </dt>
                                 <dd>
                                     <span class="whitespace-pre-line">{{
                                         cms.site.address
@@ -171,7 +170,7 @@ function submit() {
                                 </dd>
                             </div>
                             <div>
-                                <dt>Call me</dt>
+                                <dt> {{ t("Call me") }} </dt>
                                 <dd>
                                     <a
                                         :href="`tel:${cms.site.phone.replace(/[^+0-9]/g, '')}`"
@@ -180,7 +179,7 @@ function submit() {
                                 </dd>
                             </div>
                             <div>
-                                <dt>Elsewhere</dt>
+                                <dt> {{ t("Elsewhere") }} </dt>
                                 <dd class="contact-social">
                                     <a
                                         :href="cms.site.github"

@@ -19,7 +19,7 @@ class AnalyticsEventRequest extends FormRequest
             'events' => ['required', 'array', 'min:1', 'max:20'],
             'events.*' => ['array:id,session_id,view_id,path,type,device,section,target,value,x,y'],
             'events.*.id' => ['required', 'uuid'], 'events.*.session_id' => ['required', 'uuid'], 'events.*.view_id' => ['required', 'uuid'],
-            'events.*.path' => ['required', 'string', 'max:160', 'regex:~^/(?:about|work(?:/[a-zA-Z0-9-]{1,80})?|contact|privacy|cookies|terms|legal)?$~'],
+            'events.*.path' => ['required', 'string', 'max:160', 'regex:~^/(?:fr(?:/|$))?(?:about|work(?:/[a-zA-Z0-9-]{1,80})?|contact|privacy|cookies|terms|legal)?$~'],
             'events.*.type' => ['required', Rule::in(['page_view', 'click', 'reading', 'scroll'])],
             'events.*.device' => ['required', Rule::in(['mobile', 'tablet', 'desktop'])],
             'events.*.section' => ['nullable', Rule::in(['navigation', 'hero', 'about', 'approach', 'projects', 'project-cover', 'project-overview', 'project-gallery', 'technology', 'biography', 'journey', 'skills', 'contact', 'footer', 'legal', 'content'])],

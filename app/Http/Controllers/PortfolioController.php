@@ -27,7 +27,7 @@ class PortfolioController extends Controller
     public function work(Request $request): Response|RedirectResponse
     {
         if ($request->filled('project')) {
-            return to_route('work.show', ['project' => $request->string('project')->toString()]);
+            return to_route((app()->getLocale() === 'fr' ? 'fr.' : '').'work.show', ['project' => $request->string('project')->toString()]);
         }
 
         return Inertia::render('Work', ['projects' => ProjectCardResource::collection(Project::where('is_published', true)->with('media')->orderBy('order')->orderBy('id')->get())->resolve()]);
@@ -42,6 +42,6 @@ class PortfolioController extends Controller
 
     public function contact(): Response
     {
-        return Inertia::render('Contact');
+        return Inertia::render('Contact', ['mapsKey' => config('services.google_maps.key')]);
     }
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocale } from "../composables/useLocale";
+const { t, locale, localPath } = useLocale();
 import SeoHead from "../Components/SeoHead.vue";
 import { computed, ref } from "vue";
 import { Link } from "@inertiajs/vue3";
@@ -39,11 +41,11 @@ function imageLoaded(event: Event, src: string) {
         <SeoHead />
         <SiteLayout>
             <article class="case-study shell">
-                <nav class="case-navigation" aria-label="Project navigation">
-                    <Link href="/work" class="case-back"
-                        ><ArrowLeft :size="18" /> Back to work</Link
+                <nav class="case-navigation" :aria-label="t('Project navigation')">
+                    <Link :href="localPath('/work')" class="case-back"
+                        ><ArrowLeft :size="18" /> {{ t("Back to work") }} </Link
                     >
-                    <span>{{ projectCategoryLabel(project.category) }}</span>
+                    <span>{{ t(projectCategoryLabel(project.category)) }}</span>
                 </nav>
                 <header class="case-opening">
                     <div class="case-introduction">
@@ -66,7 +68,7 @@ function imageLoaded(event: Event, src: string) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="case-action primary"
-                                >Visit website <ArrowUpRight :size="18"
+                                > {{ t("Visit website") }} <ArrowUpRight :size="18"
                             /></a>
                             <a
                                 v-if="
@@ -77,14 +79,13 @@ function imageLoaded(event: Event, src: string) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="case-action"
-                                >Source code <ArrowUpRight :size="18"
+                                > {{ t("Source code") }} <ArrowUpRight :size="18"
                             /></a>
                         </div>
                         <a href="#project-overview" class="case-explore"
                             ><span class="case-explore-icon"
                                 ><ArrowDown :size="19"
-                            /></span>
-                            Explore the project</a
+                            /></span> {{ t("Explore the project") }} </a
                         >
                     </div>
                     <figure
@@ -119,7 +120,7 @@ function imageLoaded(event: Event, src: string) {
                             /></span>
                         </a>
                         <figcaption>
-                            <span>Project preview</span
+                            <span> {{ t("Project preview") }} </span
                             ><span
                                 >01 /
                                 {{
@@ -137,7 +138,7 @@ function imageLoaded(event: Event, src: string) {
                     class="case-technologies"
                     aria-labelledby="technology-title"
                 >
-                    <h2 id="technology-title">The stack.</h2>
+                    <h2 id="technology-title"> {{ t("The stack.") }} </h2>
                     <ul>
                         <li
                             v-for="(technology, index) in technologies"
@@ -167,14 +168,14 @@ function imageLoaded(event: Event, src: string) {
                     </ul>
                 </section>
                 <div class="case-content">
-                    <nav class="case-index" aria-label="On this project">
+                    <nav class="case-index" :aria-label="t('On this project')">
                         <a href="#project-overview"
-                            >The project <ArrowUpRight :size="15"
+                            > {{ t("The project") }} <ArrowUpRight :size="15"
                         /></a>
                         <a
                             v-if="project.images.length > 1"
                             href="#project-gallery"
-                            >In detail <ArrowDown :size="15"
+                            > {{ t("In detail") }} <ArrowDown :size="15"
                         /></a>
                         <span>{{
                             projectCategoryLabel(project.category)
@@ -182,8 +183,7 @@ function imageLoaded(event: Event, src: string) {
                     </nav>
                     <div>
                         <section id="project-overview" class="case-overview">
-                            <h2>
-                                Inside the project<span class="accent-text"
+                            <h2> {{ t("Inside the project") }} <span class="accent-text"
                                     >.</span
                                 >
                             </h2>
@@ -203,16 +203,14 @@ function imageLoaded(event: Event, src: string) {
                             aria-labelledby="gallery-title"
                         >
                             <div class="case-gallery-heading">
-                                <h2 id="gallery-title">
-                                    A closer look<span class="accent-text"
+                                <h2 id="gallery-title"> {{ t("A closer look") }} <span class="accent-text"
                                         >.</span
                                     >
                                 </h2>
                                 <span
                                     >{{
                                         project.images.length - 1
-                                    }}
-                                    images</span
+                                    }} {{ t("images") }} </span
                                 >
                             </div>
                             <div class="case-image-grid">
@@ -277,10 +275,10 @@ function imageLoaded(event: Event, src: string) {
                     </div>
                 </div>
                 <div class="case-return">
-                    <Link href="/work"
-                        ><span>More to explore.</span
+                    <Link :href="localPath('/work')"
+                        ><span> {{ t("More to explore.") }} </span
                         ><ArrowUpRight :size="40" /></Link
-                    ><span>Back to the project archive</span>
+                    ><span> {{ t("Back to the project archive") }} </span>
                 </div>
             </article>
             <ImageGallery
