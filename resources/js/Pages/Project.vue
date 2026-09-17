@@ -396,22 +396,25 @@ function imageLoaded(event: Event, src: string) {
     border-radius: 16px;
 }
 .case-cover .case-image-link {
-    height: clamp(420px, 49vw, 720px);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .case-cover img {
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: auto;
+    display: block;
 }
 .case-cover.portrait .case-image-link {
-    padding: 30px;
+    height: clamp(420px, 49vw, 680px);
+    padding: clamp(24px, 3vw, 40px);
 }
 .case-cover.portrait img {
     width: auto;
+    height: 100%;
     max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 24px hsl(var(--foreground) / 0.14));
 }
 .case-study figcaption {
     display: flex;
@@ -643,16 +646,17 @@ function imageLoaded(event: Event, src: string) {
         margin-top: 20px;
     }
     .case-cover .case-image-link {
-        height: auto;
-        min-height: 270px;
-        aspect-ratio: 1.2;
+        border-radius: 12px;
     }
     .case-cover.portrait .case-image-link {
+        height: auto;
         aspect-ratio: 0.85;
         padding: 20px;
     }
-    .case-cover img {
-        max-height: 460px;
+    .case-cover.portrait img {
+        width: 100%;
+        height: 100%;
+        max-height: 500px;
     }
     .case-opening {
         padding-bottom: 42px;
