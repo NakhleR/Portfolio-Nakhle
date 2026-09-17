@@ -17,7 +17,7 @@ const failed = ref(false);
 const loading = ref(false);
 const ready = ref(false);
 const provider = ref("");
-const streetZoom = 16;
+const streetZoom = 15;
 const centre = () => ({ lat: Number(cms.value.site.latitude), lng: Number(cms.value.site.longitude) });
 const mapLink = computed(() => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${centre().lat},${centre().lng}`)}`);
 let map: GoogleMap | undefined;
