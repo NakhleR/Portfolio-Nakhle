@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, onBeforeUnmount, onMounted } from "vue";
+import { ref, watch, onBeforeUnmount, onMounted } from "vue";
 import { router, useForm } from "@inertiajs/vue3";
 import { Save, Upload, ArrowUpRight } from "lucide-vue-next";
 import AdminLayout from "../Layouts/AdminLayout.vue";
@@ -18,6 +18,7 @@ const form = useForm({
     version: props.version,
 });
 const action = useForm({ version: props.version });
+const publishDialog = ref<HTMLDialogElement | null>(null);
 watch(
     () => [props.data, props.version],
     () => {
@@ -46,10 +47,10 @@ function save() {
     form.transform(({content,version})=>({data:content,version})).put(`/dashboard/pages/${props.section}`, { preserveScroll: true });
 }
 function publish() {
-    if (confirm("Publish this saved draft to the website?"))
-        action.post(`/dashboard/pages/${props.section}/publish`, {
-            preserveScroll: true,
-        });
+    action.post(`/dashboard/pages/${props.section}/publish`, {
+        preserveScroll: true,
+        onSuccess: () => publishDialog.value?.close(),
+    });
 }
 function restore(id: number) {
     if (
@@ -97,7 +98,7 @@ onBeforeUnmount(() => {
                     }}</button
                 ><button
                     class="cms-button"
-                    @click="publish"
+                    @click="publishDialog?.showModal()"
                     :disabled="!hasDraft || form.isDirty || action.processing"
                 >
                     <Upload :size="16" />{{
@@ -219,6 +220,33 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
             </aside>
-        </div></AdminLayout
+        </div>
+        <dialog ref="publishDialog" class="cms-publish-dialog" aria-labelledby="publish-dialog-title">
+            <h2 id="publish-dialog-title">Publish {{ definition.label }}?</h2>
+            <p>This saved draft will become visible on the website. The previous version remains in Published history.</p>
+            <p v-if="action.errors.version" class="cms-error" role="alert">{{ action.errors.version }}</p>
+            <div class="cms-toolbar">
+                <button type="button" class="cms-button secondary" autofocus @click="publishDialog?.close()">Cancel</button>
+                <button type="button" class="cms-button" :disabled="action.processing" @click="publish">
+                    {{ action.processing ? 'Publishing…' : 'Publish now' }}
+                </button>
+            </div>
+        </dialog></AdminLayout
     >
 </template>
+
+<style scoped>
+.cms-publish-dialog {
+    width: min(480px, calc(100vw - 32px));
+    margin: auto;
+    padding: 28px;
+    border: 1px solid hsl(var(--border));
+    border-radius: 18px;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+}
+.cms-publish-dialog::backdrop { background: rgb(0 0 0 / 55%); }
+.cms-publish-dialog h2 { font-size: 22px; font-weight: 600; }
+.cms-publish-dialog p { margin: 16px 0 24px; line-height: 1.6; }
+.cms-publish-dialog .cms-toolbar { justify-content: flex-end; }
+</style>

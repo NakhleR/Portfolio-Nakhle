@@ -45,7 +45,7 @@ class CmsRequest extends FormRequest
                     $rules[$name][] = Rule::in($field['options']);
                 }
                 if ($type === 'asset') {
-                    $rules[$name][] = 'regex:#^/(?!/)[a-zA-Z0-9_/-]+\.(png|jpe?g|webp|gif|avif)$#';
+                    $rules[$name][] = 'regex:#^/(?!/)[a-zA-Z0-9_/-]+\.(png|jpe?g|webp|gif|avif|svg)$#';
                 }
             }
         }

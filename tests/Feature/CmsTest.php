@@ -93,6 +93,22 @@ class CmsTest extends TestCase
         $this->assertDatabaseCount('cms_documents', 0);
     }
 
+    public function test_about_drafts_accept_local_svg_icons_and_reject_unsafe_paths(): void
+    {
+        $this->actingAs($this->admin());
+        $data = app(CmsContent::class)->defaults('about');
+        $data['skills'][0]['items'][0]['imagePath'] = '/technology-icons/pytorch.svg';
+
+        $this->put('/dashboard/pages/about', ['version' => 0, 'data' => $data])->assertSessionHasNoErrors();
+        $this->assertSame('/technology-icons/pytorch.svg', CmsDocument::find('about')->draft['skills'][0]['items'][0]['imagePath']);
+
+        foreach (['//example.com/icon.svg', 'https://example.com/icon.svg', '/../../icon.svg', 'data:image/svg+xml,<svg/>', '/icon.svg?script=1', '/icon.html'] as $path) {
+            $data['skills'][0]['items'][0]['imagePath'] = $path;
+            $this->putJson('/dashboard/pages/about', ['version' => 1, 'data' => $data])
+                ->assertUnprocessable()->assertJsonValidationErrors('data.skills.0.items.0.imagePath');
+        }
+    }
+
     public function test_unpublished_projects_are_absent_from_public_pages_api_and_sitemap(): void
     {
         $project = $this->project(['is_published' => false]);
