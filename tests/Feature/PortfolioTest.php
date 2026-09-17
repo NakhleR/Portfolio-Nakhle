@@ -165,7 +165,9 @@ class PortfolioTest extends TestCase
         Storage::disk('public')->assertExists($media->getPathRelativeToRoot('display'));
         $this->getJson('/api/projects/'.$project->mongo_id)
             ->assertJsonPath('images.0', $media->getUrl())
-            ->assertJsonPath('imageVariants.0.src', $media->getUrl('display'));
+            ->assertJsonPath('imageVariants.0.src', $media->getUrl('display'))
+            ->assertJsonPath('imageVariants.0.width', 640)
+            ->assertJsonPath('imageVariants.0.height', 480);
         $this->assertStringContainsString('640w', $media->getSrcset('display'));
         $this->assertSame([640, 480], array_slice(getimagesize($media->getPath('display')), 0, 2));
         $media->update(['generated_conversions' => []]);
@@ -197,6 +199,34 @@ class PortfolioTest extends TestCase
             ->assertJsonPath('images.0', $media->getUrl())
             ->assertJsonPath('imageVariants.0.src', $media->getUrl())
             ->assertJsonPath('imageVariants.0.srcset', '');
+    }
+
+    public function test_existing_portrait_media_exposes_dimensions_before_images_load(): void
+    {
+        $project = $this->project();
+        $media = $project->addMedia(UploadedFile::fake()->image('phone.png', 360, 800))->toMediaCollection('images');
+        $this->assertFalse($media->hasCustomProperty('dimensions'));
+
+        $this->get('/work/'.$project->mongo_id)->assertInertia(fn (Assert $page) => $page
+            ->where('project.imageVariants.0.width', 360)
+            ->where('project.imageVariants.0.height', 800));
+        $media->update(['responsive_images' => []]);
+        $this->getJson('/api/projects/'.$project->mongo_id)
+            ->assertJsonPath('imageVariants.0.width', null)
+            ->assertJsonPath('imageVariants.0.height', null);
+    }
+
+    public function test_upload_saves_dimensions_for_images_without_responsive_conversions(): void
+    {
+        $project = $this->project();
+        $this->actingAs($this->admin())->post('/dashboard/projects/'.$project->mongo_id.'/media', [
+            'file' => UploadedFile::fake()->image('phone.gif', 120, 240),
+        ])->assertCreated();
+
+        $this->getJson('/api/projects/'.$project->mongo_id)
+            ->assertJsonPath('imageVariants.0.width', 120)
+            ->assertJsonPath('imageVariants.0.height', 240);
+        $this->assertSame(['width' => 120, 'height' => 240], $project->fresh()->getFirstMedia('images')->getCustomProperty('dimensions'));
     }
 
     public function test_work_archive_only_receives_cover_media_and_summary_fields(): void

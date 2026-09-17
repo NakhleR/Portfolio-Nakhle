@@ -2,19 +2,17 @@
 import { useLocale } from "../composables/useLocale";
 const { t } = useLocale();
 import { ArrowUpRight } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { computed } from "vue";
 import type { ProjectCardData } from "../types";
 import { projectCategoryLabel } from "../data/projectCategories";
 import ProjectImage from "./ProjectImage.vue";
 const props = withDefaults(defineProps<{ project: ProjectCardData; index?: number }>(), {
     index: 0,
 });
-const portrait = ref(false);
-function imageLoaded(event: Event) {
-    const image = event.target as HTMLImageElement;
-    portrait.value = image.naturalHeight > image.naturalWidth;
-}
-watch(() => props.project.images[0], () => { portrait.value = false; });
+const portrait = computed(() => {
+    const image = props.project.imageVariants?.[0];
+    return !!image?.width && !!image?.height && image.height > image.width;
+});
 </script>
 <template>
     <article class="folio-card">
@@ -31,9 +29,6 @@ watch(() => props.project.images[0], () => { portrait.value = false; });
                 :loading="index === 0 ? 'eager' : 'lazy'"
                 :fetchpriority="index === 0 ? 'high' : 'auto'"
                 decoding="async"
-                width="1200"
-                height="800"
-                @load="imageLoaded"
             />
             <span v-else class="image-placeholder">{{ project.title }}</span>
             <span class="project-open" aria-hidden="true"

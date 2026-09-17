@@ -30,11 +30,12 @@ const paragraphs = computed(() =>
         .split(/\n\s*\n/)
         .filter(Boolean),
 );
-const portraitImages = ref(new Set<string>());
-function imageLoaded(event: Event, src: string) {
-    const image = event.target as HTMLImageElement;
-    if (image.naturalWidth < image.naturalHeight) portraitImages.value.add(src);
-}
+const imageLayouts = computed(() => props.project.images.map((_, index) => {
+    const image = props.project.imageVariants?.[index];
+    const width = image?.width || 1200;
+    const height = image?.height || 900;
+    return { portrait: height > width, ratio: `${width} / ${height}` };
+}));
 </script>
 <template>
     <div>
@@ -92,7 +93,7 @@ function imageLoaded(event: Event, src: string) {
                         v-if="project.images.length"
                         class="case-cover"
                         :class="{
-                            portrait: portraitImages.has(project.images[0]),
+                            portrait: imageLayouts[0].portrait,
                         }"
                     >
                         <a
@@ -101,6 +102,7 @@ function imageLoaded(event: Event, src: string) {
                             aria-haspopup="dialog"
                             :aria-label="`Open ${project.title} cover image in gallery`"
                             class="case-image-link"
+                            :style="{ aspectRatio: imageLayouts[0].portrait ? undefined : imageLayouts[0].ratio }"
                         >
                             <ProjectImage
                                 :project="project"
@@ -109,11 +111,8 @@ function imageLoaded(event: Event, src: string) {
                                     project.imageVariants?.[0]?.alt ||
                                     `${project.title} — overview`
                                 "
-                                width="1200"
-                                height="1000"
                                 fetchpriority="high"
                                 decoding="async"
-                                @load="imageLoaded($event, project.images[0])"
                             />
                             <span class="image-expand"
                                 ><Expand :size="18"
@@ -220,7 +219,7 @@ function imageLoaded(event: Event, src: string) {
                                     ) in project.images.slice(1)"
                                     :key="image"
                                     :class="{
-                                        portrait: portraitImages.has(image),
+                                        portrait: imageLayouts[index + 1].portrait,
                                     }"
                                 >
                                     <a
@@ -231,6 +230,7 @@ function imageLoaded(event: Event, src: string) {
                                         aria-haspopup="dialog"
                                         :aria-label="`Open ${project.title} image ${index + 2} in gallery`"
                                         class="case-image-link"
+                                        :style="{ aspectRatio: imageLayouts[index + 1].portrait ? undefined : imageLayouts[index + 1].ratio }"
                                     >
                                         <ProjectImage
                                             :project="project"
@@ -244,9 +244,6 @@ function imageLoaded(event: Event, src: string) {
                                             "
                                             loading="lazy"
                                             decoding="async"
-                                            width="1200"
-                                            height="900"
-                                            @load="imageLoaded($event, image)"
                                         />
                                         <span class="image-expand"
                                             ><Expand :size="18"
@@ -402,7 +399,8 @@ function imageLoaded(event: Event, src: string) {
 }
 .case-cover img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     display: block;
 }
 .case-cover.portrait .case-image-link {
@@ -563,7 +561,7 @@ function imageLoaded(event: Event, src: string) {
 }
 .case-image-grid img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: contain;
 }
 .case-image-grid .portrait .case-image-link {

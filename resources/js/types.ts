@@ -13,7 +13,7 @@ export interface Project {
     longDescription: string | null;
     technologies: string[];
     images: string[];
-    imageVariants?: { src: string; srcset: string; alt?: string }[];
+    imageVariants?: { src: string; srcset: string; alt?: string; width?: number | null; height?: number | null }[];
     media: Media[];
     liveUrl: string | null;
     githubUrl: string | null;

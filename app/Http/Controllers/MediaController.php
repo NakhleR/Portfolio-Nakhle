@@ -14,11 +14,13 @@ class MediaController extends Controller
 {
     public function store(UploadRequest $request, Project $project): JsonResponse
     {
+        $dimensions = getimagesize($request->file('file')->getPathname());
         $extension = match ($request->file('file')->getMimeType()) {
             'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp',
             'image/gif' => 'gif', 'image/avif' => 'avif',
         };
         $media = $project->addMediaFromRequest('file')
+            ->withCustomProperties(['dimensions' => ['width' => $dimensions[0] ?? null, 'height' => $dimensions[1] ?? null]])
             ->usingFileName(Str::uuid().'.'.$extension)
             ->toMediaCollection('images');
 

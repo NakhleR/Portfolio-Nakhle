@@ -18,5 +18,7 @@ const variant = computed(() => props.project.imageVariants?.[props.index]);
         :src="variant?.src || project.images[index]"
         :srcset="variant?.srcset || undefined"
         :sizes="sizes"
+        :width="variant?.width || 1200"
+        :height="variant?.height || 900"
     />
 </template>
