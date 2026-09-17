@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\AcceptHeader;
-use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
@@ -30,7 +29,7 @@ class SetLocale
             if ($request->routeIs('home') && ! $request->header('X-Inertia')) {
                 $preferredLocale = $request->session()->get('preferred_locale');
                 if (! in_array($preferredLocale, ['en', 'fr'], true)) {
-                    $preferredLocale = $this->detectedLocale($request);
+                    $preferredLocale = $this->browserLocale($request);
                 }
 
                 if ($preferredLocale === 'fr') {
@@ -42,13 +41,8 @@ class SetLocale
         return $next($request);
     }
 
-    private function detectedLocale(Request $request): string
+    private function browserLocale(Request $request): string
     {
-        if ($request->header('CF-IPCountry') === 'FR'
-            && IpUtils::checkIp((string) $request->server('REMOTE_ADDR'), config('services.cloudflare.proxy_ranges', []))) {
-            return 'fr';
-        }
-
         foreach (AcceptHeader::fromString($request->header('Accept-Language', ''))->all() as $language) {
             $locale = strtolower(explode('-', str_replace('_', '-', $language->getValue()))[0]);
             if ($language->getQuality() > 0 && in_array($locale, ['en', 'fr'], true)) {

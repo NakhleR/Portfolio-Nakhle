@@ -86,35 +86,16 @@ class LocalizationTest extends TestCase
             ->assertRedirect('/fr')->assertSessionMissing('preferred_locale');
     }
 
-    public function test_cloudflare_visitors_in_france_get_french_unless_they_choose_english(): void
+    public function test_country_headers_do_not_override_browser_language(): void
     {
         foreach (['173.245.48.10', '2606:4700::1234'] as $proxyAddress) {
             $this->withServerVariables(['REMOTE_ADDR' => $proxyAddress])
                 ->get('/', ['CF-IPCountry' => 'FR', 'Accept-Language' => 'en-US'])
-                ->assertRedirect('/fr');
-        }
-
-        $this->get('/?lang=en', ['CF-IPCountry' => 'FR'])->assertRedirect('/');
-        $this->get('/', ['CF-IPCountry' => 'FR', 'Accept-Language' => 'fr-FR'])
-            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
-    }
-
-    public function test_other_or_unknown_countries_fall_back_to_browser_language(): void
-    {
-        $this->withServerVariables(['REMOTE_ADDR' => '173.245.48.10']);
-        foreach (['US', 'XX', 'T1', ''] as $country) {
-            $this->get('/', ['CF-IPCountry' => $country, 'Accept-Language' => 'fr-CA'])
-                ->assertRedirect('/fr');
-            $this->get('/', ['CF-IPCountry' => $country, 'Accept-Language' => 'en-US'])
                 ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
         }
-    }
 
-    public function test_country_headers_from_direct_connections_are_ignored(): void
-    {
-        $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.10'])
-            ->get('/', ['CF-IPCountry' => 'FR', 'X-Forwarded-For' => '173.245.48.10', 'Accept-Language' => 'en-US'])
-            ->assertOk()->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
+        $this->get('/', ['CF-IPCountry' => 'US', 'Accept-Language' => 'fr-FR'])
+            ->assertRedirect('/fr');
     }
 
     public function test_french_cms_drafts_remain_private_and_shared_contact_details_are_preserved(): void
