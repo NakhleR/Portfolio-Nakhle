@@ -84,15 +84,15 @@ class LocalizationTest extends TestCase
     public function test_map_configuration_and_policy_name_match_the_active_provider(): void
     {
         config(['services.google_maps.key' => 'browser-test-key']);
-        $response = $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->where('mapsKey', 'browser-test-key'));
+        $response = $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->missing('mapsKey')->where('mapsAccessUrl', '/maps/access'));
         $this->assertStringContainsString('https://*.googleapis.com', $response->headers->get('Content-Security-Policy'));
-        $this->assertStringNotContainsString('tile.openstreetmap.org', $response->headers->get('Content-Security-Policy'));
-        $this->get('/privacy')->assertSee('loads automatically')->assertSee('Google Maps')->assertDontSee('OpenStreetMap');
-        $this->get('/fr/privacy')->assertSee('se charge automatiquement')->assertSee('Google Maps')->assertDontSee('OpenStreetMap');
+        $this->assertStringContainsString('tile.openstreetmap.org', $response->headers->get('Content-Security-Policy'));
+        $this->get('/privacy')->assertSee('loads automatically')->assertSee('Google Maps or OpenStreetMap');
+        $this->get('/fr/privacy')->assertSee('se charge automatiquement')->assertSee('Google Maps ou OpenStreetMap');
         $this->get('/cookies')->assertSee('loads automatically');
         $this->get('/fr/cookies')->assertSee('se charge automatiquement');
         config(['services.google_maps.key' => '']);
-        $response = $this->get('/contact')->assertInertia(fn (Assert $page) => $page->where('mapsKey', ''));
+        $response = $this->get('/contact')->assertInertia(fn (Assert $page) => $page->missing('mapsKey'));
         $this->assertStringNotContainsString('googleapis.com', $response->headers->get('Content-Security-Policy'));
     }
 

@@ -3,71 +3,137 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { ArrowUpRight, LocateFixed, MapPin, Minus, Plus } from "lucide-vue-next";
 import { loadGoogleMaps, createMapPin, mapStyles, type GoogleMap } from "../composables/googleMaps";
+import type { Map as LeafletMap } from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { useLocale } from "../composables/useLocale";
 import { useCms } from "../composables/useCms";
 
 const { locale } = useLocale();
 const cms = useCms();
-const page = usePage<{ mapsKey?: string }>();
+const page = usePage<{ mapsAccessUrl?: string }>();
 const text = (en: string, fr: string) => locale.value === "fr" ? fr : en;
 const element = ref<HTMLElement | null>(null);
 const failed = ref(false);
 const loading = ref(false);
 const ready = ref(false);
+const provider = ref("");
 const streetZoom = 16;
 const centre = () => ({ lat: Number(cms.value.site.latitude), lng: Number(cms.value.site.longitude) });
 const mapLink = computed(() => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${centre().lat},${centre().lng}`)}`);
 let map: GoogleMap | undefined;
+let leaflet: LeafletMap | undefined;
 let disposed = false;
+let generation = 0;
+let accessRequest: AbortController | undefined;
 let cleanup = () => {};
+const current = (attempt: number) => !disposed && attempt === generation;
 
 function resetView() {
     map?.setCenter(centre());
     map?.setZoom(streetZoom);
+    leaflet?.setView(centre(), streetZoom, { animate: false });
 }
 function zoom(amount: number) {
     if (map) map.setZoom(Math.max(3, Math.min(20, (map.getZoom() ?? streetZoom) + amount)));
+    if (leaflet) leaflet.setZoom(leaflet.getZoom() + amount, { animate: false });
 }
-function mapError() {
-    loading.value = false;
+function surface(): HTMLDivElement {
+    const target = document.createElement("div");
+    target.style.cssText = "position:absolute;inset:0;width:100%;height:100%;";
+    element.value!.replaceChildren(target);
+    return target;
+}
+async function loadLeaflet(attempt: number) {
+    if (!current(attempt) || provider.value === "leaflet") return;
+    provider.value = "leaflet";
+    cleanup();
+    map = undefined;
+    loading.value = true;
     ready.value = false;
-    failed.value = true;
+    failed.value = false;
+    try {
+        const L = await import("leaflet");
+        if (!current(attempt) || !element.value) return;
+        const target = surface();
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const fallbackMap = L.map(target, {
+            zoomControl: false, scrollWheelZoom: false,
+            zoomAnimation: !reducedMotion, fadeAnimation: !reducedMotion,
+        }).setView(centre(), streetZoom);
+        leaflet = fallbackMap;
+        const resize = new ResizeObserver(() => {
+            const position = fallbackMap.getCenter();
+            fallbackMap.invalidateSize({ pan: false });
+            fallbackMap.setView(position, fallbackMap.getZoom(), { animate: false });
+        });
+        const timeout = window.setTimeout(() => {
+            if (current(attempt)) { failed.value = true; loading.value = false; }
+        }, 15000);
+        cleanup = () => {
+            clearTimeout(timeout); resize.disconnect(); fallbackMap.remove(); target.remove(); leaflet = undefined;
+        };
+        resize.observe(target);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).once("tileload", () => {
+            clearTimeout(timeout);
+            if (current(attempt)) { ready.value = true; failed.value = false; loading.value = false; }
+        }).addTo(fallbackMap);
+        L.circleMarker(centre(), { radius: 7, weight: 3, fillOpacity: 1, className: "fallback-pin" })
+            .addTo(fallbackMap).bindPopup(() => {
+                const label = document.createElement("span");
+                label.textContent = cms.value.site.map_label;
+                return label;
+            }, { autoPan: false });
+    } catch {
+        if (current(attempt)) { cleanup(); failed.value = true; loading.value = false; }
+    }
+}
+function googleError() {
+    if (provider.value === "google") void loadLeaflet(generation);
 }
 async function loadMap() {
     if (loading.value) return;
+    const attempt = ++generation;
     cleanup();
+    provider.value = "";
     failed.value = false;
     ready.value = false;
     loading.value = true;
     await nextTick();
-
+    accessRequest = new AbortController();
+    const accessTimeout = window.setTimeout(() => accessRequest?.abort(), 10000);
     try {
-        const library = await loadGoogleMaps(page.props.mapsKey || "", locale.value);
-        if (disposed || !element.value || failed.value) return;
+        const response = await fetch(page.props.mapsAccessUrl || "/maps/access", {
+            method: "POST", credentials: "same-origin", signal: accessRequest.signal,
+            headers: {
+                Accept: "application/json",
+                "X-CSRF-TOKEN": document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || "",
+            },
+        });
+        clearTimeout(accessTimeout);
+        if (!response.ok) throw new Error("Map allowance unavailable");
+        const access = await response.json() as { provider: string; key?: string };
+        if (!current(attempt)) return;
+        if (access.provider !== "google" || !access.key) { await loadLeaflet(attempt); return; }
+        provider.value = "google";
+        const library = await loadGoogleMaps(access.key, locale.value);
+        if (!current(attempt) || !element.value || provider.value !== "google") return;
+        const target = surface();
         const isDark = () => document.documentElement.classList.contains("dark");
-        const currentMap = new library.Map(element.value, {
-            center: centre(),
-            zoom: streetZoom,
-            minZoom: 3,
-            maxZoom: 20,
-            mapTypeId: "roadmap",
-            renderingType: "RASTER",
-            tilt: 0,
-            disableDefaultUI: true,
-            clickableIcons: false,
-            gestureHandling: "cooperative",
-            keyboardShortcuts: true,
-            styles: mapStyles(isDark()),
+        const currentMap = new library.Map(target, {
+            center: centre(), zoom: streetZoom, minZoom: 3, maxZoom: 20,
+            mapTypeId: "roadmap", renderingType: "RASTER", tilt: 0,
+            disableDefaultUI: true, clickableIcons: false, gestureHandling: "cooperative",
+            keyboardShortcuts: true, styles: mapStyles(isDark()),
         });
         map = currentMap;
         const pin = createMapPin(library, currentMap, centre(), cms.value.site.map_label);
-        const timeout = window.setTimeout(mapError, 20000);
+        const timeout = window.setTimeout(googleError, 20000);
         const tilesListener = currentMap.addListener("tilesloaded", () => {
             clearTimeout(timeout);
-            if (!failed.value) {
-                loading.value = false;
-                ready.value = true;
-            }
+            if (current(attempt) && provider.value === "google") { loading.value = false; ready.value = true; }
         });
         const themeObserver = new MutationObserver(() => currentMap.setOptions({ styles: mapStyles(isDark()) }));
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
@@ -75,36 +141,38 @@ async function loadMap() {
             const position = currentMap.getCenter()?.toJSON();
             if (position) currentMap.setCenter(position);
         });
-        resizeObserver.observe(element.value);
+        resizeObserver.observe(target);
+        const errorObserver = new MutationObserver(() => {
+            if (target.querySelector(".gm-err-container, .gm-err-message")) googleError();
+        });
+        errorObserver.observe(target, { childList: true, subtree: true });
         cleanup = () => {
-            clearTimeout(timeout);
-            tilesListener.remove();
-            themeObserver.disconnect();
-            resizeObserver.disconnect();
-            pin.setMap(null);
-            element.value?.replaceChildren();
-            map = undefined;
+            clearTimeout(timeout); tilesListener.remove(); themeObserver.disconnect();
+            resizeObserver.disconnect(); errorObserver.disconnect(); pin.setMap(null); target.remove(); map = undefined;
         };
-    } catch (error) {
-        cleanup();
-        if (import.meta.env.DEV) console.warn("Map could not load", error);
-        mapError();
+    } catch {
+        if (current(attempt)) await loadLeaflet(attempt);
+    } finally {
+        clearTimeout(accessTimeout);
     }
 }
 onMounted(() => {
-    window.addEventListener("portfolio-map-error", mapError);
+    window.addEventListener("portfolio-map-error", googleError);
     void loadMap();
 });
 onBeforeUnmount(() => {
     disposed = true;
-    window.removeEventListener("portfolio-map-error", mapError);
+    generation++;
+    accessRequest?.abort();
+    window.removeEventListener("portfolio-map-error", googleError);
     cleanup();
 });
 </script>
+
 <template>
-    <section class="location-map" data-analytics-ignore data-lenis-prevent>
-        <div class="map-stage">
-            <div ref="element" class="map-canvas" role="region"
+    <section class="location-map" :data-map-provider="provider" style="position: relative; width: 100%; max-width: 100%; min-width: 0; overflow: hidden;" data-analytics-ignore data-lenis-prevent>
+        <div class="map-stage" style="position: relative; width: 100%; height: 360px; overflow: hidden; contain: layout paint;">
+            <div ref="element" class="map-canvas" style="position: relative; width: 100%; height: 100%; overflow: hidden;" role="region"
                 :aria-label="`${text('Map of', 'Carte de')} ${cms.site.map_label}`" :aria-busy="loading" />
             <div v-if="failed" class="map-error">
                 <MapPin :size="26" :stroke-width="1.25" aria-hidden="true" />
@@ -135,6 +203,9 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.map-canvas :deep(.leaflet-tile-pane) { filter: grayscale(1) contrast(0.9) brightness(1.06); }
+:global(.dark .location-map .leaflet-tile-pane) { filter: grayscale(1) invert(1) brightness(0.8); }
+.map-canvas :deep(.fallback-pin) { fill: hsl(var(--foreground)); stroke: hsl(var(--background)); }
 .location-map { overflow: hidden; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--background)); }
 .map-stage { position: relative; height: 400px; isolation: isolate; background: hsl(var(--secondary)); }
 .map-canvas { position: absolute; inset: 0; z-index: 0; background: hsl(var(--secondary)); font-family: inherit; }

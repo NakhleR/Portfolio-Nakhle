@@ -195,7 +195,7 @@ function submit() {
                                 </dd>
                             </div>
                         </dl>
-                        <div class="contact-map"><LocationMap /></div>
+                        <div class="contact-map" style="position: relative; min-width: 0; width: 100%; overflow: hidden;"><LocationMap /></div>
                     </aside>
                 </section>
             </div>

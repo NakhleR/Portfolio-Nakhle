@@ -7,6 +7,7 @@ use App\Http\Controllers\CmsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\MapAccessController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\PrivacyController;
@@ -27,6 +28,7 @@ Route::get('/about', [PortfolioController::class, 'about'])->name('about');
 Route::get('/work', [PortfolioController::class, 'work'])->name('work');
 Route::get('/work/{project}', [PortfolioController::class, 'project'])->name('work.show');
 Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
+Route::post('/maps/access', MapAccessController::class)->middleware('throttle:30,1')->name('maps.access');
 Route::prefix('fr')->name('fr.')->group(function (): void {
     Route::get('/', [PortfolioController::class, 'home'])->name('home');
     Route::get('/about', [PortfolioController::class, 'about'])->name('about');

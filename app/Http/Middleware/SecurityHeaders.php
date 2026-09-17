@@ -21,7 +21,7 @@ class SecurityHeaders
         $script = "'self' 'nonce-".Vite::cspNonce()."' 'wasm-unsafe-eval'";
         $connect = "'self' blob:";
         $style = "'self' 'unsafe-inline'";
-        $images = "'self' data: blob:";
+        $images = "'self' data: blob: https://*.tile.openstreetmap.org";
         $fonts = "'self' data:";
         $frames = "'none'";
         if (config('services.google_maps.key')) {

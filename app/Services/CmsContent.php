@@ -55,7 +55,7 @@ class CmsContent
                             'La carte ne contacte OpenStreetMap que lorsque vous demandez son chargement' => 'La carte se charge automatiquement sur la page de contact et contacte OpenStreetMap',
                             'La carte reste inactive jusqu’à votre demande. Son chargement contacte OpenStreetMap.' => 'La carte se charge automatiquement sur la page de contact et contacte OpenStreetMap, qui reçoit notamment votre adresse IP.',
                         ]);
-                        $value = str_replace('OpenStreetMap', 'Google Maps', $value);
+                        $value = str_replace('OpenStreetMap', app()->getLocale() === 'fr' ? 'Google Maps ou OpenStreetMap (carte de secours)' : 'Google Maps or OpenStreetMap (fallback map)', $value);
                     }
                 });
             }
