@@ -664,7 +664,7 @@ Use Cookie preferences in the footer to change your choice. Withdrawing consent 
                         'body' => 'Analytics and contact messages are stored in the database on Nakhle Rizk’s own server and are accessible to him to operate this personal portfolio and respond to enquiries. Analytics are not sent to an advertising network or external analytics provider, and personal information is not sold.
 
 
-The interactive map connects to OpenStreetMap only when you choose to load it. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. The site is self-hosted using Microsoft IIS; publisher and hosting contact details are listed in the Legal notice.',
+The interactive map loads automatically on the contact page and connects to OpenStreetMap. That provider then receives connection information such as your IP address. External project, GitHub, LinkedIn, and other links take you to services governed by their own privacy notices. The site is self-hosted using Microsoft IIS; publisher and hosting contact details are listed in the Legal notice.',
                     ],
                     [
                         'heading' => 'Your rights',
@@ -740,7 +740,7 @@ Cookie preferences remains available in the footer. Turning analytics off drops 
                     ],
                     [
                         'heading' => 'Third-party content',
-                        'body' => 'The map stays inactive until you request it. Loading it contacts OpenStreetMap. Visiting an external link is a separate interaction with that provider. Those services can have their own storage and privacy practices.',
+                        'body' => 'The map loads automatically on the contact page and connects to OpenStreetMap, which receives connection information such as your IP address. Visiting an external link is a separate interaction with that provider. Those services can have their own storage and privacy practices.',
                     ],
                 ],
                 'max' => 30,

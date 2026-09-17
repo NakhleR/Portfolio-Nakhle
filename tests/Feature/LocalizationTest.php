@@ -87,8 +87,31 @@ class LocalizationTest extends TestCase
         $response = $this->get('/fr/contact')->assertInertia(fn (Assert $page) => $page->missing('mapsKey'));
         $this->assertStringNotContainsString('googleapis.com', $response->headers->get('Content-Security-Policy'));
         $this->assertStringContainsString('https://*.tile.openstreetmap.org', $response->headers->get('Content-Security-Policy'));
-        $this->get('/privacy')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
-        $this->get('/fr/privacy')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
+        $this->get('/privacy')->assertSee('loads automatically')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
+        $this->get('/fr/privacy')->assertSee('se charge automatiquement')->assertSee('OpenStreetMap')->assertDontSee('Google Maps');
+        $this->get('/cookies')->assertSee('loads automatically');
+        $this->get('/fr/cookies')->assertSee('se charge automatiquement');
+    }
+
+    public function test_saved_map_notices_reflect_automatic_loading(): void
+    {
+        CmsDocument::create(['key' => 'privacy', 'published' => ['sections' => [
+            ['heading' => 'Map', 'body' => 'The interactive map connects to OpenStreetMap only when you choose to load it.'],
+        ]]]);
+        CmsDocument::create(['key' => 'cookies', 'published' => ['sections' => [
+            ['heading' => 'Map', 'body' => 'The map stays inactive until you request it. Loading it contacts OpenStreetMap.'],
+        ]]]);
+        CmsDocument::create(['key' => 'fr_privacy', 'published' => ['sections' => [
+            ['heading' => 'Carte', 'body' => 'La carte ne contacte {{map_provider}} que lorsque vous demandez son chargement ; celui-ci reçoit alors notamment votre adresse IP.'],
+        ]]]);
+        CmsDocument::create(['key' => 'fr_cookies', 'published' => ['sections' => [
+            ['heading' => 'Carte', 'body' => 'La carte reste inactive jusqu’à votre demande. Son chargement contacte {{map_provider}}.'],
+        ]]]);
+
+        $this->get('/privacy')->assertSee('loads automatically')->assertDontSee('only when you choose');
+        $this->get('/cookies')->assertSee('loads automatically')->assertDontSee('stays inactive');
+        $this->get('/fr/privacy')->assertSee('se charge automatiquement')->assertDontSee('que lorsque vous demandez');
+        $this->get('/fr/cookies')->assertSee('se charge automatiquement')->assertDontSee('reste inactive');
     }
 
     public function test_manifest_link_points_to_a_deployable_json_file(): void

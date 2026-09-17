@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { ArrowUpRight, LocateFixed, MapPin, Minus, Plus } from "lucide-vue-next";
 import type { LatLngTuple, Map as LeafletMap } from "leaflet";
 import { useLocale } from "../composables/useLocale";
@@ -10,7 +10,6 @@ const { locale } = useLocale();
 const cms = useCms();
 const text = (en: string, fr: string) => locale.value === "fr" ? fr : en;
 const element = ref<HTMLElement | null>(null);
-const enabled = ref(false);
 const failed = ref(false);
 const loading = ref(false);
 const ready = ref(false);
@@ -32,7 +31,6 @@ async function loadMap() {
     cleanup();
     failed.value = false;
     ready.value = false;
-    enabled.value = true;
     loading.value = true;
     await nextTick();
 
@@ -100,6 +98,7 @@ async function loadMap() {
         failed.value = true;
     }
 }
+onMounted(loadMap);
 onBeforeUnmount(() => {
     disposed = true;
     cleanup();
@@ -109,15 +108,13 @@ onBeforeUnmount(() => {
 <template>
     <section class="location-map" data-analytics-ignore data-lenis-prevent>
         <div class="map-stage">
-            <div v-if="enabled" ref="element" class="map-canvas" role="region"
+            <div ref="element" class="map-canvas" role="region"
                 :aria-label="`${text('Map of', 'Carte de')} ${cms.site.map_label}`" :aria-busy="loading" />
-            <div v-if="!enabled || failed" class="map-consent">
+            <div v-if="failed" class="map-error">
                 <MapPin :size="26" :stroke-width="1.25" aria-hidden="true" />
-                <h3>{{ text('A little closer.', 'Un peu plus près.') }}</h3>
-                <p v-if="failed" role="status">{{ text('The map could not load. You can retry or open the location below.', 'La carte n’a pas pu charger. Réessayez ou ouvrez le lien ci-dessous.') }}</p>
-                <p v-else>{{ text('Load the street map to explore the neighbourhood. OpenStreetMap will receive your IP address.', 'Chargez le plan pour explorer le quartier. OpenStreetMap recevra votre adresse IP.') }}</p>
+                <p role="status">{{ text('The map could not load. You can retry or open the location below.', 'La carte n’a pas pu charger. Réessayez ou ouvrez le lien ci-dessous.') }}</p>
                 <button type="button" class="map-load" @click="loadMap">
-                    {{ failed ? text('Try again', 'Réessayer') : text('Load map', 'Afficher la carte') }}
+                    {{ text('Try again', 'Réessayer') }}
                     <ArrowUpRight :size="16" aria-hidden="true" />
                 </button>
             </div>
@@ -145,9 +142,8 @@ onBeforeUnmount(() => {
 .location-map { overflow: hidden; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--background)); }
 .map-stage { position: relative; height: 400px; isolation: isolate; background: hsl(var(--secondary)); }
 .map-canvas { position: absolute; inset: 0; z-index: 0; background: hsl(var(--secondary)); font-family: inherit; }
-.map-consent { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px; text-align: center; background: hsl(var(--secondary)); }
-.map-consent h3 { font-size: 24px; font-weight: 500; letter-spacing: -0.04em; }
-.map-consent p { max-width: 34ch; font-size: 13px; line-height: 1.7; color: hsl(var(--muted-foreground)); }
+.map-error { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px; text-align: center; background: hsl(var(--secondary)); }
+.map-error p { max-width: 34ch; font-size: 13px; line-height: 1.7; color: hsl(var(--muted-foreground)); }
 .map-load { display: inline-flex; align-items: center; gap: 20px; min-height: 44px; padding: 10px 16px; margin-top: 4px; border: 1px solid hsl(var(--foreground) / 0.3); border-radius: 4px; font-size: 12px; }
 .map-load:hover { background: hsl(var(--background)); }
 .map-loading { position: absolute; top: 16px; left: 16px; z-index: 2; padding: 10px 14px; background: hsl(var(--background)); border: 1px solid hsl(var(--border)); font-size: 12px; }
@@ -172,6 +168,6 @@ onBeforeUnmount(() => {
 @media (max-width: 600px) {
     .map-stage { height: 340px; }
     .map-caption { padding: 14px 16px; gap: 4px; flex-direction: column; align-items: flex-start; }
-    .map-consent { padding: 24px; }
+    .map-error { padding: 24px; }
 }
 </style>

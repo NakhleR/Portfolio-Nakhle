@@ -49,6 +49,12 @@ class CmsContent
                 array_walk_recursive($result[$key], function (&$value): void {
                     if (is_string($value)) {
                         $value = str_replace(['Google Maps', '{{map_provider}}'], 'OpenStreetMap', $value);
+                        $value = strtr($value, [
+                            'The interactive map connects to OpenStreetMap only when you choose to load it.' => 'The interactive map loads automatically on the contact page and connects to OpenStreetMap.',
+                            'The map stays inactive until you request it. Loading it contacts OpenStreetMap.' => 'The map loads automatically on the contact page and connects to OpenStreetMap, which receives connection information such as your IP address.',
+                            'La carte ne contacte OpenStreetMap que lorsque vous demandez son chargement' => 'La carte se charge automatiquement sur la page de contact et contacte OpenStreetMap',
+                            'La carte reste inactive jusqu’à votre demande. Son chargement contacte OpenStreetMap.' => 'La carte se charge automatiquement sur la page de contact et contacte OpenStreetMap, qui reçoit notamment votre adresse IP.',
+                        ]);
                     }
                 });
             }
