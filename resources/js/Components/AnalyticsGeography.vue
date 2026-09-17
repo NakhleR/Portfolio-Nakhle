@@ -70,7 +70,7 @@ watch(() => props.countries, () => { selected.value = null; hovered.value = null
                         <strong>{{ located.toLocaleString("en-US") }} <small>located sessions</small></strong>
                     </template>
                 </div>
-                <svg :viewBox="region === 'europe' ? '440 95 205 220' : '0 0 1000 500'" role="img" aria-labelledby="geo-map-title geo-map-description" @mouseleave="hovered = null">
+                <svg class="geo-world-map" :viewBox="region === 'europe' ? '440 95 205 220' : '0 0 1000 500'" role="img" aria-labelledby="geo-map-title geo-map-description" @mouseleave="hovered = null">
                     <title id="geo-map-title">Sessions by country</title>
                     <desc id="geo-map-description">Darker countries and taller columns indicate more sessions. Columns use representative country positions, not visitor addresses. Exact counts are available in the country list.</desc>
                     <g class="geo-grid" aria-hidden="true">
@@ -143,7 +143,7 @@ watch(() => props.countries, () => { selected.value = null; hovered.value = null
 .geo-readout > span { display: block; font-size: 11px; color: #657153; }
 .geo-readout strong { display: block; margin-top: 5px; font-size: 25px; font-weight: 500; letter-spacing: -.04em; }
 .geo-readout small { font-size: 11px; letter-spacing: 0; font-weight: 400; color: #778267; }
-.geo-stage svg { display: block; width: 100%; height: auto; min-height: 310px; max-height: 440px; }
+.geo-world-map { display: block; width: 100%; height: auto; min-height: 310px; max-height: 440px; }
 .geo-grid path { stroke: #d7decb; stroke-width: .5; fill: none; }
 .geo-countries path { stroke: #f7f8f1; stroke-width: .65; stroke-linejoin: round; cursor: pointer; }
 .geo-countries path.is-active { stroke: #425529; stroke-width: 1.5; }
@@ -151,6 +151,9 @@ watch(() => props.countries, () => { selected.value = null; hovered.value = null
 .geo-towers .is-active path { stroke: #273b15; stroke-width: .6; }
 .geo-map-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px 20px; font-size: 10px; color: #667456; }
 .geo-scale, .geo-map-footer a { display: flex; align-items: center; gap: 5px; }
+.geo-map-footer a { color: inherit; white-space: nowrap; text-decoration: none; }
+.geo-map-footer a:hover { text-decoration: underline; }
+.geo-map-footer a svg { flex-shrink: 0; }
 .geo-scale i { width: 9px; height: 9px; background: #e1e4d9; border: 1px solid #cbd3be; border-radius: 2px; }
 .geo-scale b { display: block; width: 55px; height: 7px; margin-left: 6px; background: linear-gradient(90deg, #c9d7b0, #7b793e); border-radius: 2px; }
 .geo-breakdown { padding: 24px 20px; border-left: 1px solid #e6eadf; }
@@ -172,5 +175,5 @@ watch(() => props.countries, () => { selected.value = null; hovered.value = null
 .geo-note p + p { margin-top: 7px; }
 button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid #62773d; outline-offset: 2px; }
 @media (max-width: 1100px) { .geo-content { grid-template-columns: 1fr; } .geo-breakdown { border-left: 0; border-top: 1px solid #e6eadf; } .geo-list { max-height: 240px; } }
-@media (max-width: 600px) { .geo-header { padding: 20px; align-items: start; flex-direction: column; gap: 14px; } .geo-stage svg { min-height: 280px; } .geo-readout { left: 20px; top: 18px; } .geo-map-footer { padding-inline: 15px; } .geo-note { padding: 15px 20px; } }
+@media (max-width: 600px) { .geo-header { padding: 20px; align-items: start; flex-direction: column; gap: 14px; } .geo-world-map { min-height: 280px; } .geo-readout { left: 20px; top: 18px; } .geo-map-footer { padding-inline: 15px; } .geo-note { padding: 15px 20px; } }
 </style>
