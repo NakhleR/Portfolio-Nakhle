@@ -28,7 +28,7 @@ $sections = [
             'address' => [
                 'label' => 'Public location',
                 'type' => 'textarea',
-                'default' => 'Rue De Fontenelle
+                'default' => 'Rue de Fontenelle
 
 Rouen 76000, France',
             ],
@@ -50,19 +50,19 @@ Rouen 76000, France',
             'map_label' => [
                 'label' => 'Map label',
                 'type' => 'text',
-                'default' => 'Rouen, France',
+                'default' => 'Rue de Fontenelle, 76000 Rouen',
             ],
             'latitude' => [
                 'label' => 'Latitude',
                 'type' => 'number',
-                'default' => 49.4431,
+                'default' => 49.44303,
                 'min' => -90,
                 'max' => 90,
             ],
             'longitude' => [
                 'label' => 'Longitude',
                 'type' => 'number',
-                'default' => 1.0993,
+                'default' => 1.08613,
                 'min' => -180,
                 'max' => 180,
             ],
