@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(SecurityHeaders::class);
+        // Cloudflare Tunnel (cloudflared) reaches the web server over loopback and forwards the visitor address.
+        $middleware->trustProxies(at: ['127.0.0.1', '::1'], headers: Request::HEADER_X_FORWARDED_FOR);
         $middleware->trustHosts(at: fn () => ['^'.preg_quote((string) parse_url(config('app.url'), PHP_URL_HOST), '/').'$'], subdomains: false);
         $middleware->web(append: [SetLocale::class, HandleInertiaRequests::class]);
         $middleware->alias(['admin' => EnsureAdministrator::class]);

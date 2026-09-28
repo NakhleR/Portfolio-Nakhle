@@ -81,6 +81,23 @@ class SecurityTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
+    public function test_rate_limits_use_forwarded_visitor_addresses_only_from_the_local_tunnel(): void
+    {
+        foreach (['198.51.100.1', '198.51.100.2'] as $visitor) {
+            for ($attempt = 1; $attempt <= 5; $attempt++) {
+                $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])->withHeaders(['X-Forwarded-For' => $visitor])
+                    ->postJson('/privacy/erase-analytics')->assertOk();
+            }
+        }
+        $this->postJson('/privacy/erase-analytics')->assertTooManyRequests();
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.9'])->withHeaders(['X-Forwarded-For' => '198.51.100.1'.$attempt])
+                ->postJson('/privacy/erase-analytics')->assertOk();
+        }
+        $this->withHeaders(['X-Forwarded-For' => '198.51.100.99'])->postJson('/privacy/erase-analytics')->assertTooManyRequests();
+    }
+
     public function test_successful_login_clears_failed_attempts_and_oversized_credentials_are_rejected(): void
     {
         $admin = User::factory()->create(['is_admin' => true, 'password' => 'correct-password']);

@@ -79,6 +79,8 @@ class AnalyticsTest extends TestCase
         foreach ([
             ['173.245.48.5', 'FR', 'page_view', 'FR'],
             ['2606:4700::1234', 'LB', 'page_view', 'LB'],
+            ['127.0.0.1', 'FR', 'page_view', 'FR'],
+            ['::1', 'LB', 'page_view', 'LB'],
             ['203.0.113.9', 'FR', 'page_view', null],
             ['173.245.48.5', 'XX', 'page_view', null],
             ['173.245.48.5', 'T1', 'page_view', null],
@@ -92,7 +94,7 @@ class AnalyticsTest extends TestCase
             $this->assertDatabaseHas('analytics_events', ['id' => $event['id'], 'country' => $expected]);
         }
         $this->postJson('/analytics/events', ['events' => [$this->event(['country' => 'FR'])]])->assertUnprocessable();
-        $this->assertDatabaseCount('analytics_events', 8);
+        $this->assertDatabaseCount('analytics_events', 10);
     }
 
     public function test_country_privacy_notice_is_visible_in_both_languages_over_published_content(): void
